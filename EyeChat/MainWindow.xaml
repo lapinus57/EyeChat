@@ -13,6 +13,12 @@
         GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
                  WindowStartupLocation="CenterScreen">
 
+    <mah:MetroWindow.Resources>
+        <FontFamily x:Key="CustomTitleFontFamily">Arial</FontFamily>
+        <Style TargetType="controls:TitleBar" BasedOn="{StaticResource {x:Type controls:TitleBar}}">
+            <Setter Property="FontFamily" Value="{DynamicResource CustomTitleFontFamily}" />
+        </Style>
+    </mah:MetroWindow.Resources>
 
     <mah:MetroWindow.Flyouts>
         <mah:FlyoutsControl>
@@ -21,6 +27,7 @@
                         IsOpen="{Binding ElementName=ToggleButtonOpenSettings, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
                         Width="500">
+                <local:SettingsWindows />
                 <!-- The content goes here -->
             </mah:Flyout>
 

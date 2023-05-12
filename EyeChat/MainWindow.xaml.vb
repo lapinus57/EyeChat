@@ -1,9 +1,12 @@
-﻿Class MainWindow
+﻿Imports MahApps.Metro.Controls.Dialogs
 
-    Private Sub LaunchGitHubSite()
+Class MainWindow
+
+    Private Async Function LaunchGitHubSiteAsync() As Task
         ' Exemple : Ouvrir le site GitHub dans le navigateur par défaut
         Dim url As String = "https://github.com/lapinus57/EyeChat"
         Process.Start(url)
-    End Sub
+        Await Me.ShowMessageAsync("This is the title", "Some message")
+    End Function
 
 End Class
