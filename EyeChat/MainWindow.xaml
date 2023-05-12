@@ -8,15 +8,41 @@
         xmlns:local="clr-namespace:EyeChat"
         mc:Ignorable="d"
         Title="EyeChat" 
-        Height="450" 
-        Width="800">
+        Height="600" 
+        Width="1150"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+                 WindowStartupLocation="CenterScreen">
+
+
+    <mah:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <iconPacks:PackIconModern Kind="Chat" 
+                                       Width="22" 
+                                       Height="22"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Margin="4"
+                                       Foreground="{DynamicResource MahApps.Brushes.IdealForeground}"/>
+        </DataTemplate>
+    </mah:MetroWindow.IconTemplate>
 
     <mah:MetroWindow.RightWindowCommands>
         <mah:WindowCommands>
-            <Button Click="LaunchGitHubSite" ToolTip="Open up the GitHub site">
+            <ToggleButton x:Name="ToggleButtonOpenSettings" 
+                          Content="{iconPacks:Modern Kind=Settings}" 
+                          ToolTip="Ouvrir les paramètres"
+                          Foreground="{DynamicResource MahApps.Brushes.IdealForeground}"/>
+            <Button Click="CreateGitHubIssues" ToolTip="Créer un ticket Github">
                 <iconPacks:PackIconModern Width="22"
                                   Height="22"
-                                  Kind="SocialGithubOctocat" />
+                                  Kind="Bug"
+                                  Foreground="{DynamicResource MahApps.Brushes.IdealForeground}"/>
+            </Button>
+            <Button Click="LaunchGitHubSite" ToolTip="Aller sur le Github">
+                <iconPacks:PackIconModern Width="22"
+                                  Height="22"
+                                  Kind="SocialGithubOctocat" 
+                                  Foreground="{DynamicResource MahApps.Brushes.IdealForeground}"/>
             </Button>
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
