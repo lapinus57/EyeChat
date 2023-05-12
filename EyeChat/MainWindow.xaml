@@ -8,57 +8,16 @@
         xmlns:local="clr-namespace:EyeChat"
         mc:Ignorable="d"
         Title="EyeChat" 
-        Height="600" 
-        Width="1150"
-        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
-                 WindowStartupLocation="CenterScreen">
-
-
-    <mah:MetroWindow.Flyouts>
-        <mah:FlyoutsControl>
-
-            <mah:Flyout Header="Paramètres" 
-                        IsOpen="{Binding ElementName=ToggleButtonOpenSettings, Path=IsChecked, Mode=TwoWay}" 
-                        Position="Right" 
-                        Width="500">
-                <!-- The content goes here -->
-            </mah:Flyout>
-
-            <mah:Flyout Header="Github / A Propos" 
-                        IsOpen="{Binding ElementName=ToggleButtonOpenGithub, Path=IsChecked, Mode=TwoWay}" 
-                        Position="Right" 
-                        Width="500">
-                <local:GithubWindows />
-                <!-- The content goes here -->
-            </mah:Flyout>
-
-        </mah:FlyoutsControl>
-    </mah:MetroWindow.Flyouts>
-
-
-
-    <mah:MetroWindow.IconTemplate>
-        <DataTemplate>
-            <iconPacks:PackIconModern Kind="Chat" 
-                                       Width="22" 
-                                       Height="22"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Margin="4"
-                                       Foreground="{DynamicResource MahApps.Brushes.IdealForeground}"/>
-        </DataTemplate>
-    </mah:MetroWindow.IconTemplate>
+        Height="450" 
+        Width="800">
 
     <mah:MetroWindow.RightWindowCommands>
         <mah:WindowCommands>
-            <ToggleButton x:Name="ToggleButtonOpenSettings" 
-                          Content="{iconPacks:Modern Kind=Settings}" 
-                          ToolTip="Ouvrir les paramètres"
-                          Foreground="{DynamicResource MahApps.Brushes.IdealForeground}"/>
-            <ToggleButton x:Name="ToggleButtonOpenGithub" 
-                          Content="{iconPacks:Modern Kind=SocialGithubOctocat}" 
-                          ToolTip="Ouvrir les paramètres"
-                          Foreground="{DynamicResource MahApps.Brushes.IdealForeground}"/>
+            <Button Click="LaunchGitHubSite" ToolTip="Open up the GitHub site">
+                <iconPacks:PackIconModern Width="22"
+                                  Height="22"
+                                  Kind="SocialGithubOctocat" />
+            </Button>
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
     <Grid>
