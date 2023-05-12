@@ -94,6 +94,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\SettingsWindows.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -104,6 +108,9 @@
     </Compile>
     <Compile Include="Controls\GithubWindows.xaml.vb">
       <DependentUpon>GithubWindows.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SettingsWindows.xaml.vb">
+      <DependentUpon>SettingsWindows.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.vb">
       <DependentUpon>MainWindow.xaml</DependentUpon>

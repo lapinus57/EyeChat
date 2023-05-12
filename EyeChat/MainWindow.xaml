@@ -21,6 +21,7 @@
                         IsOpen="{Binding ElementName=ToggleButtonOpenSettings, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
                         Width="500">
+                <local:SettingsWindows />
                 <!-- The content goes here -->
             </mah:Flyout>
 

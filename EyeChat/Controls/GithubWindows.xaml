@@ -3,24 +3,58 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:local="clr-namespace:EyeChat"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="500">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Hidden">
         <StackPanel>
+            <GroupBox Header="Aide / Nouveauté" 
+                      BorderThickness="0">
+            </GroupBox>
+            
             <GroupBox Header="GitHub" 
                       BorderThickness="0">
                 <StackPanel>
-                    
+                    <mah:MetroHeader Header="Ouvrir un ticket">
+                        <StackPanel>
+                            <TextBlock Text="Catégorie :" Margin="10,0,0,0"/>
+                            <ComboBox Margin="10,0,0,0" Width="200" HorizontalAlignment="Left" x:Name="categoryComboBox" SelectedIndex="0">
+                                <ComboBoxItem Content="Signaler un problème" Tag="problem" />
+                                <ComboBoxItem Content="Proposer une idée" Tag="idea" />
+                            </ComboBox>
+                            <TextBlock Text="Message :" Margin="10,10,0,0"/>
+                            <TextBox x:Name="DescriptionTextBox" Margin="10,0,10,0" Height="60" Width="470" HorizontalAlignment="Left" AcceptsReturn="True" TextWrapping="Wrap" MaxLength="200" VerticalScrollBarVisibility="Visible"/>
+                            <TextBlock Text="{Binding ElementName=DescriptionTextBox, Path=Text.Length, StringFormat='Caractères saisis : {0}/200'}" 
+                               HorizontalAlignment="Right" Margin="0,0,10,0" />
+                            <Button Content="Envoyer" Margin="50,5,50,10" Click="SendReport_Click"/>
+                        </StackPanel>
+                    </mah:MetroHeader>
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="A Propos" 
-                      BorderThickness="0">
+            <GroupBox Header="A Propos" BorderThickness="0">
                 <StackPanel>
-                    <TextBlock x:Name="AboutTextBlock" Text="EyeChat"/>
+                    <TextBlock x:Name="AboutTextBlock" Margin="10,10">
+                        <Run FontWeight="Bold" Text="{Binding Title}" />
+                        <LineBreak />
+                        <Run Text="Version: " />
+                        <Run FontWeight="Bold" Text="{Binding AssemblyVersion}" />
+                        <LineBreak />
+                        <Run Text="Fichier: " />
+                        <Run FontWeight="Bold" Text="{Binding FileVersion}" />
+                        <LineBreak />
+                        <Run FontWeight="Bold" Text="{Binding Description}" />
+                        <LineBreak />
+                        <Run Text="Développé par " />
+                        <Run FontWeight="Bold" Text="{Binding Company}" />
+                        <LineBreak />
+                        <Run Text="{Binding Copyright}" />
+                        <LineBreak />
+                        <Run Text="{Binding Trademark}" />
+                    </TextBlock>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

@@ -12,7 +12,7 @@ Imports System.Windows
 ' Vérifiez les valeurs des attributs de l'assembly
 
 <Assembly: AssemblyTitle("EyeChat")>
-<Assembly: AssemblyDescription("Logiciel de discution")>
+<Assembly: AssemblyDescription("Logiciel de discution intranet anciennement Dialogue")>
 <Assembly: AssemblyCompany("MULLER")>
 <Assembly: AssemblyProduct("EyeChat")>
 <Assembly: AssemblyCopyright("Copyright ©  2023")>
