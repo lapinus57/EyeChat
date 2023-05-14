@@ -110,8 +110,6 @@ Public Class GithubWindows
             ' Afficher un message d'erreur ou prendre une autre action appropriée
         End If
 
-
-    Private Sub GithubWindows_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
-        GetAssemblyInfos()
     End Sub
+
 End Class
