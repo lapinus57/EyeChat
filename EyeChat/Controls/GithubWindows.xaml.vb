@@ -111,8 +111,7 @@ Public Class GithubWindows
         End If
 
 
-        ' Réinitialiser le ComboBox à l'état initial après avoir traité le rapport
-        categoryComboBox.SelectedIndex = 0
-        DescriptionTextBox.Text = ""
+    Private Sub GithubWindows_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
+        GetAssemblyInfos()
     End Sub
 End Class
