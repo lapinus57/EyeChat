@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:local="clr-namespace:EyeChat">
+
+
+    <system:String x:Key="GroupeBoxHeader1">Aide / Nouveauté</system:String>
+    <system:String x:Key="GroupeBoxHeader2">GitHub</system:String>
+    <system:String x:Key="GroupeBoxHeader3">A Propos</system:String>
+    <system:String x:Key="HomePageButtonContent">EyeChat sur GitHub</system:String>
+    <system:String x:Key="WikiButtonContent">EyeChat le Wiki</system:String>
+    <system:String x:Key="ChangeLogLabel">Change Log :</system:String>
+    <system:String x:Key="OpenTicketHeaderText">Ouvrir un ticket</system:String>
+    <system:String x:Key="CategoryLabel">Catégorie :</system:String>
+    <system:String x:Key="ProblemCategory">Signaler un problème</system:String>
+    <system:String x:Key="IdeaCategory">Proposer une idée</system:String>
+    <system:String x:Key="MessageLabel">Message :</system:String>
+    <system:String x:Key="SendButtonContent">Envoyer</system:String>
+    <system:String x:Key="AboutHeaderText">Informations sur l'application</system:String>
+    <system:String x:Key="VersionText">Version :</system:String>
+    <system:String x:Key="FileVersionText">Fichier :</system:String>
+    <system:String x:Key="DescriptionText">Description :</system:String>
+    <system:String x:Key="DevelopedByText">Développé par :</system:String>
+    <system:String x:Key="CopyrightText">Droits d'auteur :</system:String>
+    <system:String x:Key="TrademarkText">Marque déposée :</system:String>
+    
+</ResourceDictionary>

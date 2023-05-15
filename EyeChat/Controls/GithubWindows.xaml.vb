@@ -5,9 +5,13 @@ Imports System.Text
 Imports Newtonsoft.Json.Linq
 Imports MahApps.Metro.Controls
 Imports MahApps.Metro.Controls.Dialogs
+Imports Octokit
+Imports System.Threading.Tasks
+Imports System.Xml
+Imports System.Windows.Forms
 
 Public Class GithubWindows
-    Inherits UserControl
+
 
     'Déclaration des variables d'information A propos
     Public Property Title As String
@@ -17,6 +21,9 @@ Public Class GithubWindows
     Public Property Company As String
     Public Property Copyright As String
     Public Property Trademark As String
+
+    Private ReadOnly httpClient As HttpClient
+
 
     Public Sub GetAssemblyInfos()
         Dim assembly As Assembly = Assembly.GetExecutingAssembly()
@@ -48,15 +55,40 @@ Public Class GithubWindows
 
     Private Sub GithubWindows_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
         GetAssemblyInfos()
+        'Dim changeLog As String = Await GetChangeLogAsync()
+        'ChangeLogTextBox.Text = changeLog
+        Dim owner As String = "lapinus57"
+        Dim repository As String = "EyeChat"
+        Dim page As String = "Change Log"
+        Dim accessToken As String = "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"
+
         DataContext = Me
     End Sub
+
+
+
+    Private Async Function GetChangeLogAsync() As Task(Of String)
+        Dim repository = "EyeChat"
+        Dim owner = "lapinus57"
+        Dim wikiPageName = "Change-Log"
+
+        Using httpClient = New HttpClient()
+
+
+            Dim apiUrl = $"https://api.github.com/repos/{owner}/{repository}/contents/{wikiPageName}.md"
+            Dim response = Await httpClient.GetAsync(apiUrl)
+            response.EnsureSuccessStatusCode()
+            Dim content = Await response.Content.ReadAsStringAsync()
+            Return content
+        End Using
+    End Function
 
     Public Async Function CreateGitHubIssueAsync(ByVal title As String, ByVal body As String) As Task
         ' Déclaration variable pour le dépôt GitHub
         Dim apiUrl As String = "https://api.github.com/repos/{owner}/{repo}/issues"
         Dim owner As String = "lapinus57"
         Dim repo As String = "EyeChat"
-        Dim personalAccessToken As String = "ghp"
+        Dim personalAccessToken As String = "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"
 
         Dim url As String = apiUrl.Replace("{owner}", owner).Replace("{repo}", repo)
 
@@ -109,6 +141,14 @@ Public Class GithubWindows
             ' Le DescriptionTextBox est vide ou ne contient que des espaces
             ' Afficher un message d'erreur ou prendre une autre action appropriée
         End If
+
+    End Sub
+
+    Private Sub WikiButton_Click(sender As Object, e As RoutedEventArgs)
+
+    End Sub
+
+    Private Sub HomePageButton_Click(sender As Object, e As RoutedEventArgs)
 
     End Sub
 

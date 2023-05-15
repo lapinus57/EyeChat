@@ -11,9 +11,9 @@
          Height="600" 
         Width="1150"
         GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
-                 WindowStartupLocation="CenterScreen">
-
-    
+                 WindowStartupLocation="CenterScreen"
+                 ShowIconOnTitleBar="True"
+                 ShowCloseButton="False">
 
     <mah:MetroWindow.Flyouts>
         <mah:FlyoutsControl>
@@ -30,8 +30,9 @@
                         IsOpen="{Binding ElementName=ToggleButtonOpenGithub, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
                         Width="500">
-                <local:GithubWindows />
+                
                 <!-- The content goes here -->
+                <local:GithubWindows />
             </mah:Flyout>
 
         </mah:FlyoutsControl>

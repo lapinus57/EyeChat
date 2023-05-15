@@ -1,54 +1,66 @@
 ﻿<UserControl x:Class="GithubWindows"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             xmlns:local="clr-namespace:EyeChat"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="500">
+             xmlns:local="clr-namespace:YourNamespace">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto"
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="../Dictionary/DictionaryGitHubWindows.xaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Hidden">
-        <StackPanel>
-            <GroupBox Header="Aide / Nouveauté" 
+		<StackPanel>
+			<GroupBox Header="{StaticResource GroupeBoxHeader1}"
                       BorderThickness="0">
-            </GroupBox>
-            
-            <GroupBox Header="GitHub" 
-                      BorderThickness="0">
-                <StackPanel>
-                    <mah:MetroHeader Header="Ouvrir un ticket">
-                        <StackPanel>
-                            <TextBlock Text="Catégorie :" Margin="10,0,0,0"/>
-                            <ComboBox Margin="10,0,0,0" Width="200" HorizontalAlignment="Left" x:Name="categoryComboBox" SelectedIndex="0">
-                                <ComboBoxItem Content="Signaler un problème" Tag="problem" />
-                                <ComboBoxItem Content="Proposer une idée" Tag="idea" />
-                            </ComboBox>
-                            <TextBlock Text="Message :" Margin="10,10,0,0"/>
-                            <TextBox x:Name="DescriptionTextBox" Margin="10,0,10,0" Height="60" Width="470" HorizontalAlignment="Left" AcceptsReturn="True" TextWrapping="Wrap" MaxLength="200" VerticalScrollBarVisibility="Visible"/>
-                            <TextBlock Text="{Binding ElementName=DescriptionTextBox, Path=Text.Length, StringFormat='Caractères saisis : {0}/200'}" 
-                               HorizontalAlignment="Right" Margin="0,0,10,0" />
-                            <Button Content="Envoyer" Margin="50,5,50,10" Click="SendReport_Click"/>
-                        </StackPanel>
-                    </mah:MetroHeader>
-                </StackPanel>
-            </GroupBox>
+				<StackPanel>
+					<Button Content="{StaticResource HomePageButtonContent}" Margin="10" HorizontalAlignment="Left" Click="HomePageButton_Click"/>
+					<Button Content="{StaticResource WikiButtonContent}" Margin="10" HorizontalAlignment="Left" Click="WikiButton_Click"/>
+					<TextBlock Text="{StaticResource ChangeLogLabel}" Margin="10,0,0,0"/>
+					<TextBox x:Name="ChangeLogTextBox" Margin="10,0,10,10" Height="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible"/>
+				</StackPanel>
+			</GroupBox>
 
-            <GroupBox Header="A Propos" BorderThickness="0">
-                <StackPanel>
-                    <TextBlock x:Name="AboutTextBlock" Margin="10,10">
-                        <Run FontWeight="Bold" Text="{Binding Title}" />
-                        <LineBreak />
-                        <Run Text="Version: " />
-                        <Run FontWeight="Bold" Text="{Binding AssemblyVersion}" />
-                        <LineBreak />
-                        <Run Text="Fichier: " />
-                        <Run FontWeight="Bold" Text="{Binding FileVersion}" />
-                        <LineBreak />
+			<GroupBox Header="{StaticResource GroupeBoxHeader2}"
+                      BorderThickness="0">
+				<StackPanel>
+					<mah:MetroHeader Header="{StaticResource OpenTicketHeaderText}">
+						<StackPanel>
+							<TextBlock Text="{StaticResource CategoryLabel}" Margin="10,0,0,0"/>
+							<ComboBox Margin="10,0,0,0" Width="200" HorizontalAlignment="Left" x:Name="categoryComboBox" SelectedIndex="0">
+								<ComboBoxItem Content="{StaticResource ProblemCategory}" Tag="problem" />
+								<ComboBoxItem Content="{StaticResource IdeaCategory}" Tag="idea" />
+							</ComboBox>
+							<TextBlock Text="{StaticResource MessageLabel}" Margin="10,10,0,0"/>
+							<TextBox x:Name="DescriptionTextBox" Margin="10,0,10,0" Height="60" Width="470" HorizontalAlignment="Left" AcceptsReturn="True" TextWrapping="Wrap" MaxLength="200" VerticalScrollBarVisibility="Visible"/>
+							<TextBlock Text="{Binding ElementName=DescriptionTextBox, Path=Text.Length, StringFormat='Caractères saisis : {0}/200'}"
+                               HorizontalAlignment="Right" Margin="0,0,10,0" />
+							<Button Content="{StaticResource SendButtonContent}" Margin="50,5,50,10" Click="SendReport_Click"/>
+						</StackPanel>
+					</mah:MetroHeader>
+				</StackPanel>
+			</GroupBox>
+
+			<GroupBox Header="{StaticResource GroupeBoxHeader3}"
+					 BorderThickness="0">
+				<StackPanel>
+					<TextBlock x:Name="AboutTextBlock" Margin="10,10">
+						<Run FontWeight="Bold" Text="{Binding Title}" />
+						<LineBreak />
+						<Run Text="{StaticResource VersionText}" />
+						<Run FontWeight="Bold" Text="{Binding AssemblyVersion}" />
+						<LineBreak />
+						<Run Text="FileVersionText}" />
+						<Run FontWeight="Bold" Text="{Binding FileVersion}" />
+						<LineBreak />
                         <Run FontWeight="Bold" Text="{Binding Description}" />
                         <LineBreak />
-                        <Run Text="Développé par " />
+                        <Run Text="{StaticResource DevelopedByText}" />
                         <Run FontWeight="Bold" Text="{Binding Company}" />
                         <LineBreak />
                         <Run Text="{Binding Copyright}" />
