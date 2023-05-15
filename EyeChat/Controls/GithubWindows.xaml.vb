@@ -25,6 +25,17 @@ Public Class GithubWindows
     Private ReadOnly httpClient As HttpClient
 
 
+
+
+
+    Private Sub GithubWindows_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
+        GetAssemblyInfos()
+        DataContext = Me
+
+
+
+    End Sub
+
     Public Sub GetAssemblyInfos()
         Dim assembly As Assembly = Assembly.GetExecutingAssembly()
         Dim assemblyName As AssemblyName = assembly.GetName()
@@ -53,35 +64,12 @@ Public Class GithubWindows
         Trademark = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyTrademarkAttribute)), AssemblyTrademarkAttribute).Trademark
     End Sub
 
-    Private Sub GithubWindows_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
-        GetAssemblyInfos()
-        'Dim changeLog As String = Await GetChangeLogAsync()
-        'ChangeLogTextBox.Text = changeLog
-        Dim owner As String = "lapinus57"
-        Dim repository As String = "EyeChat"
-        Dim page As String = "Change Log"
-        Dim accessToken As String = "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"
 
-        DataContext = Me
+    Public Sub New()
+        InitializeComponent()
+        'DialogParticipation.SetRegister(Me, Me)
     End Sub
 
-
-
-    Private Async Function GetChangeLogAsync() As Task(Of String)
-        Dim repository = "EyeChat"
-        Dim owner = "lapinus57"
-        Dim wikiPageName = "Change-Log"
-
-        Using httpClient = New HttpClient()
-
-
-            Dim apiUrl = $"https://api.github.com/repos/{owner}/{repository}/contents/{wikiPageName}.md"
-            Dim response = Await httpClient.GetAsync(apiUrl)
-            response.EnsureSuccessStatusCode()
-            Dim content = Await response.Content.ReadAsStringAsync()
-            Return content
-        End Using
-    End Function
 
     Public Async Function CreateGitHubIssueAsync(ByVal title As String, ByVal body As String) As Task
         ' Déclaration variable pour le dépôt GitHub
@@ -145,6 +133,9 @@ Public Class GithubWindows
     End Sub
 
     Private Sub WikiButton_Click(sender As Object, e As RoutedEventArgs)
+
+
+
 
     End Sub
 

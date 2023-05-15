@@ -1,10 +1,17 @@
-﻿<UserControl x:Class="GithubWindows"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
+﻿
+<UserControl x:Class="GithubWindows"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"		 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             xmlns:local="clr-namespace:YourNamespace">
+			 xmlns:dia="http://metro.mahapps.com/winfx/xaml/controls/dialogs"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"			
+             xmlns:local="clr-namespace:EyeChat"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="500">
 
+	
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -12,6 +19,7 @@
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</UserControl.Resources>
+	
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Hidden">
@@ -72,6 +80,6 @@
         </StackPanel>
        
     </ScrollViewer>
-    
-    
+	
+
 </UserControl>

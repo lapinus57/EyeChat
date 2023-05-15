@@ -2,20 +2,46 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:mah2="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EyeChat"
+             xmlns:ll="clr-namespace:EyeChat.My"
+             mah2:DialogParticipation.Register="{Binding}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="500">
+
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Dictionary/DictionarySettingsWindows.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Hidden">
         <StackPanel>
             <GroupBox Header="Général" 
                       BorderThickness="0">
+                <StackPanel>
+                    <TextBlock Text="{StaticResource UserNameLabel}" Margin="10,0,0,0"/>
+                    <TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0"/>
+                    <TextBlock Text="{StaticResource AvatarLabel}" Margin="10,0,0,0"/>
+
+
+                </StackPanel>
             </GroupBox>
 
             <GroupBox Header="Affichage" 
                       BorderThickness="0">
-            
+                <ComboBox SelectedValuePath="Content" SelectedValue="{Binding AppTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" SelectionChanged="AppThemeChanged">
+                    <ComboBoxItem Content="Clair" />
+                    <ComboBoxItem Content="Sombre" />
+                </ComboBox>
+
             </GroupBox>
 
             <GroupBox Header="Fonctionalité" 

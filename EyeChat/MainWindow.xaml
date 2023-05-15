@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"       
         xmlns:local="clr-namespace:EyeChat"
         mc:Ignorable="d"
         Title="EyeChat" 
@@ -13,7 +14,12 @@
         GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
                  WindowStartupLocation="CenterScreen"
                  ShowIconOnTitleBar="True"
-                 ShowCloseButton="False">
+                 ShowCloseButton="False"
+                 xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+             Dialog:DialogParticipation.Register="{Binding}">
+
+
+
 
     <mah:MetroWindow.Flyouts>
         <mah:FlyoutsControl>
@@ -23,6 +29,8 @@
                         Position="Right" 
                         Width="500">
                 <local:SettingsWindows />
+                
+
                 <!-- The content goes here -->
             </mah:Flyout>
 
@@ -30,9 +38,9 @@
                         IsOpen="{Binding ElementName=ToggleButtonOpenGithub, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
                         Width="500">
-                
-                <!-- The content goes here -->
                 <local:GithubWindows />
+                <!-- The content goes here -->
+               
             </mah:Flyout>
 
         </mah:FlyoutsControl>
@@ -65,6 +73,14 @@
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="955*"/>
+            <ColumnDefinition Width="200*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="485*"/>
+            <RowDefinition Height="50*"/>
+        </Grid.RowDefinitions>
+       
     </Grid>
 </mah:MetroWindow>
