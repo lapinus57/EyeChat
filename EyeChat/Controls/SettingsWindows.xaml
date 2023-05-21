@@ -24,30 +24,48 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Hidden">
         <StackPanel>
-            <GroupBox Header="Général" 
-                      BorderThickness="0">
-                <StackPanel>
-                    <TextBlock Text="{StaticResource UserNameLabel}" Margin="10,0,0,0"/>
-                    <TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0"/>
-                    <TextBlock Text="{StaticResource AvatarLabel}" Margin="10,0,0,0"/>
+			<Expander Header="Général">
+				<Expander.Content>
+					<!-- Contenu collapsible -->
+					<StackPanel>
+						<TextBlock Text="{StaticResource UserNameLabel}" Margin="10,0,0,0"/>
+						<TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0"/>
+						<TextBlock Text="{StaticResource AvatarLabel}" Margin="10,0,0,0"/>
+					</StackPanel>
+					
+					
+				</Expander.Content>
+			</Expander>
+
+			<Expander Header="Affichage">
+				<Expander.Content>
+					<!-- Contenu collapsible -->
+					<StackPanel>
+						<TextBlock Text="{StaticResource AppThemeLabel}" Margin="10,0,0,0"/>
+						<ComboBox SelectedValuePath="Content" SelectedValue="{Binding AppTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" SelectionChanged="AppThemeChanged">
+							<ComboBoxItem Content="Clair" />
+							<ComboBoxItem Content="Sombre" />
+						</ComboBox>
+						
+					</StackPanel>
 
 
-                </StackPanel>
-            </GroupBox>
+				</Expander.Content>
+			</Expander>
 
-            <GroupBox Header="Affichage" 
-                      BorderThickness="0">
-                <ComboBox SelectedValuePath="Content" SelectedValue="{Binding AppTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" SelectionChanged="AppThemeChanged">
-                    <ComboBoxItem Content="Clair" />
-                    <ComboBoxItem Content="Sombre" />
-                </ComboBox>
+			<Expander Header="Fonctionalité">
+				<Expander.Content>
+					<!-- Contenu collapsible -->
+					<StackPanel>
+						
 
-            </GroupBox>
+					</StackPanel>
 
-            <GroupBox Header="Fonctionalité" 
-                      BorderThickness="0">
 
-            </GroupBox>
+				</Expander.Content>
+			</Expander>
+
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

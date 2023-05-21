@@ -5,5 +5,6 @@
 
     <system:String x:Key="UserNameLabel">Nom :</system:String>
     <system:String x:Key="AvatarLabel">Avatar :</system:String>
+    <system:String x:Key="AppThemeLabel">Thème :</system:String>
 
 </ResourceDictionary>
