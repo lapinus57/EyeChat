@@ -1,5 +1,7 @@
 ﻿Imports ControlzEx.Theming
 Imports MahApps.Metro.Controls
+Imports System.Drawing
+Imports EyeChat.SettingsWrapper
 
 Public Class SettingsWindows
 
@@ -13,15 +15,13 @@ Public Class SettingsWindows
         End Get
     End Property
 
-    Public Sub New()
 
-    End Sub
 
 
     Private Sub AppThemeChanged(sender As Object, e As SelectionChangedEventArgs)
-        ' Construire le nom du thème en utilisant les variables VariableAppTheme et VariableAppTheme
-        Dim themeName As String = If(My.Settings.AppTheme = "Clair", "Light", "Dark") & "." & My.Settings.AppColor
-        ThemeManager.Current.ChangeTheme(Application.Current, themeName)
+
+        SetTheme()
+
     End Sub
 
     Private Sub SettingsWindows_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized

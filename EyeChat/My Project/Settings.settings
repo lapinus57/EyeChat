@@ -8,8 +8,8 @@
     <Setting Name="AppTheme" Type="System.String" Scope="User">
       <Value Profile="(Default)">Clair</Value>
     </Setting>
-    <Setting Name="AppColor" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Blue</Value>
+    <Setting Name="AppColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">0, 138, 0</Value>
     </Setting>
   </Settings>
 </SettingsFile>
