@@ -80,13 +80,25 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("0, 138, 0")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Red")>  _
         Public Property AppColor() As Global.System.Drawing.Color
             Get
                 Return CType(Me("AppColor"),Global.System.Drawing.Color)
             End Get
             Set
                 Me("AppColor") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Red")>  _
+        Public Property AppColorString() As String
+            Get
+                Return CType(Me("AppColorString"),String)
+            End Get
+            Set
+                Me("AppColorString") = value
             End Set
         End Property
     End Class
