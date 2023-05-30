@@ -7,9 +7,12 @@
 			 xmlns:dia="http://metro.mahapps.com/winfx/xaml/controls/dialogs"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"			
-             xmlns:local="clr-namespace:EyeChat"
+             xmlns:local="clr-namespace:EyeChat" 
+             xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro" 
+             d:DataContext="{d:DesignInstance Type=local:SettingsViewModel}"
+             Dialog:DialogParticipation.Register="{Binding}"            
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="500">
+             d:DesignHeight="800" d:DesignWidth="500">
 
 	
 	<UserControl.Resources>
@@ -27,10 +30,10 @@
 			<GroupBox Header="{StaticResource GroupeBoxHeader1}"
                       BorderThickness="0">
 				<StackPanel>
-					<Button Content="{StaticResource HomePageButtonContent}" Margin="10" HorizontalAlignment="Left" Click="HomePageButton_Click"/>
-					<Button Content="{StaticResource WikiButtonContent}" Margin="10" HorizontalAlignment="Left" Click="WikiButton_Click"/>
-					<TextBlock Text="{StaticResource ChangeLogLabel}" Margin="10,0,0,0"/>
-					<TextBox x:Name="ChangeLogTextBox" Margin="10,0,10,10" Height="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible"/>
+                    <Button Content="{StaticResource HomePageButtonContent}" Margin="10" HorizontalAlignment="Left" Click="HomePageButton_Click" FontSize="{Binding AppSizeDisplay}"/>
+					<Button Content="{StaticResource WikiButtonContent}" Margin="10" HorizontalAlignment="Left" Click="WikiButton_Click" FontSize="{Binding AppSizeDisplay}"/>
+                    <TextBlock Text="{StaticResource ChangeLogLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                    <TextBox x:Name="ChangeLogTextBox" Margin="10,0,10,10" Height="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" FontSize="{Binding AppSizeDisplay}"/>
 				</StackPanel>
 			</GroupBox>
 
@@ -39,16 +42,16 @@
 				<StackPanel>
 					<mah:MetroHeader Header="{StaticResource OpenTicketHeaderText}">
 						<StackPanel>
-							<TextBlock Text="{StaticResource CategoryLabel}" Margin="10,0,0,0"/>
-							<ComboBox Margin="10,0,0,0" Width="200" HorizontalAlignment="Left" x:Name="categoryComboBox" SelectedIndex="0">
+                            <TextBlock Text="{StaticResource CategoryLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                            <ComboBox Margin="10,0,0,0" Width="200" HorizontalAlignment="Left" x:Name="categoryComboBox" SelectedIndex="0" FontSize="{Binding AppSizeDisplay}">
 								<ComboBoxItem Content="{StaticResource ProblemCategory}" Tag="problem" />
 								<ComboBoxItem Content="{StaticResource IdeaCategory}" Tag="idea" />
 							</ComboBox>
-							<TextBlock Text="{StaticResource MessageLabel}" Margin="10,10,0,0"/>
-							<TextBox x:Name="DescriptionTextBox" Margin="10,0,10,0" Height="60" Width="470" HorizontalAlignment="Left" AcceptsReturn="True" TextWrapping="Wrap" MaxLength="200" VerticalScrollBarVisibility="Visible"/>
+                            <TextBlock Text="{StaticResource MessageLabel}" Margin="10,10,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                            <TextBox x:Name="DescriptionTextBox" Margin="10,0,10,0" Height="60" Width="460" HorizontalAlignment="Left" AcceptsReturn="True" TextWrapping="Wrap" MaxLength="200" VerticalScrollBarVisibility="Visible" FontSize="{Binding AppSizeDisplay}"/>
 							<TextBlock Text="{Binding ElementName=DescriptionTextBox, Path=Text.Length, StringFormat='Caractères saisis : {0}/200'}"
-                               HorizontalAlignment="Right" Margin="0,0,10,0" />
-							<Button Content="{StaticResource SendButtonContent}" Margin="50,5,50,10" Click="SendReport_Click"/>
+                               HorizontalAlignment="Right" Margin="0,0,10,0" FontSize="{Binding AppSizeDisplay}"/>
+                            <Button Content="{StaticResource SendButtonContent}" Margin="50,5,50,10" Click="SendReport_Click" FontSize="{Binding AppSizeDisplay}"/>
 						</StackPanel>
 					</mah:MetroHeader>
 				</StackPanel>
@@ -57,23 +60,23 @@
 			<GroupBox Header="{StaticResource GroupeBoxHeader3}"
 					 BorderThickness="0">
 				<StackPanel>
-					<TextBlock x:Name="AboutTextBlock" Margin="10,10">
-						<Run FontWeight="Bold" Text="{Binding Title}" />
-						<LineBreak />
-						<Run Text="{StaticResource VersionText}" />
-						<Run FontWeight="Bold" Text="{Binding AssemblyVersion}" />
-						<LineBreak />
-						<Run Text="FileVersionText}" />
-						<Run FontWeight="Bold" Text="{Binding FileVersion}" />
-						<LineBreak />
-                        <Run FontWeight="Bold" Text="{Binding Description}" />
-                        <LineBreak />
-                        <Run Text="{StaticResource DevelopedByText}" />
-                        <Run FontWeight="Bold" Text="{Binding Company}" />
-                        <LineBreak />
-                        <Run Text="{Binding Copyright}" />
-                        <LineBreak />
-                        <Run Text="{Binding Trademark}" />
+                    <TextBlock x:Name="AboutTextBlock" Margin="10,10" FontSize="{Binding AppSizeDisplay}">
+					<Run FontWeight="Bold" Text="{Binding Title}" FontSize="{Binding AppSizeDisplay}"/>
+					<LineBreak />
+					<Run Text="{StaticResource VersionText}" FontSize="{Binding AppSizeDisplay}" />
+					<Run FontWeight="Bold" Text="{Binding AssemblyVersion}" FontSize="{Binding AppSizeDisplay}" />
+					<LineBreak />
+					<Run Text="{StaticResource FileVersionText}" FontSize="{Binding AppSizeDisplay}"/>
+					<Run FontWeight="Bold" Text="{Binding FileVersion}" FontSize="{Binding AppSizeDisplay}"/>
+					<LineBreak />
+					<Run FontWeight="Bold" Text="{Binding Description}" FontSize="{Binding AppSizeDisplay}"/>
+					<LineBreak />
+					<Run Text="{StaticResource DevelopedByText}" FontSize="{Binding AppSizeDisplay}"/>
+					<Run FontWeight="Bold" Text="{Binding Company}" FontSize="{Binding AppSizeDisplay}"/>
+					<LineBreak />
+					<Run Text="{Binding Copyright}" FontSize="{Binding AppSizeDisplay}"/>
+					<LineBreak />
+					<Run Text="{Binding Trademark}" FontSize="{Binding AppSizeDisplay}"/>
                     </TextBlock>
                 </StackPanel>
             </GroupBox>

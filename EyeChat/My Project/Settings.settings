@@ -9,7 +9,16 @@
       <Value Profile="(Default)">Clair</Value>
     </Setting>
     <Setting Name="AppColor" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">0, 138, 0</Value>
+      <Value Profile="(Default)">Red</Value>
+    </Setting>
+    <Setting Name="AppColorString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Red</Value>
+    </Setting>
+    <Setting Name="AppSizeDisplay" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">12</Value>
+    </Setting>
+    <Setting Name="DebugLevel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

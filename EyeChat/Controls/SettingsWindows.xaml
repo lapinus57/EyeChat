@@ -1,13 +1,10 @@
-﻿<UserControl x:Class="SettingsWindows"
+﻿<UserControl xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"  x:Class="SettingsWindows"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             xmlns:mah2="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:EyeChat"
-             xmlns:ll="clr-namespace:EyeChat.My"
-             mah2:DialogParticipation.Register="{Binding}"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:EyeChat"
+             xmlns:local="clr-namespace:EyeChat"                         
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="500">
 
@@ -17,53 +14,107 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Dictionary/DictionarySettingsWindows.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+           
         </ResourceDictionary>
     </UserControl.Resources>
-    
-    
+
+
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Hidden">
         <StackPanel>
-			<Expander Header="Général">
+            <Expander Header="Général" FontSize="{Binding AppSizeDisplay}">
 				<Expander.Content>
 					<!-- Contenu collapsible -->
 					<StackPanel>
-						<TextBlock Text="{StaticResource UserNameLabel}" Margin="10,0,0,0"/>
-						<TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0"/>
-						<TextBlock Text="{StaticResource AvatarLabel}" Margin="10,0,0,0"/>
+                        <TextBlock Text="{StaticResource UserNameLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                        <TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}"/>
+                        <TextBlock Text="{StaticResource AvatarLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
 					</StackPanel>
 					
 					
 				</Expander.Content>
 			</Expander>
 
-			<Expander Header="Affichage">
+            <Expander Header="Affichage" FontSize="{Binding AppSizeDisplay}">
 				<Expander.Content>
 					<!-- Contenu collapsible -->
 					<StackPanel>
-						<TextBlock Text="{StaticResource AppThemeLabel}" Margin="10,0,0,0"/>
-						<ComboBox SelectedValuePath="Content" SelectedValue="{Binding AppTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" SelectionChanged="AppThemeChanged">
+                        <TextBlock Text="{StaticResource AppThemeLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                        <ComboBox SelectedValuePath="Content" SelectedValue="{Binding AppTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" SelectionChanged="AppThemeChanged" FontSize="{Binding AppSizeDisplay}">
 							<ComboBoxItem Content="Clair" />
 							<ComboBoxItem Content="Sombre" />
 						</ComboBox>
-						
-					</StackPanel>
+
+                        <TextBlock Text="{StaticResource AppColorLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" />
+
+                        <ComboBox x:Name="cboColors" Width="470" SelectedValue="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False" SelectionChanged="AppColorChanged" FontSize="{Binding AppSizeDisplay}">
+                            <ComboBox.Items>
+                                <ComboBoxItem Content="Noir" Tag="Black" />
+                                <ComboBoxItem Content="Blanc" Tag="White" />
+                                <ComboBoxItem Content="Rouge" Tag="Red" />
+                                <ComboBoxItem Content="Vert" Tag="Green" />
+                                <ComboBoxItem Content="Bleu" Tag="Blue" />
+                                <ComboBoxItem Content="Violet" Tag="Purple" />
+                                <ComboBoxItem Content="Orange" Tag="Orange" />
+                                <ComboBoxItem Content="Citron vert" Tag="Lime" />
+                                <ComboBoxItem Content="Émeraude" Tag="Emerald" />
+                                <ComboBoxItem Content="Turquoise" Tag="Teal" />
+                                <ComboBoxItem Content="Cyan" Tag="Cyan" />
+                                <ComboBoxItem Content="Cobalt" Tag="Cobalt" />
+                                <ComboBoxItem Content="Indigo" Tag="Indigo" />
+                                <ComboBoxItem Content="Violet" Tag="Violet" />
+                                <ComboBoxItem Content="Rose" Tag="Pink" />
+                                <ComboBoxItem Content="Magenta" Tag="Magenta" />
+                                <ComboBoxItem Content="Cramoisi" Tag="Crimson" />
+                                <ComboBoxItem Content="Ambre" Tag="Amber" />
+                                <ComboBoxItem Content="Jaune" Tag="Yellow" />
+                                <ComboBoxItem Content="Marron" Tag="Brown" />
+                                <ComboBoxItem Content="Olive" Tag="Olive" />
+                                <ComboBoxItem Content="Acier" Tag="Steel" />
+                                <ComboBoxItem Content="Mauve" Tag="Mauve" />
+                                <ComboBoxItem Content="Sienna" Tag="Sienna" />
+                            </ComboBox.Items>
+                        </ComboBox>
+                        <TextBlock Text="{StaticResource AppSizeLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                        <ComboBox x:Name="cboSize" Width="470" SelectedValue="{Binding AppSizeDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False" SelectionChanged="AppColorChanged" FontSize="{Binding AppSizeDisplay}">
+                            <ComboBox.Items>
+                                <ComboBoxItem Content="Très petit" Tag="12" />
+                                <ComboBoxItem Content="Petit" Tag="14" />
+                                <ComboBoxItem Content="Moyen" Tag="16" />
+                                <ComboBoxItem Content="Grand" Tag="18" />
+                                <ComboBoxItem Content="Très Grand" Tag="20" />
+                                
+                            </ComboBox.Items>
+                        </ComboBox>
+
+                    </StackPanel>
 
 
 				</Expander.Content>
 			</Expander>
 
-			<Expander Header="Fonctionalité">
+            <Expander Header="Fonctionalité" FontSize="20" >
 				<Expander.Content>
 					<!-- Contenu collapsible -->
 					<StackPanel>
-						
+						<mah:ToggleSwitch />
 
 					</StackPanel>
 
 
 				</Expander.Content>
 			</Expander>
+            <Expander Header="Débug" FontSize="20" >
+                <Expander.Content>
+                    <!-- Contenu collapsible -->
+                    <StackPanel>
+                        <ComboBox ItemsSource="{Binding DebugLevels}" SelectedItem="{Binding SelectedDebugLevel, Mode=TwoWay}" Margin="10" FontSize="{Binding AppSizeDisplay}"/>
+
+                    </StackPanel>
+
+
+                </Expander.Content>
+            </Expander>
 
 
         </StackPanel>
