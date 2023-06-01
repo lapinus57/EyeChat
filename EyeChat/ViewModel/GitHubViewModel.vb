@@ -2,6 +2,9 @@
 Imports MahApps.Metro
 Imports MahApps.Metro.IconPacks
 Imports System.Reflection
+Imports log4net
+Imports Newtonsoft.Json.Linq
+Imports log4net.Core
 
 Public Class GitHubViewModel
 
@@ -14,6 +17,8 @@ Public Class GitHubViewModel
     Public Property Copyright As String
     Public Property Trademark As String
 
+    Private Shared ReadOnly logger As ILog = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+
     Public Sub New(dialogCoordinator As IDialogCoordinator)
         Me.dialogCoordinator = dialogCoordinator
         GetAssemblyInfos()
@@ -24,12 +29,25 @@ Public Class GitHubViewModel
     End Function
     Public Property AppSizeDisplay As Integer
         Get
-            Return My.Settings.AppSizeDisplay
+            Try
+                Return My.Settings.AppSizeDisplay
+                logger.Debug($"Lecture de la propriété AppSizeDisplay : {My.Settings.AppSizeDisplay}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AppSizeDisplay : {ex.Message}")
+                Return "14"
+            End Try
+
         End Get
         Set(ByVal value As Integer)
-            My.Settings.AppSizeDisplay = value
-            My.Settings.Save()
-            NotifyPropertyChanged("AppSizeDisplay")
+            Try
+                My.Settings.AppSizeDisplay = value
+                My.Settings.Save()
+                NotifyPropertyChanged("AppSizeDisplay")
+                logger.Info($"La propriété AppSizeDisplay a été modifiée : {value}")
+            Catch ex As Exception
+                ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
+                logger.Error($"Erreur lors de la modification de la propriété AppSizeDisplay : {ex.Message}")
+            End Try
         End Set
     End Property
 
@@ -38,31 +56,37 @@ Public Class GitHubViewModel
     End Sub
 
     Public Sub GetAssemblyInfos()
-        Dim assembly As Assembly = Assembly.GetExecutingAssembly()
-        Dim assemblyName As AssemblyName = assembly.GetName()
+        Try
+            Dim assembly As Assembly = Assembly.GetExecutingAssembly()
+            Dim assemblyName As AssemblyName = assembly.GetName()
 
-        ' Récupérer les informations de version
-        Dim assemblyVersionAttribut As Version = assembly.GetName().Version
-        AssemblyVersion = assemblyVersionAttribut.ToString()
+            ' Récupérer les informations de version
+            Dim assemblyVersionAttribut As Version = assembly.GetName().Version
+            AssemblyVersion = assemblyVersionAttribut.ToString()
 
-        ' Obtenir la version du fichier
-        FileVersion = FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion
+            ' Obtenir la version du fichier
+            FileVersion = FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion
 
-        ' Récupérer le titre de l'application
-        Title = assemblyName.Name
+            ' Récupérer le titre de l'application
+            Title = assemblyName.Name
 
-        Dim CopyrightAttribute As AssemblyCopyrightAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyCopyrightAttribute)), AssemblyCopyrightAttribute)
-        Copyright = CopyrightAttribute.Copyright
+            Dim CopyrightAttribute As AssemblyCopyrightAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyCopyrightAttribute)), AssemblyCopyrightAttribute)
+            Copyright = CopyrightAttribute.Copyright
 
-        ' Récupérer la description de l'application
-        Dim descriptionAttribute As AssemblyDescriptionAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyDescriptionAttribute)), AssemblyDescriptionAttribute)
-        Description = descriptionAttribute.Description
+            ' Récupérer la description de l'application
+            Dim descriptionAttribute As AssemblyDescriptionAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyDescriptionAttribute)), AssemblyDescriptionAttribute)
+            Description = descriptionAttribute.Description
 
-        ' Récupérer les informations du développeur
-        Dim companyAttribute As AssemblyCompanyAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyCompanyAttribute)), AssemblyCompanyAttribute)
-        Company = companyAttribute.Company
+            ' Récupérer les informations du développeur
+            Dim companyAttribute As AssemblyCompanyAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyCompanyAttribute)), AssemblyCompanyAttribute)
+            Company = companyAttribute.Company
 
-        Trademark = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyTrademarkAttribute)), AssemblyTrademarkAttribute).Trademark
+            Trademark = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyTrademarkAttribute)), AssemblyTrademarkAttribute).Trademark
+            logger.Debug("Lecture de la propriété GetAssemblyInfos")
+        Catch ex As Exception
+            logger.Error($"Erreur lors de la lecture de la propriété GetAssemblyInfos : {ex.Message}")
+        End Try
+
     End Sub
 
 End Class

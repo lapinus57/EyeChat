@@ -18,7 +18,55 @@
       <Value Profile="(Default)">12</Value>
     </Setting>
     <Setting Name="DebugLevel" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">DEBUG</Value>
+    </Setting>
+    <Setting Name="CtrlF9" Type="System.String" Scope="User">
+      <Value Profile="(Default)">a</Value>
+    </Setting>
+    <Setting Name="CtrlF10" Type="System.String" Scope="User">
+      <Value Profile="(Default)">b</Value>
+    </Setting>
+    <Setting Name="CtrlF11" Type="System.String" Scope="User">
+      <Value Profile="(Default)">c</Value>
+    </Setting>
+    <Setting Name="CtrlF12" Type="System.String" Scope="User">
+      <Value Profile="(Default)">d</Value>
+    </Setting>
+    <Setting Name="AltF9" Type="System.String" Scope="User">
+      <Value Profile="(Default)">e</Value>
+    </Setting>
+    <Setting Name="AltF10" Type="System.String" Scope="User">
+      <Value Profile="(Default)">f</Value>
+    </Setting>
+    <Setting Name="AltF11" Type="System.String" Scope="User">
+      <Value Profile="(Default)">g</Value>
+    </Setting>
+    <Setting Name="AltF12" Type="System.String" Scope="User">
+      <Value Profile="(Default)">h</Value>
+    </Setting>
+    <Setting Name="CtrlF9Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="CtrlF10Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="CtrlF11Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="CtrlF12Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AltF9Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AltF10Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AltF11Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AltF12Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

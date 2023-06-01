@@ -47,7 +47,7 @@
 
                         <TextBlock Text="{StaticResource AppColorLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" />
 
-                        <ComboBox x:Name="cboColors" Width="470" SelectedValue="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False" SelectionChanged="AppColorChanged" FontSize="{Binding AppSizeDisplay}">
+                        <ComboBox x:Name="cboColors" Margin="10,0" SelectedValue="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False" SelectionChanged="AppColorChanged" FontSize="{Binding AppSizeDisplay}">
                             <ComboBox.Items>
                                 <ComboBoxItem Content="Noir" Tag="Black" />
                                 <ComboBoxItem Content="Blanc" Tag="White" />
@@ -76,7 +76,7 @@
                             </ComboBox.Items>
                         </ComboBox>
                         <TextBlock Text="{StaticResource AppSizeLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
-                        <ComboBox x:Name="cboSize" Width="470" SelectedValue="{Binding AppSizeDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False" SelectionChanged="AppColorChanged" FontSize="{Binding AppSizeDisplay}">
+                        <ComboBox x:Name="cboSize" Margin="10,0" SelectedValue="{Binding AppSizeDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False" SelectionChanged="AppColorChanged" FontSize="{Binding AppSizeDisplay}">
                             <ComboBox.Items>
                                 <ComboBoxItem Content="Très petit" Tag="12" />
                                 <ComboBoxItem Content="Petit" Tag="14" />
@@ -92,6 +92,153 @@
 
 				</Expander.Content>
 			</Expander>
+
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Text="Raccourcis clavier" FontSize="{Binding AppSizeDisplay}" />
+                </Expander.Header>
+                <Expander.Content>
+                    <!-- Contenu collapsible -->
+                    <StackPanel>
+
+                        <Grid Margin="10,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Ctrl + F9" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=CtrlF9Switch}" Value="False">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="0" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF9Switch"/>
+                            <TextBox Text="{Binding CtrlF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="0" IsEnabled="{Binding IsOn, ElementName=CtrlF9Switch}"/>
+
+                            <TextBlock Text="Ctrl + F10" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=CtrlF10Switch}" Value="False">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="1" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF10Switch"/>
+                            <TextBox Text="{Binding CtrlF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="1" IsEnabled="{Binding IsOn, ElementName=CtrlF10Switch}"/>
+
+                            <TextBlock Text="Ctrl + F11" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=CtrlF11Switch}" Value="False">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="2" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF11Switch"/>
+                            <TextBox Text="{Binding CtrlF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="2" IsEnabled="{Binding IsOn, ElementName=CtrlF11Switch}"/>
+
+                            <TextBlock Text="Ctrl + F12" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=CtrlF12Switch}" Value="False">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="3" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF12Switch"/>
+                            <TextBox Text="{Binding CtrlF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="3" IsEnabled="{Binding IsOn, ElementName=CtrlF12Switch}"/>
+
+                            <TextBlock Text="Alt + F9" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=AltF9Switch}" Value="False">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="4" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF9Switch"/>
+                            <TextBox Text="{Binding AltF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="4" IsEnabled="{Binding IsOn, ElementName=AltF9Switch}"/>
+
+                            <TextBlock Text="Alt + F10" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="5" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=AltF10Switch}" Value="False">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="5" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF10Switch"/>
+                            <TextBox Text="{Binding AltF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="5" IsEnabled="{Binding IsOn, ElementName=AltF10Switch}"/>
+
+                            <TextBlock Text="Alt + F11" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="6" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=AltF11Switch}" Value="False">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="6" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF11Switch"/>
+                            <TextBox Text="{Binding AltF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="6" IsEnabled="{Binding IsOn, ElementName=AltF11Switch}"/>
+
+                            <TextBlock Text="Alt + F12" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="7" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=AltF12Switch}" Value="False">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="7" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF12Switch"/>
+                            <TextBox Text="{Binding AltF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="7" IsEnabled="{Binding IsOn, ElementName=AltF12Switch}"/>
+                        </Grid>
+
+                    </StackPanel>
+
+
+                </Expander.Content>
+            </Expander>
 
             <Expander Header="Fonctionalité" FontSize="20" >
 				<Expander.Content>

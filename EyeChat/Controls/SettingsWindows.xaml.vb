@@ -16,12 +16,13 @@ Public Class SettingsWindows
         End Get
     End Property
 
-    Private Sub AppThemeChanged(sender As Object, e As SelectionChangedEventArgs)
-
-        SetTheme()
-
-    End Sub
     Private Sub AppColorChanged(sender As Object, e As SelectionChangedEventArgs)
+        SetTheme()
+    End Sub
+
+
+
+    Private Sub AppThemeChanged(sender As Object, e As SelectionChangedEventArgs)
 
         SetTheme()
 

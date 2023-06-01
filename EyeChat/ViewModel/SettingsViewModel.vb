@@ -21,15 +21,21 @@ Public Class SettingsViewModel
         Implements INotifyPropertyChanged.PropertyChanged
 
     Public Sub New()
+        ColorItems.Add(New ColorItemViewModel(Colors.Red, "Red", ColorItems))
+        ColorItems.Add(New ColorItemViewModel(Colors.Green, "Green", ColorItems))
+        ColorItems.Add(New ColorItemViewModel(Colors.Blue, "Blue", ColorItems))
+        ' Ajoutez d'autres objets ColorItemViewModel pour les autres couleurs
 
+        ' Initialisation des valeurs par défaut
 
     End Sub
 
     Public Property UserName As String
         Get
             Try
-                Return My.Settings.UserName
                 logger.Debug($"Lecture de la propriété UserName : {My.Settings.UserName}")
+                Return My.Settings.UserName
+
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété UserName : {ex.Message}")
                 Return "EyeChat"
@@ -52,8 +58,9 @@ Public Class SettingsViewModel
     Public Property AppTheme As String
         Get
             Try
-                Return My.Settings.AppTheme
                 logger.Debug($"Lecture de la propriété AppTheme : {My.Settings.AppTheme}")
+                Return My.Settings.AppTheme
+
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AppTheme : {ex.Message}")
                 Return "White"
@@ -76,8 +83,9 @@ Public Class SettingsViewModel
     Public Property AppSizeDisplay As Integer
         Get
             Try
-                Return My.Settings.AppSizeDisplay
                 logger.Debug($"Lecture de la propriété AppSizeDisplay : {My.Settings.AppSizeDisplay}")
+                Return My.Settings.AppSizeDisplay
+
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AppSizeDisplay : {ex.Message}")
                 Return "14"
@@ -100,8 +108,9 @@ Public Class SettingsViewModel
     Public Property AppColorString As String
         Get
             Try
-                Return My.Settings.AppColorString
                 logger.Debug($"Lecture de la propriété AppColorString : {My.Settings.AppColorString}")
+                Return My.Settings.AppColorString
+
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AppColorString : {ex.Message}")
                 Return "Blue"
@@ -127,8 +136,9 @@ Public Class SettingsViewModel
     Public Property AppColor As Color
         Get
             Try
-                Return My.Settings.AppColor
                 logger.Debug($"Lecture de la propriété AppColor : {My.Settings.AppColor}")
+                Return My.Settings.AppColor
+
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AppColor : {ex.Message}")
                 Return Color.Blue
@@ -189,7 +199,14 @@ Public Class SettingsViewModel
 
     Public Property SelectedDebugLevel As String
         Get
-            Return My.Settings.DebugLevel
+            Try
+                logger.Debug($"Lecture de la propriété SelectedDebugLevel : {My.Settings.DebugLevel}")
+                Return My.Settings.DebugLevel
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété SelectedDebugLevel : {ex.Message}")
+                Return "DEBUG"
+            End Try
+
         End Get
         Set(ByVal value As String)
             My.Settings.DebugLevel = value
@@ -212,4 +229,177 @@ Public Class SettingsViewModel
         End Set
     End Property
 
+    Public Property CtrlF9 As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété CtrlF9 : {My.Settings.CtrlF9}")
+                Return My.Settings.CtrlF9
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété CtrlF9 : {ex.Message}")
+                Return String.Empty
+            End Try
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.CtrlF9 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("CtrlF9")
+                logger.Info($"La propriété CtrlF9 a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété CtrlF9 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property CtrlF10 As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété CtrlF10 : {My.Settings.CtrlF10}")
+                Return My.Settings.CtrlF10
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété CtrlF10 : {ex.Message}")
+                Return String.Empty
+            End Try
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.CtrlF10 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("CtrlF10")
+                logger.Info($"La propriété CtrlF10 a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété CtrlF10 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+    Public Property CtrlF11 As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété CtrlF11 : {My.Settings.CtrlF11}")
+                Return My.Settings.CtrlF11
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété CtrlF11 : {ex.Message}")
+                Return String.Empty
+            End Try
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.CtrlF11 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("CtrlF11")
+                logger.Info($"La propriété CtrlF11 a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété CtrlF11 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property CtrlF12 As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété CtrlF12 : {My.Settings.CtrlF12}")
+                Return My.Settings.CtrlF12
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété CtrlF12 : {ex.Message}")
+                Return String.Empty
+            End Try
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.CtrlF12 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("CtrlF12")
+                logger.Info($"La propriété CtrlF12 a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété CtrlF12 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+    Public Property AltF9 As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété AltF9 : {My.Settings.AltF9}")
+                Return My.Settings.AltF9
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AltF9 : {ex.Message}")
+                Return String.Empty
+            End Try
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.AltF9 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("AltF9")
+                logger.Info($"La propriété AltF9 a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété AltF9 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property AltF10 As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété AltF10 : {My.Settings.AltF10}")
+                Return My.Settings.AltF10
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AltF10 : {ex.Message}")
+                Return String.Empty
+            End Try
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.AltF10 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("AltF10")
+                logger.Info($"La propriété AltF10 a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété AltF10 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property AltF11 As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété AltF11 : {My.Settings.AltF11}")
+                Return My.Settings.AltF11
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AltF11 : {ex.Message}")
+                Return String.Empty
+            End Try
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.AltF11 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("AltF11")
+                logger.Info($"La propriété AltF11 a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété AltF11 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property AltF12 As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété AltF12 : {My.Settings.AltF12}")
+                Return My.Settings.AltF12
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AltF12 : {ex.Message}")
+                Return String.Empty
+            End Try
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.AltF12 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("AltF12")
+                logger.Info($"La propriété AltF12 a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété AltF12 : {ex.Message}")
+            End Try
+        End Set
+    End Property
 End Class
