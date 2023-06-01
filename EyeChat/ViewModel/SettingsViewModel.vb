@@ -21,7 +21,12 @@ Public Class SettingsViewModel
         Implements INotifyPropertyChanged.PropertyChanged
 
     Public Sub New()
+        ColorItems.Add(New ColorItemViewModel(Colors.Red, "Red", ColorItems))
+        ColorItems.Add(New ColorItemViewModel(Colors.Green, "Green", ColorItems))
+        ColorItems.Add(New ColorItemViewModel(Colors.Blue, "Blue", ColorItems))
+        ' Ajoutez d'autres objets ColorItemViewModel pour les autres couleurs
 
+        ' Initialisation des valeurs par défaut
 
     End Sub
 

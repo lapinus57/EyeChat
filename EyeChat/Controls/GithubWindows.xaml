@@ -60,23 +60,23 @@
 			<GroupBox Header="{StaticResource GroupeBoxHeader3}"
 					 BorderThickness="0">
 				<StackPanel>
-                    <TextBlock x:Name="AboutTextBlock" Margin="10,10" FontSize="{Binding AppSizeDisplay}">
-					<Run FontWeight="Bold" Text="{Binding Title}" FontSize="{Binding AppSizeDisplay}"/>
-					<LineBreak />
-					<Run Text="{StaticResource VersionText}" FontSize="{Binding AppSizeDisplay}" />
-					<Run FontWeight="Bold" Text="{Binding AssemblyVersion}" FontSize="{Binding AppSizeDisplay}" />
-					<LineBreak />
-					<Run Text="{StaticResource FileVersionText}" FontSize="{Binding AppSizeDisplay}"/>
-					<Run FontWeight="Bold" Text="{Binding FileVersion}" FontSize="{Binding AppSizeDisplay}"/>
-					<LineBreak />
-					<Run FontWeight="Bold" Text="{Binding Description}" FontSize="{Binding AppSizeDisplay}"/>
-					<LineBreak />
-					<Run Text="{StaticResource DevelopedByText}" FontSize="{Binding AppSizeDisplay}"/>
-					<Run FontWeight="Bold" Text="{Binding Company}" FontSize="{Binding AppSizeDisplay}"/>
-					<LineBreak />
-					<Run Text="{Binding Copyright}" FontSize="{Binding AppSizeDisplay}"/>
-					<LineBreak />
-					<Run Text="{Binding Trademark}" FontSize="{Binding AppSizeDisplay}"/>
+					<TextBlock x:Name="AboutTextBlock" Margin="10,10">
+						<Run FontWeight="Bold" Text="{Binding Title}" />
+						<LineBreak />
+						<Run Text="{StaticResource VersionText}" />
+						<Run FontWeight="Bold" Text="{Binding AssemblyVersion}" />
+						<LineBreak />
+						<Run Text="FileVersionText}" />
+						<Run FontWeight="Bold" Text="{Binding FileVersion}" />
+						<LineBreak />
+                        <Run FontWeight="Bold" Text="{Binding Description}" />
+                        <LineBreak />
+                        <Run Text="{StaticResource DevelopedByText}" />
+                        <Run FontWeight="Bold" Text="{Binding Company}" />
+                        <LineBreak />
+                        <Run Text="{Binding Copyright}" />
+                        <LineBreak />
+                        <Run Text="{Binding Trademark}" />
                     </TextBlock>
                 </StackPanel>
             </GroupBox>

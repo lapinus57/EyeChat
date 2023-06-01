@@ -42,27 +42,27 @@ Public Class GitHubViewModel
         Dim assemblyName As AssemblyName = assembly.GetName()
 
         ' Récupérer les informations de version
-        Dim assemblyVersionAttribut As Version = assembly.GetName().Version
+        Dim assemblyVersionAttribut As Version = Assembly.GetName().Version
         AssemblyVersion = assemblyVersionAttribut.ToString()
 
         ' Obtenir la version du fichier
-        FileVersion = FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion
+        FileVersion = FileVersionInfo.GetVersionInfo(Assembly.Location).FileVersion
 
         ' Récupérer le titre de l'application
         Title = assemblyName.Name
 
-        Dim CopyrightAttribute As AssemblyCopyrightAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyCopyrightAttribute)), AssemblyCopyrightAttribute)
+        Dim CopyrightAttribute As AssemblyCopyrightAttribute = DirectCast(Assembly.GetCustomAttribute(GetType(AssemblyCopyrightAttribute)), AssemblyCopyrightAttribute)
         Copyright = CopyrightAttribute.Copyright
 
         ' Récupérer la description de l'application
-        Dim descriptionAttribute As AssemblyDescriptionAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyDescriptionAttribute)), AssemblyDescriptionAttribute)
+        Dim descriptionAttribute As AssemblyDescriptionAttribute = DirectCast(Assembly.GetCustomAttribute(GetType(AssemblyDescriptionAttribute)), AssemblyDescriptionAttribute)
         Description = descriptionAttribute.Description
 
         ' Récupérer les informations du développeur
-        Dim companyAttribute As AssemblyCompanyAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyCompanyAttribute)), AssemblyCompanyAttribute)
+        Dim companyAttribute As AssemblyCompanyAttribute = DirectCast(Assembly.GetCustomAttribute(GetType(AssemblyCompanyAttribute)), AssemblyCompanyAttribute)
         Company = companyAttribute.Company
 
-        Trademark = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyTrademarkAttribute)), AssemblyTrademarkAttribute).Trademark
+        Trademark = DirectCast(Assembly.GetCustomAttribute(GetType(AssemblyTrademarkAttribute)), AssemblyTrademarkAttribute).Trademark
     End Sub
 
 End Class
