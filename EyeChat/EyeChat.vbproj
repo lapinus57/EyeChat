@@ -123,6 +123,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Class\Patient.vb" />
+    <Compile Include="Class\User.vb" />
+    <Compile Include="Controls\UserListControl.xaml.vb">
+      <DependentUpon>UserListControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\ColorItemViewModel.vb" />
     <Compile Include="ViewModel\GitHubViewModel.vb" />
     <Page Include="Controls\GithubWindows.xaml">
@@ -130,6 +135,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SettingsWindows.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\UserListControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -220,7 +229,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Class\" />
     <Folder Include="Logs\" />
     <Folder Include="Properties\" />
     <Folder Include="Windows\" />

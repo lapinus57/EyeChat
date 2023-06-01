@@ -14,7 +14,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Dictionary/DictionarySettingsWindows.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-           
+            
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -95,7 +95,9 @@
 
             <Expander>
                 <Expander.Header>
-                    <TextBlock Text="Raccourcis clavier" FontSize="{Binding AppSizeDisplay}" />
+                   
+                 <TextBlock Text="Raccourcis clavier" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                       
                 </Expander.Header>
                 <Expander.Content>
                     <!-- Contenu collapsible -->
@@ -255,7 +257,7 @@
                 <Expander.Content>
                     <!-- Contenu collapsible -->
                     <StackPanel>
-                        <ComboBox ItemsSource="{Binding DebugLevels}" SelectedItem="{Binding SelectedDebugLevel, Mode=TwoWay}" Margin="10" FontSize="{Binding AppSizeDisplay}"/>
+                        <ComboBox ItemsSource="{Binding DebugLevels}" SelectedItem="{Binding SelectedDebugLevel, Mode=TwoWay}" Margin="10,0" FontSize="{Binding AppSizeDisplay}"/>
 
                     </StackPanel>
 

@@ -43,12 +43,19 @@ Public Class GitHubViewModel
                 My.Settings.AppSizeDisplay = value
                 My.Settings.Save()
                 NotifyPropertyChanged("AppSizeDisplay")
+                NotifyPropertyChanged("ArrowSize")
                 logger.Info($"La propriété AppSizeDisplay a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                 logger.Error($"Erreur lors de la modification de la propriété AppSizeDisplay : {ex.Message}")
             End Try
         End Set
+    End Property
+
+    Public ReadOnly Property ArrowSize As Double
+        Get
+            Return AppSizeDisplay * 0.8 ' Ajustez le coefficient selon vos préférences
+        End Get
     End Property
 
     Private Sub NotifyPropertyChanged(v As String)

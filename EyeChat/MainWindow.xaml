@@ -73,14 +73,19 @@
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
     <Grid>
+        <Grid.RenderTransform>
+            <TranslateTransform Y="0.5" />
+        </Grid.RenderTransform>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="955*"/>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="805*"/>
             <ColumnDefinition Width="200*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="485*"/>
             <RowDefinition Height="50*"/>
         </Grid.RowDefinitions>
-       
+       <local:UserListUserControl Grid.Column="2" Grid.Row="0" x:Name="UserlistCtrl" />
+        
     </Grid>
 </mah:MetroWindow>

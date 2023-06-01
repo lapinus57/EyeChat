@@ -97,6 +97,7 @@ Public Class SettingsViewModel
                 My.Settings.AppSizeDisplay = value
                 My.Settings.Save()
                 NotifyPropertyChanged("AppSizeDisplay")
+                NotifyPropertyChanged("ArrowSize")
                 logger.Info($"La propriété AppSizeDisplay a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
@@ -402,4 +403,11 @@ Public Class SettingsViewModel
             End Try
         End Set
     End Property
+
+    Public ReadOnly Property ArrowSize As Double
+        Get
+            Return AppSizeDisplay * 0.8 ' Ajustez le coefficient selon vos préférences
+        End Get
+    End Property
+
 End Class

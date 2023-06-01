@@ -1,9 +1,17 @@
-﻿Imports MahApps.Metro.Controls.Dialogs
+﻿Imports System.Collections.ObjectModel
+Imports MahApps.Metro.Controls.Dialogs
 
 Class MainWindow
+
+    Public Property UserList As New ObservableCollection(Of User)()
     Private Sub MainWindow_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
 
         Me.ShowCloseButton = True
+        UserlistCtrl.AddUser("Nouvel Utilisateur", "avatar4.jpg", "En ligne", "Actif")
+
+
+
+
 
     End Sub
 
