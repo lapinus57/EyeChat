@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="MessageBubbleCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:EyeChat"           
+             xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro" >
+
+    <UserControl.Resources>
+        <local:ContainsStringToVisibilityConverter x:Key="ContainsStringToVisibilityConverter" TargetString="tu peut venir" />
+        <!-- Style for the MessageBubbleCtrl -->
+        <Style TargetType="local:MessageBubbleCtrl">
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsAlignedRight}" Value="True">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+       
+        <!-- Style for the TextBlock -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+            <Setter Property="Foreground" Value="AliceBlue"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+
+        
+        <SolidColorBrush x:Key="MahApps.Brushes.MenuItem.SelectionFill" Color="{Binding Source={StaticResource MahApps.Brushes.Accent}, Path=Color}" />
+    
+    </UserControl.Resources>
+
+    <Grid Margin="5">
+        <Border CornerRadius="10" Padding="10" Width="400" Height="auto" >
+            <Border.ContextMenu>
+                <ContextMenu >
+                    
+                    <MenuItem  Header="0" Click="AMenuItem_Click" Visibility="{Binding Content, Converter={StaticResource ContainsStringToVisibilityConverter}, ConverterParameter='tu peux venir'}"/>
+                    <MenuItem  Header="1" Click="BMenuItem_Click" Visibility="{Binding Content, Converter={StaticResource ContainsStringToVisibilityConverter}, ConverterParameter='tu peux venir'}"/>
+                    <MenuItem  Header="2" Click="CMenuItem_Click" Visibility="{Binding Content, Converter={StaticResource ContainsStringToVisibilityConverter}, ConverterParameter='tu peux venir'}"/>
+                    <MenuItem  Header="A" Click="DMenuItem_Click" Visibility="{Binding Content, Converter={StaticResource ContainsStringToVisibilityConverter}, ConverterParameter='tu peux venir'}"/>
+                    <MenuItem Header="Copier" Click="CopyMenuItem_Click"/>
+                    <MenuItem Header="Supprimer" Click="DeleteMenuItem_Click"/>
+                    
+                </ContextMenu>
+            </Border.ContextMenu>
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="{StaticResource MahApps.Brushes.Accent3}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsAlignedRight}" Value="True" >
+                            <Setter Property="Background" Value="{StaticResource MahApps.Brushes.Accent}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="{Binding Avatar}" Width="40" Height="40" Margin="0,0,0,0" VerticalAlignment="Top" />
+                <StackPanel Grid.Column="1">
+                    <TextBlock HorizontalAlignment="Left" Foreground="{StaticResource MahApps.Brushes.IdealForeground}" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <Run Text="{Binding Sender}" />
+                        <Run Text=" : " />
+                    </TextBlock>
+                    <TextBlock FontSize="20" Margin="5"  Foreground="{StaticResource MahApps.Brushes.IdealForeground}"  Text="{Binding Content}"/>
+                    <!-- <emoji:RichTextBox Text="{Binding Content}" IsReadOnly="True" Background="Transparent" BorderBrush="Transparent" BorderThickness="0" FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/> -->
+                    <TextBlock Text="{Binding Timestamp, StringFormat={}{0:HH:mm}}" HorizontalAlignment="Right"  Foreground="{StaticResource MahApps.Brushes.IdealForeground}" VerticalAlignment="Bottom" FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+
+</UserControl>

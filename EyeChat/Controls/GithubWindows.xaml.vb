@@ -61,7 +61,7 @@ Public Class GithubWindows
             client.DefaultRequestHeaders.Add("User-Agent", "VotreApplication")
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {personalAccessToken}")
 
-            Dim requestBody As JObject = New JObject(
+            Dim requestBody As New JObject(
             New JProperty("title", title),
             New JProperty("body", body)
         )
@@ -133,6 +133,10 @@ Public Class GithubWindows
     End Sub
 
     Private Sub HomePageButton_Click(sender As Object, e As RoutedEventArgs)
+
+
+
+
 
     End Sub
 

@@ -123,10 +123,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Class\BooleanToVisibilityConverter.vb" />
+    <Compile Include="Class\ContainsStringToVisibilityConverter.vb" />
+    <Compile Include="Class\Message.vb" />
+    <Compile Include="Class\MultiplyByTwoConverter.vb" />
     <Compile Include="Class\Patient.vb" />
     <Compile Include="Class\User.vb" />
-    <Compile Include="Controls\UserListControl.xaml.vb">
-      <DependentUpon>UserListControl.xaml</DependentUpon>
+    <Compile Include="Controls\MessageBubbleCtrl.xaml.vb">
+      <DependentUpon>MessageBubbleCtrl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MessageListBubbleCtrl.xaml.vb">
+      <DependentUpon>MessageListBubbleCtrl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PatientListControl.xaml.vb">
+      <DependentUpon>PatientListControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\UsersBubbleCtrl.xaml.vb">
+      <DependentUpon>UsersBubbleCtrl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\UsersListBubbleCtrl.xaml.vb">
+      <DependentUpon>UsersListBubbleCtrl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\ColorItemViewModel.vb" />
     <Compile Include="ViewModel\GitHubViewModel.vb" />
@@ -134,11 +150,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\MessageBubbleCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\MessageListBubbleCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PatientListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\SettingsWindows.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\UserListControl.xaml">
+    <Page Include="Controls\UsersBubbleCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\UsersListBubbleCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -229,9 +261,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="historicMsg\" />
     <Folder Include="Logs\" />
     <Folder Include="Properties\" />
     <Folder Include="Windows\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Avatar\avataaars.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\packages\JeremyAnsel.HLSL.Targets.1.0.13\build\JeremyAnsel.HLSL.Targets.targets" Condition="Exists('..\packages\JeremyAnsel.HLSL.Targets.1.0.13\build\JeremyAnsel.HLSL.Targets.targets')" />

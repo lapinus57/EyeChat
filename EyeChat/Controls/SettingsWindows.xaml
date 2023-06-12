@@ -1,4 +1,5 @@
-﻿<UserControl xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"  x:Class="SettingsWindows"
+﻿<UserControl xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"  
+             x:Class="SettingsWindows"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -35,7 +36,7 @@
 				</Expander.Content>
 			</Expander>
 
-            <Expander Header="Affichage" FontSize="{Binding AppSizeDisplay}">
+            <Expander Header="Affichage" FontSize="{Binding AppSizeDisplay}" >
 				<Expander.Content>
 					<!-- Contenu collapsible -->
 					<StackPanel>
@@ -86,7 +87,14 @@
                                 
                             </ComboBox.Items>
                         </ComboBox>
-
+                        <TextBlock Text="{StaticResource DisplayRoom}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                        <ComboBox x:Name="cbodisplay" Margin="10,0" SelectedValue="{Binding AppNameDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False"  FontSize="{Binding AppSizeDisplay}">
+                            <ComboBox.Items>
+                                <ComboBoxItem Content="Nom" Tag="A" />
+                                <ComboBoxItem Content="Salle (Nom)" Tag="B" />
+                                <ComboBoxItem Content="Nom (Salle)" Tag="C" />
+                            </ComboBox.Items>
+                        </ComboBox>
                     </StackPanel>
 
 
@@ -253,7 +261,7 @@
 
 				</Expander.Content>
 			</Expander>
-            <Expander Header="Débug" FontSize="20" >
+            <Expander Header="Débug" FontSize="20" Visibility="{Binding RoomDisplayStr}">
                 <Expander.Content>
                     <!-- Contenu collapsible -->
                     <StackPanel>

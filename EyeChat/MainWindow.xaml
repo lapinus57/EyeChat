@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="EyeChat" 
          Height="600" 
-        Width="1150"
+        Width="1350"
         GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
                  WindowStartupLocation="CenterScreen"
                  ShowIconOnTitleBar="True"
@@ -28,6 +28,7 @@
                         IsOpen="{Binding ElementName=ToggleButtonOpenSettings, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
                         Width="500">
+
                 <local:SettingsWindows />
                 
 
@@ -38,9 +39,11 @@
                         IsOpen="{Binding ElementName=ToggleButtonOpenGithub, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
                         Width="500">
-                <local:GithubWindows />
+                
                 <!-- The content goes here -->
-               
+
+
+                <local:GithubWindows />
             </mah:Flyout>
 
         </mah:FlyoutsControl>
@@ -77,15 +80,25 @@
             <TranslateTransform Y="0.5" />
         </Grid.RenderTransform>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200*"/>
-            <ColumnDefinition Width="805*"/>
-            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="300*"/>
+            <ColumnDefinition Width="800*"/>
+            <ColumnDefinition Width="250*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="485*"/>
             <RowDefinition Height="50*"/>
         </Grid.RowDefinitions>
-       <local:UserListUserControl Grid.Column="2" Grid.Row="0" x:Name="UserlistCtrl" />
         
+        <local:MessageListBubbleCtrl Messages="{Binding SelectedUserMessages}" Grid.Column="1" x:Name="lapin"/>
+        <Grid Width="250" Grid.Column="2" >
+            <ListBox ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" x:Name="test">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <local:UsersBubbleCtrl />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="65,28,0,0" Grid.Row="1" VerticalAlignment="Top" Click="Button_Click"/>
     </Grid>
 </mah:MetroWindow>

@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="UsersBubbleCtrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EyeChat"
+             mc:Ignorable="d" 
+             xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf">
+    
+    <UserControl.Resources>
+        <local:MultiplyByTwoConverter x:Key="MultiplyByTwoConverter" />
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid Width="250" >
+        <Border Width="250" Height="auto" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding Avatar}" 
+                       Width="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource MultiplyByTwoConverter}}" 
+                       Height="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource MultiplyByTwoConverter}}"
+                       Margin="0,0,0,0" 
+                       VerticalAlignment="Center" />
+                <StackPanel Width="220">
+                    <StackPanel Width="220" Orientation="Horizontal" >
+                        <TextBlock Text="{Binding Room}" Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text=" (" Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Name}" Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text=")" Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Name}" Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text=" (" Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Room}" Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text=")" Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Name}" Visibility="{Binding NameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    </StackPanel>
+
+
+                    <TextBlock Text="En ligne" Background="Transparent" Width="220"/>
+
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
+

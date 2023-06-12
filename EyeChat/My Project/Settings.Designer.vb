@@ -13,17 +13,17 @@ Option Explicit On
 
 
 Namespace My
-
-    <Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute(),
-     Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.5.0.0"),
-     Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>
+    
+    <Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute(),  _
+     Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.5.0.0"),  _
+     Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
     Partial Friend NotInheritable Class MySettings
         Inherits Global.System.Configuration.ApplicationSettingsBase
-
-        Private Shared defaultInstance As MySettings = CType(Global.System.Configuration.ApplicationSettingsBase.Synchronized(New MySettings()), MySettings)
-
+        
+        Private Shared defaultInstance As MySettings = CType(Global.System.Configuration.ApplicationSettingsBase.Synchronized(New MySettings()),MySettings)
+        
 #Region "Fonctionnalité Enregistrement automatique My.Settings"
-#If _MYTYPE = "WindowsForms" Then
+#If _MyType = "WindowsForms" Then
     Private Shared addedHandler As Boolean
 
     Private Shared addedHandlerLockObject As New Object
@@ -36,11 +36,11 @@ Namespace My
     End Sub
 #End If
 #End Region
-
+        
         Public Shared ReadOnly Property [Default]() As MySettings
             Get
-
-#If _MYTYPE = "WindowsForms" Then
+                
+#If _MyType = "WindowsForms" Then
                If Not addedHandler Then
                     SyncLock addedHandlerLockObject
                         If Not addedHandler Then
@@ -53,281 +53,401 @@ Namespace My
                 Return defaultInstance
             End Get
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("EyeChat")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("EyeChat")>  _
         Public Property UserName() As String
             Get
-                Return CType(Me("UserName"), String)
+                Return CType(Me("UserName"),String)
             End Get
             Set
-                Me("UserName") = Value
+                Me("UserName") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("Clair")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Clair")>  _
         Public Property AppTheme() As String
             Get
-                Return CType(Me("AppTheme"), String)
+                Return CType(Me("AppTheme"),String)
             End Get
             Set
-                Me("AppTheme") = Value
+                Me("AppTheme") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("Red")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Red")>  _
         Public Property AppColor() As Global.System.Drawing.Color
             Get
-                Return CType(Me("AppColor"), Global.System.Drawing.Color)
+                Return CType(Me("AppColor"),Global.System.Drawing.Color)
             End Get
             Set
-                Me("AppColor") = Value
+                Me("AppColor") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("Red")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Red")>  _
         Public Property AppColorString() As String
             Get
-                Return CType(Me("AppColorString"), String)
+                Return CType(Me("AppColorString"),String)
             End Get
             Set
-                Me("AppColorString") = Value
+                Me("AppColorString") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("12")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("12")>  _
         Public Property AppSizeDisplay() As Integer
             Get
-                Return CType(Me("AppSizeDisplay"), Integer)
+                Return CType(Me("AppSizeDisplay"),Integer)
             End Get
             Set
-                Me("AppSizeDisplay") = Value
+                Me("AppSizeDisplay") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("DEBUG")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("DEBUG")>  _
         Public Property DebugLevel() As String
             Get
-                Return CType(Me("DebugLevel"), String)
+                Return CType(Me("DebugLevel"),String)
             End Get
             Set
-                Me("DebugLevel") = Value
+                Me("DebugLevel") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("a")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("a")>  _
         Public Property CtrlF9() As String
             Get
-                Return CType(Me("CtrlF9"), String)
+                Return CType(Me("CtrlF9"),String)
             End Get
             Set
-                Me("CtrlF9") = Value
+                Me("CtrlF9") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("b")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("b")>  _
         Public Property CtrlF10() As String
             Get
-                Return CType(Me("CtrlF10"), String)
+                Return CType(Me("CtrlF10"),String)
             End Get
             Set
-                Me("CtrlF10") = Value
+                Me("CtrlF10") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("c")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("c")>  _
         Public Property CtrlF11() As String
             Get
-                Return CType(Me("CtrlF11"), String)
+                Return CType(Me("CtrlF11"),String)
             End Get
             Set
-                Me("CtrlF11") = Value
+                Me("CtrlF11") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("d")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("d")>  _
         Public Property CtrlF12() As String
             Get
-                Return CType(Me("CtrlF12"), String)
+                Return CType(Me("CtrlF12"),String)
             End Get
             Set
-                Me("CtrlF12") = Value
+                Me("CtrlF12") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("e")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("e")>  _
         Public Property AltF9() As String
             Get
-                Return CType(Me("AltF9"), String)
+                Return CType(Me("AltF9"),String)
             End Get
             Set
-                Me("AltF9") = Value
+                Me("AltF9") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("f")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("f")>  _
         Public Property AltF10() As String
             Get
-                Return CType(Me("AltF10"), String)
+                Return CType(Me("AltF10"),String)
             End Get
             Set
-                Me("AltF10") = Value
+                Me("AltF10") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("g")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("g")>  _
         Public Property AltF11() As String
             Get
-                Return CType(Me("AltF11"), String)
+                Return CType(Me("AltF11"),String)
             End Get
             Set
-                Me("AltF11") = Value
+                Me("AltF11") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("h")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("h")>  _
         Public Property AltF12() As String
             Get
-                Return CType(Me("AltF12"), String)
+                Return CType(Me("AltF12"),String)
             End Get
             Set
-                Me("AltF12") = Value
+                Me("AltF12") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
         Public Property CtrlF9Enabled() As Boolean
             Get
-                Return CType(Me("CtrlF9Enabled"), Boolean)
+                Return CType(Me("CtrlF9Enabled"),Boolean)
             End Get
             Set
-                Me("CtrlF9Enabled") = Value
+                Me("CtrlF9Enabled") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
         Public Property CtrlF10Enabled() As Boolean
             Get
-                Return CType(Me("CtrlF10Enabled"), Boolean)
+                Return CType(Me("CtrlF10Enabled"),Boolean)
             End Get
             Set
-                Me("CtrlF10Enabled") = Value
+                Me("CtrlF10Enabled") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
         Public Property CtrlF11Enabled() As Boolean
             Get
-                Return CType(Me("CtrlF11Enabled"), Boolean)
+                Return CType(Me("CtrlF11Enabled"),Boolean)
             End Get
             Set
-                Me("CtrlF11Enabled") = Value
+                Me("CtrlF11Enabled") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
         Public Property CtrlF12Enabled() As Boolean
             Get
-                Return CType(Me("CtrlF12Enabled"), Boolean)
+                Return CType(Me("CtrlF12Enabled"),Boolean)
             End Get
             Set
-                Me("CtrlF12Enabled") = Value
+                Me("CtrlF12Enabled") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
         Public Property AltF9Enabled() As Boolean
             Get
-                Return CType(Me("AltF9Enabled"), Boolean)
+                Return CType(Me("AltF9Enabled"),Boolean)
             End Get
             Set
-                Me("AltF9Enabled") = Value
+                Me("AltF9Enabled") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
         Public Property AltF10Enabled() As Boolean
             Get
-                Return CType(Me("AltF10Enabled"), Boolean)
+                Return CType(Me("AltF10Enabled"),Boolean)
             End Get
             Set
-                Me("AltF10Enabled") = Value
+                Me("AltF10Enabled") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
         Public Property AltF11Enabled() As Boolean
             Get
-                Return CType(Me("AltF11Enabled"), Boolean)
+                Return CType(Me("AltF11Enabled"),Boolean)
             End Get
             Set
-                Me("AltF11Enabled") = Value
+                Me("AltF11Enabled") = value
             End Set
         End Property
-
-        <Global.System.Configuration.UserScopedSettingAttribute(),
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
         Public Property AltF12Enabled() As Boolean
             Get
-                Return CType(Me("AltF12Enabled"), Boolean)
+                Return CType(Me("AltF12Enabled"),Boolean)
             End Get
             Set
-                Me("AltF12Enabled") = Value
+                Me("AltF12Enabled") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property UniqueId() As String
+            Get
+                Return CType(Me("UniqueId"),String)
+            End Get
+            Set
+                Me("UniqueId") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property Id() As Integer
+            Get
+                Return CType(Me("Id"),Integer)
+            End Get
+            Set
+                Me("Id") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property RoomDisplay() As Boolean
+            Get
+                Return CType(Me("RoomDisplay"),Boolean)
+            End Get
+            Set
+                Me("RoomDisplay") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Collapsed")>  _
+        Public Property RoomDisplayStr() As String
+            Get
+                Return CType(Me("RoomDisplayStr"),String)
+            End Get
+            Set
+                Me("RoomDisplayStr") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property RoomDisplayInverted() As Boolean
+            Get
+                Return CType(Me("RoomDisplayInverted"),Boolean)
+            End Get
+            Set
+                Me("RoomDisplayInverted") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("10")>  _
+        Public Property SizeDisplayUsers() As Integer
+            Get
+                Return CType(Me("SizeDisplayUsers"),Integer)
+            End Get
+            Set
+                Me("SizeDisplayUsers") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Collapsed")>  _
+        Public Property RoomNameDisplayUsers() As Global.System.Windows.Visibility
+            Get
+                Return CType(Me("RoomNameDisplayUsers"),Global.System.Windows.Visibility)
+            End Get
+            Set
+                Me("RoomNameDisplayUsers") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Collapsed")>  _
+        Public Property NameRoomDisplayUsers() As Global.System.Windows.Visibility
+            Get
+                Return CType(Me("NameRoomDisplayUsers"),Global.System.Windows.Visibility)
+            End Get
+            Set
+                Me("NameRoomDisplayUsers") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Visible")>  _
+        Public Property NameDisplayUsers() As Global.System.Windows.Visibility
+            Get
+                Return CType(Me("NameDisplayUsers"),Global.System.Windows.Visibility)
+            End Get
+            Set
+                Me("NameDisplayUsers") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("A")>  _
+        Public Property AppNameDisplay() As String
+            Get
+                Return CType(Me("AppNameDisplay"),String)
+            End Get
+            Set
+                Me("AppNameDisplay") = value
             End Set
         End Property
     End Class
 End Namespace
 
 Namespace My
-
-    <Global.Microsoft.VisualBasic.HideModuleNameAttribute(),
-     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),
-     Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute()>
+    
+    <Global.Microsoft.VisualBasic.HideModuleNameAttribute(),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute()>  _
     Friend Module MySettingsProperty
-
-        <Global.System.ComponentModel.Design.HelpKeywordAttribute("My.Settings")>
+        
+        <Global.System.ComponentModel.Design.HelpKeywordAttribute("My.Settings")>  _
         Friend ReadOnly Property Settings() As Global.EyeChat.My.MySettings
             Get
                 Return Global.EyeChat.My.MySettings.Default
