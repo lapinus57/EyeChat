@@ -98,5 +98,11 @@
     <Setting Name="AppNameDisplay" Type="System.String" Scope="User">
       <Value Profile="(Default)">A</Value>
     </Setting>
+    <Setting Name="ComputerName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="WindowsName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

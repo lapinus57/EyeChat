@@ -4,10 +4,13 @@
                     xmlns:local="clr-namespace:EyeChat">
 
     <system:String x:Key="UserNameLabel">Nom :</system:String>
+    <system:String x:Key="ComputerNameLabel">Identifiant du PC :</system:String>
+    <system:String x:Key="WindowsNameLabel">Nom du PC :</system:String>
     <system:String x:Key="AvatarLabel">Avatar :</system:String>
     <system:String x:Key="AppThemeLabel">Thème :</system:String>
     <system:String x:Key="AppColorLabel">Couleur :</system:String>
     <system:String x:Key="AppSizeLabel">Taille de l'interface :</system:String>
     <system:String x:Key="DisplayRoom">Afficher le nom de la salle :</system:String>
+    <system:String x:Key="general">Général</system:String>
     
 </ResourceDictionary>

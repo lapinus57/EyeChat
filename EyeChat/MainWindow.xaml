@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"       
+        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"   
+                 
+                 
         xmlns:local="clr-namespace:EyeChat"
         mc:Ignorable="d"
         Title="EyeChat" 
@@ -16,9 +18,7 @@
                  ShowIconOnTitleBar="True"
                  ShowCloseButton="False"
                  xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
-             Dialog:DialogParticipation.Register="{Binding}">
-
-
+                 Dialog:DialogParticipation.Register="{Binding}">
 
 
     <mah:MetroWindow.Flyouts>
@@ -30,7 +30,7 @@
                         Width="500">
 
                 <local:SettingsWindows />
-                
+
 
                 <!-- The content goes here -->
             </mah:Flyout>
@@ -39,7 +39,7 @@
                         IsOpen="{Binding ElementName=ToggleButtonOpenGithub, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
                         Width="500">
-                
+
                 <!-- The content goes here -->
 
 
@@ -73,6 +73,10 @@
                           Content="{iconPacks:Modern Kind=SocialGithubOctocat}" 
                           ToolTip="Ouvrir les paramètres"
                           Foreground="{DynamicResource MahApps.Brushes.IdealForeground}"/>
+            <Button x:Name="ConnectionButon"
+                    Content="Connection"
+                    Click="ConnectionButon_Click"
+                    />
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
     <Grid>
@@ -80,18 +84,23 @@
             <TranslateTransform Y="0.5" />
         </Grid.RenderTransform>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300*"/>
-            <ColumnDefinition Width="800*"/>
-            <ColumnDefinition Width="250*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="485*"/>
-            <RowDefinition Height="50*"/>
+            <RowDefinition Height="30*"/>
         </Grid.RowDefinitions>
-        
-        <local:MessageListBubbleCtrl Messages="{Binding SelectedUserMessages}" Grid.Column="1" x:Name="lapin"/>
-        <Grid Width="250" Grid.Column="2" >
-            <ListBox ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" x:Name="test">
+
+        <local:MessageListBubbleCtrl Messages="{Binding SelectedUserMessages}" 
+                                     Grid.Column="1" 
+                                     x:Name="lapin"/>
+        <Grid  Grid.Column="2" >
+            <ListBox ItemsSource="{Binding Users}" 
+                     SelectedItem="{Binding SelectedListUser, Mode=TwoWay}"                       
+                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"                   
+                     x:Name="ListUseres">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <local:UsersBubbleCtrl />
@@ -99,6 +108,33 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="65,28,0,0" Grid.Row="1" VerticalAlignment="Top" Click="Button_Click"/>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <TextBox x:Name="SendTextBox" 
+                 mah:TextBoxHelper.Watermark="Message"               
+                 Height="auto" 
+                 Margin="3"/>
+            
+        </Grid>
+        
+        <mah:MetroTabControl Grid.Column="0" 
+                             mah:HeaderedControlHelper.HeaderFontSize="{Binding AppSizeDisplay, Mode=OneWay}"
+                             mah:HeaderedControlHelper.HeaderFontWeight="Bold"
+                             x:Name="TabCtrl">
+        <TabItem Header="RDC" >
+                <ListBox ItemsSource="{Binding Patients}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <local:PatientBubbleCtrl />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+        </TabItem>
+        <TabItem Header="1er" >
+
+        </TabItem>
+        <TabItem Header="Tous" >
+
+        </TabItem>
+        </mah:MetroTabControl>
     </Grid>
 </mah:MetroWindow>

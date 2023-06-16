@@ -8,13 +8,13 @@ Public Class BooleanToVisibilityConverter
     Public Function Convert(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.Convert
         Dim boolValue As Boolean = False
         If Boolean.TryParse(value.ToString(), boolValue) Then
-            If boolValue Then
-                Return Visibility.Visible
+            If boolValue = False Then
+                Return Visibility.Hidden
             Else
-                Return Visibility.Collapsed
+                Return Visibility.Hidden
             End If
         End If
-        Return Visibility.Collapsed
+        'Return Visibility.Collapsed
     End Function
 
     Public Function ConvertBack(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.ConvertBack

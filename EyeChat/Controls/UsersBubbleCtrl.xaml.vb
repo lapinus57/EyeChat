@@ -1,11 +1,22 @@
 ﻿Imports System.ComponentModel
 Imports EyeChat.MainWindow
+Imports Newtonsoft.Json
 
 Public Class UsersBubbleCtrl
     Inherits UserControl
     Implements INotifyPropertyChanged
 
     Public Shared ReadOnly SizeProperty As DependencyProperty = DependencyProperty.Register("SizeDisplayUsers", GetType(Double), GetType(UsersBubbleCtrl))
+    Public Shared ReadOnly NameProperty As DependencyProperty = DependencyProperty.Register("Name", GetType(String), GetType(UsersBubbleCtrl))
+
+    Public Property Name As String
+        Get
+            Return CStr(GetValue(NameProperty))
+        End Get
+        Set(value As String)
+            SetValue(NameProperty, value)
+        End Set
+    End Property
     Public Property Size As Double
         Get
             Return CDbl(GetValue(SizeProperty))

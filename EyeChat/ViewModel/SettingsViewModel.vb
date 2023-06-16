@@ -46,11 +46,61 @@ Public Class SettingsViewModel
             Try
                 My.Settings.AppNameDisplay = value
                 My.Settings.Save()
-                NotifyPropertyChanged(" AppNameDisplay")
+                NotifyPropertyChanged("AppNameDisplay")
                 logger.Info($"La propriété  AppNameDisplay a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
-                logger.Error($"Erreur lors de la modification de la propriété  AppNameDisplay : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété AppNameDisplay : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property ComputerName As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété  ComputerName : {My.Settings.ComputerName}")
+                Return My.Settings.ComputerName
+
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété ComputerName : {ex.Message}")
+                Return "Bender"
+            End Try
+
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.ComputerName = value
+                My.Settings.Save()
+                NotifyPropertyChanged("ComputerName")
+                logger.Info($"La propriété  ComputerName a été modifiée : {value}")
+            Catch ex As Exception
+                ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
+                logger.Error($"Erreur lors de la modification de la propriété ComputerName : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property WindowsName As String
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété  ComputerName : {My.Settings.WindowsName}")
+                Return My.Settings.WindowsName
+
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété WindowsName : {ex.Message}")
+                Return "Bender"
+            End Try
+
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.WindowsName = value
+                My.Settings.Save()
+                NotifyPropertyChanged("WindowsName")
+                logger.Info($"La propriété WindowsName a été modifiée : {value}")
+            Catch ex As Exception
+                ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
+                logger.Error($"Erreur lors de la modification de la propriété WindowsName : {ex.Message}")
             End Try
         End Set
     End Property
@@ -124,6 +174,8 @@ Public Class SettingsViewModel
                 NotifyPropertyChanged("ArrowSize")
                 SelectUser(SelectedUser)
                 Users.Clear()
+
+
                 Dim loadedUsers = LoadUsersFromJson()
                 For Each user In loadedUsers
                     Users.Add(user)

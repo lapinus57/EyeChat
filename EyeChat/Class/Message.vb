@@ -59,6 +59,14 @@ Public Class Message
                 Using jsonReader As New JsonTextReader(streamReader)
                     Dim serializer As New JsonSerializer()
                     messages = serializer.Deserialize(Of ObservableCollection(Of Message))(jsonReader)
+
+                    For Each message In messages
+                        If (message.Sender = My.Settings.UserName) Then
+                            message.IsAlignedRight = True
+                        Else
+                            message.IsAlignedRight = False
+                        End If
+                    Next
                 End Using
             End Using
         End If

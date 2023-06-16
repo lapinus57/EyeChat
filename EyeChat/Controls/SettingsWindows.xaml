@@ -23,21 +23,54 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Hidden">
         <StackPanel>
-            <Expander Header="Général" FontSize="{Binding AppSizeDisplay}">
+            <Expander >
+                <Expander.Header>
+                    <TextBlock Text="Général" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                </Expander.Header>
+                
 				<Expander.Content>
 					<!-- Contenu collapsible -->
 					<StackPanel>
-                        <TextBlock Text="{StaticResource UserNameLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
-                        <TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}"/>
-                        <TextBlock Text="{StaticResource AvatarLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                        <TextBlock Text="{StaticResource ComputerNameLabel}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="{Binding AppSizeDisplay}"/>
+                        <TextBox Text="{Binding ComputerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="10,0,10,0"
+                                 FontSize="{Binding AppSizeDisplay}"
+                                 IsReadOnly="True"/>
+
+                        <TextBlock Text="{StaticResource WindowsNameLabel}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="{Binding AppSizeDisplay}"/>
+                        <TextBox Text="{Binding WindowsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="10,0,10,0"
+                                 FontSize="{Binding AppSizeDisplay}"
+                                 IsReadOnly="True"/>
+
+                        <TextBlock Text="{StaticResource UserNameLabel}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="{Binding AppSizeDisplay}"/>
+                        <TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="10,0,10,0"
+                                 FontSize="{Binding AppSizeDisplay}"/>
+                        
+                        
+                        <TextBlock Text="{StaticResource AvatarLabel}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="{Binding AppSizeDisplay}"/>
 					</StackPanel>
 					
 					
 				</Expander.Content>
 			</Expander>
 
-            <Expander Header="Affichage" FontSize="{Binding AppSizeDisplay}" >
-				<Expander.Content>
+            <Expander >
+                <Expander.Header>
+
+                    <TextBlock Text="Affichage" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+
+                </Expander.Header>
+                <Expander.Content>
 					<!-- Contenu collapsible -->
 					<StackPanel>
                         <TextBlock Text="{StaticResource AppThemeLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
@@ -250,8 +283,11 @@
                 </Expander.Content>
             </Expander>
 
-            <Expander Header="Fonctionalité" FontSize="20" >
-				<Expander.Content>
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Text="Fonctionalité" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                </Expander.Header>
+                <Expander.Content>
 					<!-- Contenu collapsible -->
 					<StackPanel>
 						<mah:ToggleSwitch />
@@ -261,7 +297,10 @@
 
 				</Expander.Content>
 			</Expander>
-            <Expander Header="Débug" FontSize="20" Visibility="{Binding RoomDisplayStr}">
+            <Expander Visibility="{Binding RoomDisplayStr}">
+                <Expander.Header>
+                    <TextBlock Text="Débug" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                </Expander.Header>
                 <Expander.Content>
                     <!-- Contenu collapsible -->
                     <StackPanel>

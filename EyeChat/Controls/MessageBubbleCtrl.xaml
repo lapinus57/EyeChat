@@ -8,6 +8,7 @@
 
     <UserControl.Resources>
         <local:ContainsStringToVisibilityConverter x:Key="ContainsStringToVisibilityConverter" TargetString="tu peut venir" />
+        <local:MultiplyByTwoConverter x:Key="MultiplyByTwoConverter" />
         <!-- Style for the MessageBubbleCtrl -->
         <Style TargetType="local:MessageBubbleCtrl">
             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -59,15 +60,28 @@
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Image Source="{Binding Avatar}" Width="40" Height="40" Margin="0,0,0,0" VerticalAlignment="Top" />
+                <Image Source="{Binding Avatar}" 
+                       Width="40" 
+                       Height="40"
+                       Margin="0,0,0,0" VerticalAlignment="Top" />
                 <StackPanel Grid.Column="1">
-                    <TextBlock HorizontalAlignment="Left" Foreground="{StaticResource MahApps.Brushes.IdealForeground}" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                    <TextBlock HorizontalAlignment="Left" 
+                               Foreground="{StaticResource MahApps.Brushes.IdealForeground}" 
+                               VerticalAlignment="Bottom" FontWeight="Bold" 
+                               FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}">
                         <Run Text="{Binding Sender}" />
                         <Run Text=" : " />
                     </TextBlock>
-                    <TextBlock FontSize="20" Margin="5"  Foreground="{StaticResource MahApps.Brushes.IdealForeground}"  Text="{Binding Content}"/>
+                    <TextBlock  Margin="5"  
+                                Foreground="{StaticResource MahApps.Brushes.IdealForeground}" 
+                                Text="{Binding Content}"
+                                FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <!-- <emoji:RichTextBox Text="{Binding Content}" IsReadOnly="True" Background="Transparent" BorderBrush="Transparent" BorderThickness="0" FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/> -->
-                    <TextBlock Text="{Binding Timestamp, StringFormat={}{0:HH:mm}}" HorizontalAlignment="Right"  Foreground="{StaticResource MahApps.Brushes.IdealForeground}" VerticalAlignment="Bottom" FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <TextBlock Text="{Binding Timestamp, StringFormat={}{0:HH:mm}}" 
+                               HorizontalAlignment="Right"  
+                               Foreground="{StaticResource MahApps.Brushes.IdealForeground}" 
+                               VerticalAlignment="Bottom" 
+                               FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                 </StackPanel>
             </Grid>
         </Border>

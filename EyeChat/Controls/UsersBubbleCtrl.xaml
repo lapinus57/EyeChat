@@ -36,7 +36,7 @@
                     </StackPanel>
 
 
-                    <TextBlock Text="En ligne" Background="Transparent" Width="220"/>
+                    <TextBlock Text="{Binding Status}" Background="Transparent" Width="220"/>
 
                 </StackPanel>
             </StackPanel>

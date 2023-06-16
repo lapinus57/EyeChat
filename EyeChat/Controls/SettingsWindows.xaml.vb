@@ -2,7 +2,6 @@
 Imports MahApps.Metro.Controls
 Imports System.Drawing
 Imports EyeChat
-Imports EyeChat.UserListControl
 Imports EyeChat.SettingsViewModel
 Imports EyeChat.MainWindow
 Imports EyeChat.User
