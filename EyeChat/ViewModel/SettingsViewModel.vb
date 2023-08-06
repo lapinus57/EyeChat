@@ -10,6 +10,7 @@ Imports Newtonsoft.Json.Linq
 Imports log4net.Core
 Imports EyeChat.MainWindow
 Imports EyeChat.User
+Imports EyeChat
 
 
 
@@ -168,12 +169,16 @@ Public Class SettingsViewModel
             End Get
             Set(ByVal value As Integer)
                 Try
-                    My.Settings.AppSizeDisplay = value
-                    My.Settings.Save()
-                    NotifyPropertyChanged("AppSizeDisplay")
+                My.Settings.AppSizeDisplay = value
+                My.Settings.Save()
+
+
+                'TabCtrl.FontSize = value
+                NotifyPropertyChanged("AppSizeDisplay")
                 NotifyPropertyChanged("ArrowSize")
                 SelectUser(SelectedUser)
                 Users.Clear()
+
 
 
                 Dim loadedUsers = LoadUsersFromJson()

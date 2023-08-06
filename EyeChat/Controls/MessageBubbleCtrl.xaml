@@ -75,6 +75,7 @@
                     <TextBlock  Margin="5"  
                                 Foreground="{StaticResource MahApps.Brushes.IdealForeground}" 
                                 Text="{Binding Content}"
+                                TextWrapping="Wrap"
                                 FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <!-- <emoji:RichTextBox Text="{Binding Content}" IsReadOnly="True" Background="Transparent" BorderBrush="Transparent" BorderThickness="0" FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/> -->
                     <TextBlock Text="{Binding Timestamp, StringFormat={}{0:HH:mm}}" 

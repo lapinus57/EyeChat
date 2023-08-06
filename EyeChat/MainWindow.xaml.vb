@@ -2,6 +2,7 @@
 Imports MahApps.Metro.Controls.Dialogs
 Imports EyeChat.Message
 Imports EyeChat.User
+Imports EyeChat.Account
 Imports System.ComponentModel
 Imports log4net.Repository.Hierarchy
 Imports log4net
@@ -16,6 +17,14 @@ Imports System.Net
 Imports System.Text
 Imports System.Web.UI.WebControls
 Imports Octokit
+Imports Newtonsoft.Json
+Imports System.IO
+Imports System.Runtime.InteropServices
+Imports System.Windows.Interop
+
+Public Class MarvinPhrasesData
+    Public Property MarvinPhrases As List(Of String)
+End Class
 
 Class MainWindow
     Implements INotifyPropertyChanged
@@ -24,7 +33,13 @@ Class MainWindow
 
     Public Shared selectedUserName As String
     Public Shared Property Computers As ObservableCollection(Of Computer)
-    Public Shared Property Patients As ObservableCollection(Of Patient)
+    'Liste des patients du RDC
+    Public Shared Property PatientsRDC As ObservableCollection(Of Patient)
+    'Liste des parients du 1er
+    Public Shared Property Patients1er As ObservableCollection(Of Patient)
+    'liste de tous les patients
+    Public Shared Property PatientsALL As ObservableCollection(Of Patient)
+
     Public Shared Property Messages As ObservableCollection(Of Message)
     Public Shared Property Users As ObservableCollection(Of User)
     Public Shared Property SelectedUserMessages As ObservableCollection(Of Message)
@@ -41,8 +56,127 @@ Class MainWindow
     Private sendingClient As UdpClient
     Private receivingThread As Thread
 
-    Private suggestions As List(Of String) = New List(Of String)() From {"/Suggestion1", "/Suggestion2", "/Suggestion3"}
+    Private Shared ReadOnly SuggestionValues As String() = {"/DEBUG", "/ENDDEBUG", "/LSTCOMPUTER", "/DISPCOMPUTER", "TEST"}
 
+    Dim jsonData As String
+    Dim phrasesData As MarvinPhrasesData
+
+#Region "Gestion des raccourcis clavier"
+#End Region
+
+
+    <DllImport("User32.dll")>
+    Private Shared Function RegisterHotKey(<[In]> hWnd As IntPtr, <[In]> id As Integer, <[In]> fsModifiers As UInteger, <[In]> vk As UInteger) As Boolean
+    End Function
+
+    <DllImport("User32.dll")>
+    Private Shared Function UnregisterHotKey(<[In]> hWnd As IntPtr, <[In]> id As Integer) As Boolean
+    End Function
+
+
+    Private _source As HwndSource
+    Private Const HOTKEY_ID As Integer = 9000
+    Private Const HOTKEY_ID1 As Integer = 9001
+    Private Const HOTKEY_ID2 As Integer = 9002
+    Private Const HOTKEY_ID3 As Integer = 9003
+
+
+    Protected Overrides Sub OnSourceInitialized(e As EventArgs)
+        MyBase.OnSourceInitialized(e)
+        Dim helper = New WindowInteropHelper(Me)
+        _source = HwndSource.FromHwnd(helper.Handle)
+        _source.AddHook(AddressOf HwndHook)
+        RegisterHotKey()
+    End Sub
+
+    Protected Overrides Sub OnClosed(e As EventArgs)
+        _source.RemoveHook(AddressOf HwndHook)
+        _source = Nothing
+        UnregisterHotKey()
+        MyBase.OnClosed(e)
+    End Sub
+
+
+    Private Sub RegisterHotKey()
+        Dim helper = New WindowInteropHelper(Me)
+        Const VK_E As UInteger = &H45
+        Const MOD_CTRL As UInteger = &H2
+        Const VK_F9 As UInteger = &H78
+        Const VK_F10 As UInteger = &H79
+        Const VK_F11 As UInteger = &H7A
+
+        ' handle error
+        If Not RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_CTRL, VK_E) Then
+        End If
+        If Not RegisterHotKey(helper.Handle, HOTKEY_ID1, MOD_CTRL, VK_F9) Then
+        End If
+        If Not RegisterHotKey(helper.Handle, HOTKEY_ID2, MOD_CTRL, VK_F10) Then
+        End If
+        If Not RegisterHotKey(helper.Handle, HOTKEY_ID3, MOD_CTRL, VK_F11) Then
+        End If
+
+    End Sub
+
+    Private Sub UnregisterHotKey()
+        Dim helper = New WindowInteropHelper(Me)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID1)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID2)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID3)
+    End Sub
+
+    Private Function HwndHook(hwnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As IntPtr, ByRef handled As Boolean) As IntPtr
+        Const WM_HOTKEY As Integer = &H312
+        Select Case msg
+            Case WM_HOTKEY
+                Select Case wParam.ToInt32()
+                    Case HOTKEY_ID
+                        'Mettre Eyechat au premier plan
+                        OnHotKeyPressed0()
+                        handled = True
+                    Case HOTKEY_ID1
+                        'OnHotKeyPressed1()
+                    Case HOTKEY_ID2
+                        'OnHotKeyPressed2()
+                    Case HOTKEY_ID3
+                        'OnHotKeyPressed3()
+                        Exit Select
+                End Select
+                Exit Select
+        End Select
+        Return IntPtr.Zero
+    End Function
+
+    Private Sub OnHotKeyPressed0()
+        Me.WindowState = WindowState.Normal
+        Me.Topmost = True
+        Me.Topmost = False
+        Me.Focus()
+    End Sub
+
+
+    Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+        If IsNameInList(Users, "A Tous") Then
+            SelectUser("A Tous")
+            SelectUserByName("A Tous")
+        End If
+
+
+        Dim Accounts As New List(Of Account)()
+        Accounts.Add(New Account() With {.Name = "Alicia", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        Accounts.Add(New Account() With {.Name = "Alix", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        Accounts.Add(New Account() With {.Name = "Benoit", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        Accounts.Add(New Account() With {.Name = "Caroline", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        Accounts.Add(New Account() With {.Name = "Christelle", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        Accounts.Add(New Account() With {.Name = "Esra", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        Accounts.Add(New Account() With {.Name = "Chef", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+
+
+        Dim jsonData As String = JsonConvert.SerializeObject(Accounts)
+        File.WriteAllText("Accounts.json", jsonData)
+
+
+    End Sub
 
 
 
@@ -68,12 +202,15 @@ Class MainWindow
         My.Settings.NameRoomDisplayUsers = Visibility.Collapsed
         My.Settings.NameDisplayUsers = Visibility.Collapsed
 
+
+
         ' Initialise la collection de messages
         Messages = If(LoadMessagesFromJson(), New ObservableCollection(Of Message)())
         ' Initialise la collection des users
         Users = If(LoadUsersFromJson(), New ObservableCollection(Of User)())
         ' Initialise la collection des patients
-        Patients = If(LoadPatientsFromJson(), New ObservableCollection(Of Patient)())
+        LoadPatientsFromJson()
+        'Patients = If(LoadPatientsFromJson(), New ObservableCollection(Of Patient)())
         ' Initialise la collection des ordinateurs 
         Computers = New ObservableCollection(Of Computer)
         ' Initialisez la collection de messages selectionné
@@ -88,7 +225,7 @@ Class MainWindow
         'AddMessage("Benoit", "John", "Hello! 💖😁🐨🐱‍🐉👩🏿‍👩🏻‍👦🏽 lol", True, avatarPath)
         'AddMessage("Benoit", "Benoit", "Hello! 💖😁🐨🐱‍🐉👩🏿‍👩🏻‍👦🏽 lol", False, avatarPath)
 
-        SelectUser("Benoit")
+
         'SaveUsersToJson(Users)
 
         InitializeSender()
@@ -97,11 +234,20 @@ Class MainWindow
         'SavePatientsToJson(Patients)
         'SelectUserList("Benoit")
         'SelectUserList("benoit")
-        ListUseres.SelectedItem = Users.FirstOrDefault(Function(user) user.Name = "Benoit")
+
+        PatientAdd("Mr", "muller", "benoit", "SK", Nothing, "1er", "Green", "benoit")
+
+
+        jsonData = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "dataphrases.json"))
+        phrasesData = JsonConvert.DeserializeObject(Of MarvinPhrasesData)(jsonData)
+        MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(My.Settings.AppSizeDisplay))
+
 
 
 
     End Sub
+
+
 
     Private Async Function LaunchGitHubSiteAsync() As Task
         ' Exemple : Ouvrir le site GitHub dans le navigateur par défaut
@@ -126,6 +272,23 @@ Class MainWindow
         ' Génération d'un integer unique basé sur le UniqueId
         Return My.Settings.UniqueId.GetHashCode()
     End Function
+
+    'Chargement des listes de patients 
+    Private Sub LoadPatientsFromJson()
+        Dim allPatients As ObservableCollection(Of Patient) = Patient.LoadPatientsFromJson()
+
+        If allPatients IsNot Nothing Then
+            ' Filtrer les patients pour chaque étage et les ajouter aux listes correspondantes
+            PatientsRDC = New ObservableCollection(Of Patient)(allPatients.Where(Function(p) p.Position = "RDC"))
+            Patients1er = New ObservableCollection(Of Patient)(allPatients.Where(Function(p) p.Position = "1er"))
+            PatientsALL = allPatients
+        Else
+            ' Si le fichier JSON n'existe pas ou est vide, initialiser les listes comme vides
+            PatientsRDC = New ObservableCollection(Of Patient)()
+            Patients1er = New ObservableCollection(Of Patient)()
+            PatientsALL = New ObservableCollection(Of Patient)()
+        End If
+    End Sub
 
 
     ' Méthode pour ajouter un nouveau message
@@ -157,26 +320,53 @@ Class MainWindow
 
     Public Sub updatemsglist()
         SelectUser(SelectedUser)
-        MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(TabCtrl, My.Settings.AppSizeDisplay)
+        MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(My.Settings.AppSizeDisplay))
     End Sub
 
 
 #Region "Gestion de l'ajout, suppression et modification d'un patient"
 
     Public Sub PatientAdd(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Annotation As String, ByVal Position As String, ByVal Colors As String, ByVal Examinator As String)
-        Patients.Add(New Patient With {.Title = Title, .LastName = LastName, .FirstName = FirstName, .Exams = Exams, .Annotation = Annotation, .Position = Position, .Hold_Time = Date.Now, .IsTaken = False, .Colors = Colors, .Examinator = Examinator})
-    End Sub
-    Public Sub PatientRemove()
-        Dim patientToRemove As Patient = Patients.FirstOrDefault(Function(patient) patient.FirstName = "benoit")
-        If patientToRemove IsNot Nothing Then
-            Patients.Remove(patientToRemove)
+        Dim newPatient As New Patient With {.Title = Title, .LastName = LastName, .FirstName = FirstName, .Exams = Exams, .Annotation = Annotation, .Position = Position, .Hold_Time = Date.Now, .IsTaken = False, .Colors = Colors, .Examinator = Examinator}
+
+        PatientsALL.Add(newPatient)
+        SavePatientsToJson(PatientsALL)
+
+        If newPatient.Position = "RDC" Then
+            PatientsRDC.Add(newPatient)
+        ElseIf newPatient.Position = "1er" Then
+            Patients1er.Add(newPatient)
         End If
     End Sub
 
+
+    Public Sub PatientRemove()
+        Dim patientToRemove As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.FirstName = "benoit")
+        If patientToRemove IsNot Nothing Then
+
+            ' Supprimer le patient de PatientsALL
+            PatientsALL.Remove(patientToRemove)
+
+            ' Si le patient est dans PatientsRDC, le supprimer également
+            If patientToRemove.Position = "RDC" Then
+                PatientsRDC.Remove(patientToRemove)
+            ElseIf patientToRemove.Position = "1er" Then
+                Patients1er.Remove(patientToRemove)
+            End If
+
+            ' Si le patient est dans Patients1er, le supprimer également
+            If Patients1er.Contains(patientToRemove) Then
+                Patients1er.Remove(patientToRemove)
+            End If
+        End If
+
+        SavePatientsToJson(PatientsALL)
+    End Sub
+
     Public Sub ModifyPatient(ByVal lastName As String, ByVal updatedPatient As Patient)
-        For index As Integer = 0 To Patients.Count - 1
-            If Patients(index).LastName = lastName Then
-                Patients(index) = updatedPatient
+        For index As Integer = 0 To PatientsALL.Count - 1
+            If PatientsALL(index).LastName = lastName Then
+                PatientsALL(index) = updatedPatient
                 Exit For
             End If
         Next
@@ -293,24 +483,28 @@ Class MainWindow
 
             Case "MSG01"
 
-                Dim avatarPathd As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                AddMessage("Marvin", "Marvin", "ll", False, avatarPathd)
                 'Ajouter un message
                 '"MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
                 Try
+
                     Dim messageContent As String = receivedMessage.Substring(5)
                     Dim parts As String() = messageContent.Split("|"c)
-                    Dim destinataire As String = parts(0)
-                    Dim author As String = parts(1)
+                    Dim author As String = parts(0)
+                    Dim destinataire As String = parts(1)
                     Dim message As String = parts(2)
                     Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", parts(3))
 
-                    If destinataire = My.Settings.UserName Then
+                    If author = My.Settings.UserName Then
+                        'AddMessage(Name(A qui),Sender(destinataire qui),message,IsAlignedRight,Avatar)
 
-                        AddMessage(author, author, message, False, avatarPath)
+                        AddMessage(destinataire, author, message, True, avatarPath)
+                        SelectUserByName(destinataire)
+                        SelectUser(destinataire)
 
                     Else
-                        AddMessage(destinataire, author, message, False, avatarPath)
+                        AddMessage(author, author, message, False, avatarPath)
+                        SelectUserByName(author)
+                        SelectUser(author)
                     End If
 
 
@@ -374,6 +568,31 @@ Class MainWindow
 
 #End Region
 
+    Private _currentInput As String = ""
+    Private _currentSuggestion As String = ""
+    Private _currentText As String = ""
+    Private _selectionStart As Integer
+    Private _selectionLength As Integer
+
+    Private Sub SuggestionBoxOnTextChanged(sender As Object, e As TextChangedEventArgs) Handles SendTextBox.TextChanged
+
+        Dim input = SendTextBox.Text
+
+        If input.Length > _currentInput.Length AndAlso input <> _currentSuggestion Then
+            _currentSuggestion = SuggestionValues.FirstOrDefault(Function(x) x.StartsWith(input))
+
+            If _currentSuggestion IsNot Nothing Then
+                _currentText = _currentSuggestion
+                _selectionStart = input.Length
+                _selectionLength = _currentSuggestion.Length - input.Length
+                SendTextBox.Text = _currentText
+                SendTextBox.[Select](_selectionStart, _selectionLength)
+            End If
+        End If
+
+        _currentInput = input
+    End Sub
+
     Private Sub SendTextBox_KeyDown(sender As Object, e As KeyEventArgs) Handles SendTextBox.KeyDown
         If e.Key = Key.Enter Then
             SendTextBox.Text = SendTextBox.Text.TrimEnd()
@@ -413,6 +632,22 @@ Class MainWindow
                         Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
                         AddMessage("Marvin", "Marvin", computerString.ToString, False, avatarPath)
 
+                    Case "TEST"
+                        ' Créer une instance de la classe Random
+                        Dim random As New Random()
+
+                        ' Vérifier si la liste contient des phrases
+                        If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 Then
+                            ' Générer un index aléatoire dans la plage des indices de la liste
+                            Dim randomIndex As Integer = random.Next(0, phrasesData.MarvinPhrases.Count)
+
+                            ' Récupérer la phrase aléatoire en utilisant l'index généré
+                            Dim randomPhrase As String = phrasesData.MarvinPhrases(randomIndex)
+
+                            ' Faire quelque chose avec la phrase aléatoire
+                            MessageBox.Show(randomPhrase)
+                        End If
+
 
                     Case Else
 
@@ -424,10 +659,39 @@ Class MainWindow
                                 Dim selectedUserName As String = selectedUser.Name
                                 ' Faites quelque chose avec le nom de l'utilisateur sélectionné
                                 ' ...
-                                text = "MSG01" & My.Settings.UserName & "|" & selectedUserName & "|" & SendTextBox.Text & "|system.png"
-                                Sendmessage(text)
 
+                                If SendTextBox.Text.Contains("marvin") Then
+                                    ' Créer une instance de la classe Random
+                                    Dim random As New Random()
+
+                                    ' Vérifier si la liste contient des phrases
+                                    If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 Then
+                                        ' Générer un index aléatoire dans la plage des indices de la liste
+                                        Dim randomIndex As Integer = random.Next(0, phrasesData.MarvinPhrases.Count)
+
+                                        ' Récupérer la phrase aléatoire en utilisant l'index généré
+                                        Dim randomPhrase As String = phrasesData.MarvinPhrases(randomIndex)
+
+                                        ' Vérifie si Marvin est dans la liste des users
+                                        If IsNameInList(Users, "Marvin") Then
+                                            ' Marvin est présent dans la liste, on ajoute le message
+                                            Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
+                                            AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
+                                        Else
+                                            ' Marvin n'est pas présent dans la liste, on créer le user et on ajoute le message
+                                            Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
+                                            Users.Add(New User With {.Name = "Marvin", .Room = "Sytem", .Avatar = avatarPath, .Status = "Don't Panic"})
+                                            AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
+                                        End If
+                                    End If
+
+                                End If
+
+                                text = "MSG01" & My.Settings.UserName & "|" & selectedUserName & "|" & SendTextBox.Text & "|benoit.png"
+                                Sendmessage(text)
+                                MessageList.ScrollToEnd()
                             End If
+
 
                         Catch ex As Exception
 
@@ -451,37 +715,36 @@ Class MainWindow
             selectedUserName = selectedUser.Name
             ' Faites quelque chose avec le nom de l'utilisateur sélectionné
             ' ...
-            'Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-            'AddMessage("Marvin", "Marvin", selectedUser.Name, False, avatarPath)
+            SelectUser(selectedUser.Name)
         End If
     End Sub
 
 
-
-
+    ' Fonction qui teste la présence d'un user et retourne une boolean
+    Function IsNameInList(users As ObservableCollection(Of User), nameToSearch As String) As Boolean
+        Return users.Any(Function(u) u.Name = nameToSearch)
+    End Function
 
 
     Private Sub ConnectionButon_Click(sender As Object, e As RoutedEventArgs)
-        SelectUserByName("Marvin")
 
+        If ConnectionButon.Content = "Connection" Then
+            ShowLoginDialogPreview()
+        Else
+            ConnectionButon.Content = "Connection"
+            logger.Debug($" {My.Settings.UserName} s'est déconnecté du poste.")
+            SaveMessagesToJson(Messages)
+            SaveUsersToJson(Users)
+            SelectedUserMessages.Clear()
+            Users.Clear()
+            My.Settings.UserName = ""
+            My.Settings.Save()
 
-        'If ConnectionButon.Content = "Connection" Then
-        'ShowLoginDialogPreview()
-        ' Else
-        'ConnectionButon.Content = "Connection"
-        'logger.Debug($" {My.Settings.UserName} s'est déconnecté du poste.")
-        'SaveMessagesToJson(Messages)
-        'SaveUsersToJson(Users)
-        'SelectedUserMessages.Clear()
-        'Users.Clear()
-        'My.Settings.UserName = ""
-        'My.Settings.Save()
-
-        'End If
+        End If
     End Sub
     Private Async Sub ShowLoginDialogPreview()
 
-        Dim result = Await Me.ShowInputAsync("Connection", "lapin", New MetroDialogSettings() With {.NegativeButtonText = "Annuler", .AffirmativeButtonText = "Connection"})
+        Dim result = Await Me.ShowInputAsync("Connection", "Entrer votre nom :", New MetroDialogSettings() With {.NegativeButtonText = "Annuler", .AffirmativeButtonText = "Connection"})
         'Dim result = Await Me.ShowLoginAsync("Eyechat connection", "", New LoginDialogSettings() With {.NegativeButtonVisibility = True, .NegativeButtonText = "Annuler"})
         If result Is Nothing Then
             ' L'utilisateur a appuyé sur Annuler ou a fermé la boîte de dialogue
@@ -499,6 +762,8 @@ Class MainWindow
         End If
 
     End Sub
+
+
 
 
     Private Sub SelectUserByName(userName As String)
@@ -523,6 +788,8 @@ Class MainWindow
             End If
         End Set
     End Property
+
+
 
 End Class
 

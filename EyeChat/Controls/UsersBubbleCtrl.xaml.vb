@@ -81,9 +81,56 @@ Public Class UsersBubbleCtrl
         Dim selectedUser As User = DirectCast(DataContext, User)
         Dim selectedName As String = selectedUser.Name
         SelectUser(selectedName)
-        ' Faites quelque chose avec le Name sélectionné
-        ' ...
 
     End Sub
+
+    Private Sub MenuItemMoveUp_Click(sender As Object, e As RoutedEventArgs)
+        ' Trouver l'élément parent ListBoxItem du UserControl
+        Dim listBoxItem As ListBoxItem = FindParentListBoxItem(Me)
+
+        ' Récupérer l'utilisateur correspondant à l'élément de la liste
+        Dim user As User = TryCast(listBoxItem.DataContext, User)
+
+        If user IsNot Nothing Then
+            ' Obtenir l'index actuel de l'utilisateur dans la liste
+            Dim currentIndex As Integer = Users.IndexOf(user)
+
+            ' Vérifier si l'utilisateur n'est pas déjà en haut de la liste et n'est pas "A Tous"
+            If currentIndex > 2 Then
+                ' Utiliser la méthode Move de la ObservableCollection pour déplacer l'utilisateur vers le haut
+                Users.Move(currentIndex, currentIndex - 1)
+            End If
+        End If
+    End Sub
+
+    Private Sub MenuItemMoveDown_Click(sender As Object, e As RoutedEventArgs)
+        ' Trouver l'élément parent ListBoxItem du UserControl
+        Dim listBoxItem As ListBoxItem = FindParentListBoxItem(Me)
+
+        ' Récupérer l'utilisateur correspondant à l'élément de la liste
+        Dim user As User = TryCast(listBoxItem.DataContext, User)
+
+        If user IsNot Nothing Then
+            ' Obtenir l'index actuel de l'utilisateur dans la liste
+            Dim currentIndex As Integer = Users.IndexOf(user)
+
+            ' Vérifier si l'utilisateur n'est pas déjà en bas de la liste et n'est pas "Secrétariat"
+            If currentIndex < Users.Count - 1 AndAlso Not user.Name.Equals("Secrétariat") AndAlso Not user.Name.Equals("A Tous") Then
+                ' Utiliser la méthode Move de la ObservableCollection pour déplacer l'utilisateur vers le bas
+                Users.Move(currentIndex, currentIndex + 1)
+            End If
+        End If
+    End Sub
+
+    Private Function FindParentListBoxItem(element As DependencyObject) As ListBoxItem
+        ' Parcourir la hiérarchie des éléments parents jusqu'à ce qu'un ListBoxItem soit trouvé
+        Dim parent = VisualTreeHelper.GetParent(element)
+
+        While parent IsNot Nothing AndAlso Not TypeOf parent Is ListBoxItem
+            parent = VisualTreeHelper.GetParent(parent)
+        End While
+
+        Return DirectCast(parent, ListBoxItem)
+    End Function
 End Class
 

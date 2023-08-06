@@ -19,4 +19,7 @@ Public Class MessageListBubbleCtrl
     Public Sub New()
         InitializeComponent()
     End Sub
+    Public Sub ScrollToEnd()
+        ScrollViewer.ScrollToEnd()
+    End Sub
 End Class

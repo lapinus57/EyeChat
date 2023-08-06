@@ -95,7 +95,7 @@
 
         <local:MessageListBubbleCtrl Messages="{Binding SelectedUserMessages}" 
                                      Grid.Column="1" 
-                                     x:Name="lapin"/>
+                                     x:Name="MessageList"/>
         <Grid  Grid.Column="2" >
             <ListBox ItemsSource="{Binding Users}" 
                      SelectedItem="{Binding SelectedListUser, Mode=TwoWay}"                       
@@ -103,7 +103,9 @@
                      x:Name="ListUseres">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <local:UsersBubbleCtrl />
+                        <local:UsersBubbleCtrl>
+                            
+                        </local:UsersBubbleCtrl>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -117,11 +119,12 @@
         </Grid>
         
         <mah:MetroTabControl Grid.Column="0" 
-                             mah:HeaderedControlHelper.HeaderFontSize="{Binding AppSizeDisplay, Mode=OneWay}"
+                             mah:HeaderedControlHelper.HeaderFontSize="{Binding AppSizeDisplay}"
                              mah:HeaderedControlHelper.HeaderFontWeight="Bold"
-                             x:Name="TabCtrl">
-        <TabItem Header="RDC" >
-                <ListBox ItemsSource="{Binding Patients}">
+                             FontSize="22"
+                             x:Name="PatientTabCtrl">
+        <TabItem Header="RDC"  >
+                <ListBox ItemsSource="{Binding PatientsRDC}" ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <local:PatientBubbleCtrl />
@@ -130,11 +133,24 @@
                 </ListBox>
         </TabItem>
         <TabItem Header="1er" >
-
-        </TabItem>
+                <ListBox ItemsSource="{Binding Patients1er}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <local:PatientBubbleCtrl />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
         <TabItem Header="Tous" >
-
-        </TabItem>
+                <ListBox ItemsSource="{Binding PatientsALL}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <local:PatientBubbleCtrl />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
         </mah:MetroTabControl>
     </Grid>
+    
 </mah:MetroWindow>

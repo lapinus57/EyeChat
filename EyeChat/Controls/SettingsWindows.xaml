@@ -67,21 +67,36 @@
             <Expander >
                 <Expander.Header>
 
-                    <TextBlock Text="Affichage" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                    <TextBlock Text="Affichage" 
+                               FontSize="{Binding AppSizeDisplay}" 
+                               VerticalAlignment="Center" />
 
                 </Expander.Header>
                 <Expander.Content>
 					<!-- Contenu collapsible -->
 					<StackPanel>
-                        <TextBlock Text="{StaticResource AppThemeLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
-                        <ComboBox SelectedValuePath="Content" SelectedValue="{Binding AppTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" SelectionChanged="AppThemeChanged" FontSize="{Binding AppSizeDisplay}">
+                        <TextBlock Text="{StaticResource AppThemeLabel}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="{Binding AppSizeDisplay}"/>
+                        <ComboBox SelectedValuePath="Content" 
+                                  SelectedValue="{Binding AppTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                  Margin="10,0,10,0" SelectionChanged="AppThemeChanged" 
+                                  FontSize="{Binding AppSizeDisplay}">
 							<ComboBoxItem Content="Clair" />
 							<ComboBoxItem Content="Sombre" />
 						</ComboBox>
 
-                        <TextBlock Text="{StaticResource AppColorLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" />
+                        <TextBlock Text="{StaticResource AppColorLabel}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="{Binding AppSizeDisplay}" />
 
-                        <ComboBox x:Name="cboColors" Margin="10,0" SelectedValue="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False" SelectionChanged="AppColorChanged" FontSize="{Binding AppSizeDisplay}">
+                        <ComboBox x:Name="cboColors" 
+                                  Margin="10,0" 
+                                  SelectedValue="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                  SelectedValuePath="Tag"  
+                                  IsEditable="False" 
+                                  SelectionChanged="AppColorChanged"
+                                  FontSize="{Binding AppSizeDisplay}">
                             <ComboBox.Items>
                                 <ComboBoxItem Content="Noir" Tag="Black" />
                                 <ComboBoxItem Content="Blanc" Tag="White" />
@@ -109,8 +124,16 @@
                                 <ComboBoxItem Content="Sienna" Tag="Sienna" />
                             </ComboBox.Items>
                         </ComboBox>
-                        <TextBlock Text="{StaticResource AppSizeLabel}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
-                        <ComboBox x:Name="cboSize" Margin="10,0" SelectedValue="{Binding AppSizeDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False" SelectionChanged="AppColorChanged" FontSize="{Binding AppSizeDisplay}">
+                        <TextBlock Text="{StaticResource AppSizeLabel}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="{Binding AppSizeDisplay}"/>
+                        <ComboBox x:Name="cboSize" 
+                                  Margin="10,0" 
+                                  SelectedValue="{Binding AppSizeDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                  SelectedValuePath="Tag"  
+                                  IsEditable="False" 
+                                  SelectionChanged="AppColorChanged" 
+                                  FontSize="{Binding AppSizeDisplay}">
                             <ComboBox.Items>
                                 <ComboBoxItem Content="Très petit" Tag="12" />
                                 <ComboBoxItem Content="Petit" Tag="14" />
@@ -290,9 +313,11 @@
                 <Expander.Content>
 					<!-- Contenu collapsible -->
 					<StackPanel>
-						<mah:ToggleSwitch />
-
-					</StackPanel>
+                        <TextBlock Text="{StaticResource SecretaryMode}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                        <mah:ToggleSwitch OffContent="Désactivé" OnContent="Activé" FontSize="{Binding AppSizeDisplay}" Margin="10,0,0,0"/>
+                        <TextBlock Text="{StaticResource DoctorMode}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
+                        <mah:ToggleSwitch OffContent="Désactivé" OnContent="Activé" FontSize="{Binding AppSizeDisplay}" Margin="10,0,0,0"/>
+                    </StackPanel>
 
 
 				</Expander.Content>

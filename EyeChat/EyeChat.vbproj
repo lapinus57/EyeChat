@@ -123,11 +123,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Class\Account.vb" />
     <Compile Include="Class\BooleanToVisibilityConverter.vb" />
     <Compile Include="Class\Computer.vb" />
     <Compile Include="Class\ContainsStringToVisibilityConverter.vb" />
     <Compile Include="Class\Message.vb" />
     <Compile Include="Class\MultiplyByTwoConverter.vb" />
+    <Compile Include="Class\NameToEnabledConverter.vb" />
     <Compile Include="Class\Patient.vb" />
     <Compile Include="Class\User.vb" />
     <Compile Include="Controls\MessageBubbleCtrl.xaml.vb">
@@ -138,6 +140,9 @@
     </Compile>
     <Compile Include="Controls\PatientBubbleCtrl.xaml.vb">
       <DependentUpon>PatientBubbleCtrl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PatientDialogue.xaml.vb">
+      <DependentUpon>PatientDialogue.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\UsersBubbleCtrl.xaml.vb">
       <DependentUpon>UsersBubbleCtrl.xaml</DependentUpon>
@@ -157,6 +162,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\PatientBubbleCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PatientDialogue.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -239,6 +248,9 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
     </EmbeddedResource>
+    <EmbeddedResource Include="Core\dataphrases.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -261,10 +273,24 @@
     <Folder Include="Windows\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Avatar\avataaars.png" />
+    <Resource Include="Avatar\avataaars.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Avatar\system.png" />
+    <Resource Include="Avatar\system.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Avatar\benoit.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Avatar\secrétaria.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\packages\JeremyAnsel.HLSL.Targets.1.0.13\build\JeremyAnsel.HLSL.Targets.targets" Condition="Exists('..\packages\JeremyAnsel.HLSL.Targets.1.0.13\build\JeremyAnsel.HLSL.Targets.targets')" />

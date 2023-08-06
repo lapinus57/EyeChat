@@ -5,11 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EyeChat"
              mc:Ignorable="d" 
-             d:DesignWidth="230">
+             d:DesignWidth="230"
+             d:MinWidth="230"
+             d:MaxWidth="600">
 
     <UserControl.Resources>
         <Style TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontSize" Value="14"/>
         </Style>
 
         
@@ -18,7 +20,7 @@
 
 
     <Grid Margin="2">
-        <Border Width="230" Height="auto" Background="{Binding Colors}">
+        <Border Width="auto" Height="auto" Background="{Binding Colors}">
             <Grid>
                 
                 <Grid.RowDefinitions>

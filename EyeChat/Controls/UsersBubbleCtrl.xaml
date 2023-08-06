@@ -6,16 +6,31 @@
              xmlns:local="clr-namespace:EyeChat"
              mc:Ignorable="d" 
              xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf">
-    
+   
     <UserControl.Resources>
         <local:MultiplyByTwoConverter x:Key="MultiplyByTwoConverter" />
+        <local:NameToEnabledConverter x:Key="NameToEnabledConverter" />
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
+
+        <SolidColorBrush x:Key="MahApps.Brushes.MenuItem.SelectionFill" Color="{Binding Source={StaticResource MahApps.Brushes.Accent}, Path=Color}" />
+        
     </UserControl.Resources>
     <Grid Width="250" >
-        <Border Width="250" Height="auto" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+        <Border Width="250" 
+                Height="auto" 
+                MouseLeftButtonDown="Border_MouseLeftButtonDown">
+            <Border.ContextMenu>
+                <ContextMenu Visibility="{Binding Name, Converter={StaticResource NameToEnabledConverter}, ConverterParameter='A Tous,Secrétariat'}">
+                    <MenuItem Header="Envoyer une notification" />
+                    <MenuItem Header="Monter" 
+                              Click="MenuItemMoveUp_Click" />
+                    <MenuItem Header="Descendre" 
+                              Click="MenuItemMoveDown_Click" />
+                </ContextMenu>
+            </Border.ContextMenu>
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Avatar}" 
                        Width="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource MultiplyByTwoConverter}}" 
@@ -24,19 +39,30 @@
                        VerticalAlignment="Center" />
                 <StackPanel Width="220">
                     <StackPanel Width="220" Orientation="Horizontal" >
-                        <TextBlock Text="{Binding Room}" Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text=" (" Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text="{Binding Name}" Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text=")" Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text="{Binding Name}" Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text=" (" Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text="{Binding Room}" Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text=")" Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text="{Binding Name}" Visibility="{Binding NameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Room}" 
+                                   Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text=" (" 
+                                   Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Name}" 
+                                   Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text=")" 
+                                   Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Name}" 
+                                   Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text=" (" 
+                                   Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Room}" 
+                                   Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text=")" 
+                                   Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Name}" 
+                                   Visibility="{Binding NameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </StackPanel>
 
 
-                    <TextBlock Text="{Binding Status}" Background="Transparent" Width="220"/>
+                    <TextBlock Text="{Binding Status}" 
+                               Background="Transparent" 
+Width="220"/>
 
                 </StackPanel>
             </StackPanel>

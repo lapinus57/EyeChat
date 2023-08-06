@@ -46,7 +46,7 @@ Public Class PatientBubbleCtrl
             Dim menuItem As MenuItem = DirectCast(sender, MenuItem)
 
             ' Obtenez l'objet Patient associé au MenuItem
-            Dim patient As Patient = DirectCast(menuItem.DataContext, Patient)
+            Dim patientall As Patient = DirectCast(menuItem.DataContext, Patient)
 
 
 
@@ -61,7 +61,7 @@ Public Class PatientBubbleCtrl
 
             ' Obtenez l'objet Patient associé au MenuItem
             Dim patient As Patient = DirectCast(menuItem.DataContext, Patient)
-            Patients.Remove(patient)
+            PatientsALL.Remove(patient)
 
             UpdateList()
         End If
@@ -82,14 +82,20 @@ Public Class PatientBubbleCtrl
     End Sub
 
     Private Sub UpdateList()
-        SavePatientsToJson(Patients)
-        Patients.Clear()
+        SavePatientsToJson(PatientsALL)
+        PatientsALL.Clear()
+        PatientsRDC.Clear()
+        Patients1er.Clear()
         Dim loadedpatient = LoadPatientsFromJson()
         For Each patient In loadedpatient
-            Patients.Add(patient)
+            PatientsALL.Add(patient)
+            If patient.Position = "RDC" Then
+                PatientsRDC.Add(patient)
+            ElseIf patient.Position = "1er" Then
+                Patients1er.Add(patient)
+            End If
         Next
     End Sub
-
 
 
 
