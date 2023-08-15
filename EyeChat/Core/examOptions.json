@@ -1,0 +1,26 @@
+[
+  {
+    "Name": "FO",
+    "Color": "#FF0000"
+  },
+  {
+    "Name": "SK",
+    "Color": "#00FF00"
+  },
+  {
+    "Name": "AT",
+    "Color": "#0000FF"
+  },
+  {
+    "Name": "AT-SK",
+    "Color": "#FF00FF"
+  },
+  {
+    "Name": "AT-FO",
+    "Color": "#FFFF00"
+  },
+  {
+    "Name": "AT-CV",
+    "Color": "#00FFFF"
+  }
+]

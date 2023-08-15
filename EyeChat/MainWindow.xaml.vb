@@ -21,6 +21,11 @@ Imports Newtonsoft.Json
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Windows.Interop
+Imports System.Windows
+Imports MahApps.Metro.Controls
+Imports MaterialDesignThemes.Wpf
+Imports GalaSoft.MvvmLight.Command
+Imports MahApps.Metro.SimpleChildWindow
 
 Public Class MarvinPhrasesData
     Public Property MarvinPhrases As List(Of String)
@@ -39,6 +44,8 @@ Class MainWindow
     Public Shared Property Patients1er As ObservableCollection(Of Patient)
     'liste de tous les patients
     Public Shared Property PatientsALL As ObservableCollection(Of Patient)
+    Public Property ExamOptions As New List(Of ExamOption)()
+
 
     Public Shared Property Messages As ObservableCollection(Of Message)
     Public Shared Property Users As ObservableCollection(Of User)
@@ -62,8 +69,6 @@ Class MainWindow
     Dim phrasesData As MarvinPhrasesData
 
 #Region "Gestion des raccourcis clavier"
-#End Region
-
 
     <DllImport("User32.dll")>
     Private Shared Function RegisterHotKey(<[In]> hWnd As IntPtr, <[In]> id As Integer, <[In]> fsModifiers As UInteger, <[In]> vk As UInteger) As Boolean
@@ -79,6 +84,9 @@ Class MainWindow
     Private Const HOTKEY_ID1 As Integer = 9001
     Private Const HOTKEY_ID2 As Integer = 9002
     Private Const HOTKEY_ID3 As Integer = 9003
+    Private Const HOTKEY_ID4 As Integer = 9004
+    Private Const HOTKEY_ID5 As Integer = 9005
+    Private Const HOTKEY_ID6 As Integer = 9006
 
 
     Protected Overrides Sub OnSourceInitialized(e As EventArgs)
@@ -101,6 +109,7 @@ Class MainWindow
         Dim helper = New WindowInteropHelper(Me)
         Const VK_E As UInteger = &H45
         Const MOD_CTRL As UInteger = &H2
+        Const MOD_SHIFT As UInteger = &H4
         Const VK_F9 As UInteger = &H78
         Const VK_F10 As UInteger = &H79
         Const VK_F11 As UInteger = &H7A
@@ -114,6 +123,12 @@ Class MainWindow
         End If
         If Not RegisterHotKey(helper.Handle, HOTKEY_ID3, MOD_CTRL, VK_F11) Then
         End If
+        If Not RegisterHotKey(helper.Handle, HOTKEY_ID4, MOD_SHIFT, VK_F9) Then
+        End If
+        If Not RegisterHotKey(helper.Handle, HOTKEY_ID5, MOD_SHIFT, VK_F10) Then
+        End If
+        If Not RegisterHotKey(helper.Handle, HOTKEY_ID6, MOD_SHIFT, VK_F11) Then
+        End If
 
     End Sub
 
@@ -123,6 +138,9 @@ Class MainWindow
         UnregisterHotKey(helper.Handle, HOTKEY_ID1)
         UnregisterHotKey(helper.Handle, HOTKEY_ID2)
         UnregisterHotKey(helper.Handle, HOTKEY_ID3)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID4)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID5)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID6)
     End Sub
 
     Private Function HwndHook(hwnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As IntPtr, ByRef handled As Boolean) As IntPtr
@@ -131,15 +149,21 @@ Class MainWindow
             Case WM_HOTKEY
                 Select Case wParam.ToInt32()
                     Case HOTKEY_ID
-                        'Mettre Eyechat au premier plan
+                        'Mettre Eyechat au premier pland
                         OnHotKeyPressed0()
                         handled = True
                     Case HOTKEY_ID1
-                        'OnHotKeyPressed1()
+                        OnHotKeyPressed1()
                     Case HOTKEY_ID2
-                        'OnHotKeyPressed2()
+                        OnHotKeyPressed2()
                     Case HOTKEY_ID3
-                        'OnHotKeyPressed3()
+                        OnHotKeyPressed3()
+                    Case HOTKEY_ID4
+                        OnHotKeyPressed4()
+                    Case HOTKEY_ID5
+                        OnHotKeyPressed5()
+                    Case HOTKEY_ID6
+                        OnHotKeyPressed6()
                         Exit Select
                 End Select
                 Exit Select
@@ -147,6 +171,7 @@ Class MainWindow
         Return IntPtr.Zero
     End Function
 
+    'Raccourci Ctrl + E
     Private Sub OnHotKeyPressed0()
         Me.WindowState = WindowState.Normal
         Me.Topmost = True
@@ -154,6 +179,109 @@ Class MainWindow
         Me.Focus()
     End Sub
 
+    'Raccourci Ctrl + F9
+    Private Sub OnHotKeyPressed1()
+        Me.WindowState = WindowState.Normal
+        Me.Topmost = True
+        Me.Topmost = False
+        Me.Focus()
+        OpenPatientDialogue("ODG", "FO", "RDC")
+
+    End Sub
+
+
+    'Raccourci Ctrl + F10
+    Private Sub OnHotKeyPressed2()
+        Me.WindowState = WindowState.Normal
+        Me.Topmost = True
+        Me.Topmost = False
+        Me.Focus()
+        OpenPatientDialogue("ODG", "SK", "RDC")
+
+    End Sub
+
+    'Raccourci Ctrl + F11
+    Private Sub OnHotKeyPressed3()
+        Me.WindowState = WindowState.Normal
+        Me.Topmost = True
+        Me.Topmost = False
+        Me.Focus()
+        OpenPatientDialogue("ODG", "AT", "RDC")
+
+    End Sub
+
+    'Raccourci Shift + F9
+    Private Sub OnHotKeyPressed4()
+        Me.WindowState = WindowState.Normal
+        Me.Topmost = True
+        Me.Topmost = False
+        Me.Focus()
+        OpenPatientDialogue("ODG", "FO", "1er")
+
+    End Sub
+
+
+    'Raccourci Shift + F10
+    Private Sub OnHotKeyPressed5()
+        Me.WindowState = WindowState.Normal
+        Me.Topmost = True
+        Me.Topmost = False
+        Me.Focus()
+        OpenPatientDialogue("ODG", "SK", "1er")
+
+    End Sub
+
+    'Raccourci Shift + F11
+    Private Sub OnHotKeyPressed6()
+        Me.WindowState = WindowState.Normal
+        Me.Topmost = True
+        Me.Topmost = False
+        Me.Focus()
+        OpenPatientDialogue("ODG", "AT", "1er")
+
+    End Sub
+
+#End Region
+
+#Region "Fênetre Patient Exams"
+
+
+    Private Sub OpenPatientDialogue(ByVal Eye As String, ByVal ExamName As String, ByVal Floor As String)
+        Me.CustomDialogBox.SetCurrentValue(ChildWindow.IsOpenProperty, True)
+
+        ' Recherchez l'élément Eye dans la ComboBox
+        Dim EyeToSelect As ComboBoxItem = FindComboBoxItemByContent(PatientEyeSelect, Eye)
+        ' Sélectionnez l'élément Eye si trouvé
+        If EyeToSelect IsNot Nothing Then
+            PatientEyeSelect.SelectedItem = EyeToSelect
+        End If
+
+        ' Recherchez l'élément Floor dans la ComboBox
+        Dim FloorToSelect As ComboBoxItem = FindComboBoxItemByContent(PatientFloorSelect, Floor)
+        ' Sélectionnez l'élément Floor si trouvé
+        If FloorToSelect IsNot Nothing Then
+            PatientFloorSelect.SelectedItem = FloorToSelect
+        End If
+
+        Dim selectedExam As ExamOption = ExamOptions.FirstOrDefault(Function(exam) exam.Name = ExamName)
+        If selectedExam IsNot Nothing Then
+            PatientExamSelect.SelectedItem = selectedExam
+        End If
+
+
+    End Sub
+
+
+    Private Function FindComboBoxItemByContent(ByVal comboBox As ComboBox, ByVal content As String) As ComboBoxItem
+        For Each item As ComboBoxItem In comboBox.Items
+            If item.Content IsNot Nothing AndAlso item.Content.ToString() = content Then
+                Return item
+            End If
+        Next
+
+        Return Nothing
+    End Function
+#End Region
 
     Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         If IsNameInList(Users, "A Tous") Then
@@ -240,6 +368,10 @@ Class MainWindow
 
         jsonData = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "dataphrases.json"))
         phrasesData = JsonConvert.DeserializeObject(Of MarvinPhrasesData)(jsonData)
+
+        Dim json As String = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "examOptions.json"))
+        ExamOptions = JsonConvert.DeserializeObject(Of List(Of ExamOption))(json)
+
         MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(My.Settings.AppSizeDisplay))
 
 
@@ -726,22 +858,34 @@ Class MainWindow
     End Function
 
 
-    Private Sub ConnectionButon_Click(sender As Object, e As RoutedEventArgs)
 
-        If ConnectionButon.Content = "Connection" Then
-            ShowLoginDialogPreview()
-        Else
-            ConnectionButon.Content = "Connection"
-            logger.Debug($" {My.Settings.UserName} s'est déconnecté du poste.")
-            SaveMessagesToJson(Messages)
-            SaveUsersToJson(Users)
-            SelectedUserMessages.Clear()
-            Users.Clear()
-            My.Settings.UserName = ""
-            My.Settings.Save()
+    Private Function ConnectionButon_Click(sender As Object, e As RoutedEventArgs) As Task
 
-        End If
-    End Sub
+
+        'Await Me.ShowChildWindowAsync(New CustomChildWindow() With {.IsModal = False})
+        'Await Me.ShowChildWindowAsync(New CustomChildWindow() With {.IsModal = False}, RootGrid)
+
+        Me.CustomDialogBox.SetCurrentValue(ChildWindow.IsOpenProperty, True)
+
+
+
+        'If ConnectionButon.Content = "Connection" Then
+        'ShowLoginDialogPreview()
+        'Else
+        'ConnectionButon.Content = "Connection"
+        'logger.Debug($" {My.Settings.UserName} s'est déconnecté du poste.")
+        'SaveMessagesToJson(Messages)
+        'SaveUsersToJson(Users)
+        'SelectedUserMessages.Clear()
+        'Users.Clear()
+        'My.Settings.UserName = ""
+        'My.Settings.Save()
+
+        'End If
+    End Function
+
+
+
     Private Async Sub ShowLoginDialogPreview()
 
         Dim result = Await Me.ShowInputAsync("Connection", "Entrer votre nom :", New MetroDialogSettings() With {.NegativeButtonText = "Annuler", .AffirmativeButtonText = "Connection"})
@@ -790,7 +934,26 @@ Class MainWindow
     End Property
 
 
+    Private Sub ClosePatientBox_OnClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Me.CustomDialogBox.Close()
+    End Sub
 
+    Private Sub ValidPatientBox_OnClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Me.CustomDialogBox.Close()
+
+        Dim selectedPatientEye As ComboBoxItem = CType(PatientEyeSelect.SelectedItem, ComboBoxItem)
+        If selectedPatientEye IsNot Nothing Then
+            SendTextBox.Text = selectedPatientEye.Content.ToString()
+        End If
+
+        'Dim selectedExamOption As ExamOption = DirectCast(PatientExamSelect.SelectedItem, ExamOption)
+        'If selectedExamOption IsNot Nothing Then
+        'SendTextBox.Text = PatientEyeSelect.SelectedItem
+        'SendTextBox.Text = selectedExamOption.Name ' Utilisez le nom de l'option        
+        'End If
+    End Sub
 End Class
+
+
 
 

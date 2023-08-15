@@ -3,25 +3,27 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"   
-                 
-                 
+        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"              
         xmlns:local="clr-namespace:EyeChat"
         mc:Ignorable="d"
         Title="EyeChat" 
          Height="600" 
         Width="1350"
         GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
-                 WindowStartupLocation="CenterScreen"
-                 ShowIconOnTitleBar="True"
-                 ShowCloseButton="False"
-                 xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
-                 Dialog:DialogParticipation.Register="{Binding}">
+        WindowStartupLocation="CenterScreen"
+        ShowIconOnTitleBar="True"
+        ShowCloseButton="False"
+        xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro" 
+        xmlns:simpleChildWindow="http://metro.mahapps.com/winfx/xaml/simplechildwindow"
+        Dialog:DialogParticipation.Register="{Binding}">
 
+    <Window.Resources>
+        
+    </Window.Resources>
 
-    <mah:MetroWindow.Flyouts>
+            <mah:MetroWindow.Flyouts>
         <mah:FlyoutsControl>
 
             <mah:Flyout Header="Paramètres" 
@@ -79,7 +81,80 @@
                     />
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
-    <Grid>
+    
+    <Grid x:Name="RootGrid">
+
+        <simpleChildWindow:ChildWindow x:Name="CustomDialogBox" 
+                                       IsModal="True" 
+                                       Title="TestChild 1"
+                                       AllowMove="False" 
+                                       CloseOnOverlay="True" 
+                                       OverlayBrush="AliceBlue"
+                                       Padding="15"
+                                       HorizontalContentAlignment="Stretch"
+                                       VerticalAlignment="Center">
+
+            <!-- Add your custom content here -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+
+                <StackPanel Grid.Column="1" Grid.Row="1">
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Label Margin="10,5">Nom du patient :</Label>
+                        <TextBox x:Name="PatientNameBox" Margin="10,5" Width="400" mah:TextBoxHelper.Watermark="Aucun patient trouvé"/>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Label Margin="12,5">Examen :</Label>
+                        <ComboBox x:Name="PatientExamSelect"  Margin="12,5" Width="75" HorizontalContentAlignment="Center"
+                      ItemsSource="{Binding ExamOptions}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Label Margin="12,5">Oeil/Yeux :</Label>
+                        <ComboBox x:Name="PatientEyeSelect" Margin="12,5" Width="75" HorizontalContentAlignment="Center">
+                            <ComboBoxItem Content="ODG"></ComboBoxItem>
+                            <ComboBoxItem Content="OD"></ComboBoxItem>
+                            <ComboBoxItem Content="OG"></ComboBoxItem>
+                        </ComboBox>
+                        <Label Margin="12,5">Etage :</Label>
+                        <ComboBox x:Name="PatientFloorSelect"  Margin="12,5" Width="75" HorizontalContentAlignment="Center">
+                            <ComboBoxItem Content="RDC"></ComboBoxItem>
+                            <ComboBoxItem Content="1er"></ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Label Margin="10,5">Commentaire :</Label>
+                        <TextBox x:Name="PatientCommentBox" Margin="10,5" Width="400" mah:TextBoxHelper.Watermark="optionnelle"/>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Button Content="Valider"  Click="ValidPatientBox_OnClick"  Margin="20,5"/>
+                        <Button Content="Annuler"  Click="ClosePatientBox_OnClick" Margin="20,5"/>
+                    </StackPanel>
+                    <!-- Other controls -->
+
+                </StackPanel>
+            </Grid>
+
+        </simpleChildWindow:ChildWindow>
+
+
+        <Grid>
+
+        
+
         <Grid.RenderTransform>
             <TranslateTransform Y="0.5" />
         </Grid.RenderTransform>
@@ -92,6 +167,8 @@
             <RowDefinition Height="485*"/>
             <RowDefinition Height="30*"/>
         </Grid.RowDefinitions>
+       
+
 
         <local:MessageListBubbleCtrl Messages="{Binding SelectedUserMessages}" 
                                      Grid.Column="1" 
@@ -118,13 +195,16 @@
             
         </Grid>
         
+       
+        
+        
         <mah:MetroTabControl Grid.Column="0" 
                              mah:HeaderedControlHelper.HeaderFontSize="{Binding AppSizeDisplay}"
                              mah:HeaderedControlHelper.HeaderFontWeight="Bold"
                              FontSize="22"
                              x:Name="PatientTabCtrl">
         <TabItem Header="RDC"  >
-                <ListBox ItemsSource="{Binding PatientsRDC}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                <ListBox x:Name="PatientListRDC" ItemsSource="{Binding PatientsRDC}" ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <local:PatientBubbleCtrl />
@@ -133,7 +213,7 @@
                 </ListBox>
         </TabItem>
         <TabItem Header="1er" >
-                <ListBox ItemsSource="{Binding Patients1er}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ListBox x:Name="PatientList1er" ItemsSource="{Binding Patients1er}" ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <local:PatientBubbleCtrl />
@@ -142,7 +222,7 @@
                 </ListBox>
             </TabItem>
         <TabItem Header="Tous" >
-                <ListBox ItemsSource="{Binding PatientsALL}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ListBox x:Name="PatientListAmm" ItemsSource="{Binding PatientsALL}" ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <local:PatientBubbleCtrl />
@@ -152,5 +232,8 @@
             </TabItem>
         </mah:MetroTabControl>
     </Grid>
+    </Grid>
+    <!-- Déclarez un contrôle DialogHost pour afficher le dialogue -->
+
     
 </mah:MetroWindow>
