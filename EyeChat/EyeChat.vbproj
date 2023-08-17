@@ -288,7 +288,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="historicMsg\" />
+    <Folder Include="HistoricMsg\" />
+    <Folder Include="HistoricPatient\" />
     <Folder Include="Logs\" />
     <Folder Include="Properties\" />
     <Folder Include="Windows\" />

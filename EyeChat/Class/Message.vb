@@ -8,7 +8,7 @@ Public Class Message
 
 
 
-    Public Shared ReadOnly messagesFilePath As String = Path.Combine("historicMsg", DateTime.Now.ToString("ddMMyyyy") & ".json")
+    Public Shared ReadOnly messagesFilePath As String = Path.Combine("HistoricMsg", DateTime.Now.ToString("ddMMyyyy") & ".json")
 
     <JsonProperty("Name")>
     Public Property Name As String
@@ -76,6 +76,13 @@ Public Class Message
 
     ' Enregistrement des messages dans le fichier JSON
     Public Shared Sub SaveMessagesToJson(ByVal messages As ObservableCollection(Of Message))
+
+        Dim dossier As String = "HistoricMsg"
+        ' Vérifier si le dossier existe
+        If Not Directory.Exists(dossier) Then
+            ' Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(dossier)
+        End If
 
         Dim serializedMessages As String = "[" & String.Join("," & Environment.NewLine, messages.Select(Function(m) JsonConvert.SerializeObject(New With {m.Name, m.Sender, m.Content, m.Avatar, m.IsAlignedRight, m.Timestamp}))) & "]"
         File.WriteAllText(messagesFilePath, serializedMessages)

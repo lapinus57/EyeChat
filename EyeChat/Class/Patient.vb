@@ -4,7 +4,7 @@ Imports Newtonsoft.Json
 
 Public Class Patient
 
-    Public Shared ReadOnly UsersFilePath As String = Path.Combine("Users", "Patients.json")
+    Public Shared ReadOnly PatientFilePath As String = Path.Combine("HistoricPatient", DateTime.Now.ToString("ddMMyyyy") & ".json")
 
     <JsonProperty("Id")>
     Public Property Id As String
@@ -53,8 +53,8 @@ Public Class Patient
     Public Shared Function LoadPatientsFromJson() As ObservableCollection(Of Patient)
         Dim patients As ObservableCollection(Of Patient) = Nothing
 
-        If File.Exists(UsersFilePath) Then
-            Using streamReader As New StreamReader(UsersFilePath)
+        If File.Exists(PatientFilePath) Then
+            Using streamReader As New StreamReader(PatientFilePath)
                 Using jsonReader As New JsonTextReader(streamReader)
                     Dim serializer As New JsonSerializer()
                     patients = serializer.Deserialize(Of ObservableCollection(Of Patient))(jsonReader)
@@ -68,8 +68,15 @@ Public Class Patient
     ' Enregistrement des messages dans le fichier JSON
     Public Shared Sub SavePatientsToJson(ByVal patients As ObservableCollection(Of Patient))
 
+        Dim dossier As String = "HistoricPatient"
+        ' Vérifier si le dossier existe
+        If Not Directory.Exists(dossier) Then
+            ' Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(dossier)
+        End If
+
         Dim serializedPatients As String = "[" & String.Join("," & Environment.NewLine, patients.Select(Function(m) JsonConvert.SerializeObject(New With {m.Id, m.Colors, m.Title, m.LastName, m.FirstName, m.Exams, m.Annotation, m.Position, m.Hold_Time, m.Pick_up_Time, m.Time_Order, m.Examinator, m.OperatorName, m.IsTaken}))) & "]"
-        File.WriteAllText(UsersFilePath, serializedPatients)
+        File.WriteAllText(PatientFilePath, serializedPatients)
 
     End Sub
 

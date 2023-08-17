@@ -86,7 +86,7 @@
 
         <simpleChildWindow:ChildWindow x:Name="CustomDialogBox" 
                                        IsModal="True" 
-                                       Title="TestChild 1"
+                                       Title="Ajout d'un patient"
                                        AllowMove="False" 
                                        CloseOnOverlay="True" 
                                        OverlayBrush="AliceBlue"

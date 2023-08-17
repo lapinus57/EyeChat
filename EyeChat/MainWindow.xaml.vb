@@ -26,6 +26,7 @@ Imports MahApps.Metro.Controls
 Imports MaterialDesignThemes.Wpf
 Imports GalaSoft.MvvmLight.Command
 Imports MahApps.Metro.SimpleChildWindow
+Imports System.Text.RegularExpressions
 
 Public Class MarvinPhrasesData
     Public Property MarvinPhrases As List(Of String)
@@ -67,6 +68,19 @@ Class MainWindow
 
     Dim jsonData As String
     Dim phrasesData As MarvinPhrasesData
+
+#Region "Gestion Capture nom des fêntre"
+    <DllImport("user32.dll")>
+    Private Shared Function EnumWindows(ByVal lpEnumFunc As EnumWindowsDelegate, ByVal lParam As IntPtr) As Boolean
+    End Function
+
+    <DllImport("user32.dll")>
+    Private Shared Function GetWindowText(ByVal hWnd As IntPtr, ByVal lpString As StringBuilder, ByVal nMaxCount As Integer) As Integer
+    End Function
+
+    Private Delegate Function EnumWindowsDelegate(ByVal hWnd As IntPtr, ByVal lParam As IntPtr) As Boolean
+
+#End Region
 
 #Region "Gestion des raccourcis clavier"
 
@@ -186,6 +200,8 @@ Class MainWindow
         Me.Topmost = False
         Me.Focus()
         OpenPatientDialogue("ODG", "FO", "RDC")
+        Dim windowList As New List(Of String)()
+        EnumWindows(AddressOf EnumWindowCallBack, IntPtr.Zero)
 
     End Sub
 
@@ -290,18 +306,18 @@ Class MainWindow
         End If
 
 
-        Dim Accounts As New List(Of Account)()
-        Accounts.Add(New Account() With {.Name = "Alicia", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
-        Accounts.Add(New Account() With {.Name = "Alix", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
-        Accounts.Add(New Account() With {.Name = "Benoit", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
-        Accounts.Add(New Account() With {.Name = "Caroline", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
-        Accounts.Add(New Account() With {.Name = "Christelle", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
-        Accounts.Add(New Account() With {.Name = "Esra", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
-        Accounts.Add(New Account() With {.Name = "Chef", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        'Dim Accounts As New List(Of Account)()
+        'Accounts.Add(New Account() With {.Name = "Alicia", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        ' Accounts.Add(New Account() With {.Name = "Alix", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        'Accounts.Add(New Account() With {.Name = "Benoit", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        'Accounts.Add(New Account() With {.Name = "Caroline", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        'Accounts.Add(New Account() With {.Name = "Christelle", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        'Accounts.Add(New Account() With {.Name = "Esra", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
+        'Accounts.Add(New Account() With {.Name = "Chef", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
 
 
-        Dim jsonData As String = JsonConvert.SerializeObject(Accounts)
-        File.WriteAllText("Accounts.json", jsonData)
+        'Dim jsonData As String = JsonConvert.SerializeObject(Accounts)
+        'File.WriteAllText("Accounts.json", jsonData)
 
 
     End Sub
@@ -363,7 +379,7 @@ Class MainWindow
         'SelectUserList("Benoit")
         'SelectUserList("benoit")
 
-        PatientAdd("Mr", "muller", "benoit", "SK", Nothing, "1er", "Green", "benoit")
+        'PatientAdd("Mr", "muller", "benoit", "SK", Nothing, "1er", "Green", "benoit")
 
 
         jsonData = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "dataphrases.json"))
@@ -558,8 +574,23 @@ Class MainWindow
 
             Case "PTN01"
                 ' Code de message pour ajouter un patient au RDC
-                ' "PTN01|Nom|Prénom|Autres informations"
-                PatientAdd("Mr", "muller", "benoit", "FO", Nothing, "RDC", "Green", "benoit")
+                ' "PTN01|Titre|Nom|Prénom|Examen|Commentaire|Position|Examinateur"
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+                    Dim Title As String = parts(0)
+                    Dim LastName As String = parts(1)
+                    Dim FirstName As String = parts(2)
+                    Dim Exam As String = parts(3)
+                    Dim Comments As String = parts(4)
+                    Dim Floor As String = parts(5)
+                    Dim Examinator As String = parts(6)
+
+                    PatientAdd(Title, LastName, FirstName, Exam, Comments, Floor, "Green", Examinator)
+                Catch ex As Exception
+
+                End Try
+                'PatientAdd("Mr", "muller", "benoit", "FO", Nothing, "RDC", "Green", "benoit")
 
             Case "PTN02"
                 ' Code de message pour la mise à jour d'un patient au RDC
@@ -616,7 +647,7 @@ Class MainWindow
             Case "MSG01"
 
                 'Ajouter un message
-                '"MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+                '"MSG01|{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
                 Try
 
                     Dim messageContent As String = receivedMessage.Substring(5)
@@ -862,13 +893,6 @@ Class MainWindow
     Private Function ConnectionButon_Click(sender As Object, e As RoutedEventArgs) As Task
 
 
-        'Await Me.ShowChildWindowAsync(New CustomChildWindow() With {.IsModal = False})
-        'Await Me.ShowChildWindowAsync(New CustomChildWindow() With {.IsModal = False}, RootGrid)
-
-        Me.CustomDialogBox.SetCurrentValue(ChildWindow.IsOpenProperty, True)
-
-
-
         'If ConnectionButon.Content = "Connection" Then
         'ShowLoginDialogPreview()
         'Else
@@ -940,18 +964,85 @@ Class MainWindow
 
     Private Sub ValidPatientBox_OnClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
         Me.CustomDialogBox.Close()
+        Dim Text As String = "PTN01Mr|MULLER|Benoit|"
+
+        Dim selectedExamOption As ExamOption = DirectCast(PatientExamSelect.SelectedItem, ExamOption)
+        If selectedExamOption IsNot Nothing Then
+            Text += selectedExamOption.Name + "|" ' Utilisez le nom de l'option        
+        End If
 
         Dim selectedPatientEye As ComboBoxItem = CType(PatientEyeSelect.SelectedItem, ComboBoxItem)
         If selectedPatientEye IsNot Nothing Then
-            SendTextBox.Text = selectedPatientEye.Content.ToString()
+            Text += selectedPatientEye.Content.ToString() + " " + PatientCommentBox.Text + "|"
         End If
 
-        'Dim selectedExamOption As ExamOption = DirectCast(PatientExamSelect.SelectedItem, ExamOption)
-        'If selectedExamOption IsNot Nothing Then
-        'SendTextBox.Text = PatientEyeSelect.SelectedItem
-        'SendTextBox.Text = selectedExamOption.Name ' Utilisez le nom de l'option        
-        'End If
+        Dim selectedPatientFloor As ComboBoxItem = CType(PatientFloorSelect.SelectedItem, ComboBoxItem)
+        If selectedPatientFloor IsNot Nothing Then
+            Text += selectedPatientFloor.Content.ToString + "|"
+        End If
+
+
+
+        ' "PTN01|Titre|Nom|Prénom|Examen|Commentaire|Position|Examinateur"
+        Text += My.Settings.UserName
+
+        Sendmessage(Text)
+
+
     End Sub
+
+
+    Private Function EnumWindowCallBack(ByVal hwnd As IntPtr, ByVal lParam As IntPtr) As Boolean
+        Dim windowText As New StringBuilder(256)
+        GetWindowText(hwnd, windowText, windowText.Capacity)
+        Dim text As String = windowText.ToString().Trim()
+        If text.Length > 0 Then
+            If text.StartsWith("REFRACTION") OrElse text.Contains("LENTILLES") OrElse text.Contains("PATHOLOGIES") OrElse text.Contains("ORTHOPTIE") Then
+                ''patientstring = text
+                ''patientstring = Microsoft.VisualBasic.Right(patientstring, (patientstring.Length - patientstring.IndexOf(" de") - 3))
+                ''patientstring = Microsoft.VisualBasic.Left(patientstring, patientstring.Length - patientstring.IndexOf(" , ", 0))
+
+                Dim inputString As String = text
+                ' Expression régulière pour extraire le nom complet de la chaîne d'entrée
+                'Dim regexPattern As String = "(REFRACTION de|LENTILLES de|PATHOLOGIES de|ORTHOPTIE de)\s+(Monsieur|Madame|Mademoiselle|Enfant|Maître|Docteur)\s+((?:[A-Z\-']+\s?)+)(?:(Née)\s+([A-Z\-']+\s?)+)?\s+(([A-ZÀ-ÖØ-Ý][a-zà-öø-ý'-]*([ -][A-ZÀ-ÖØ-Ý][a-zà-öø-ý'-]*)*)).*$"
+                Dim regexPattern As String = "(REFRACTION de|LENTILLES de|PATHOLOGIES de|ORTHOPTIE de)\s+(Monsieur|Madame|Mademoiselle|Enfant|Maître|Docteur)\s+((?:[A-ZÀ-ÖØ-Ý\-']+\s?)+)(?:(Née)\s+([A-ZÀ-ÖØ-Ý\-']+\s?)+)?\s+(([A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*([ -][A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*)*)).*$"
+
+                ' Création d'un objet Regex à partir de l'expression régulière
+                Dim regex As New Regex(regexPattern, RegexOptions.IgnoreCase)
+                ' Extraction du nom complet à partir de la chaîne d'entrée
+                Dim match As Match = regex.Match(inputString)
+                ' Construction de la chaîne de sortie à partir des groupes capturés par l'expression régulière
+
+                ' Extraction du titre à partir de la chaîne d'entrée
+                Dim titre As String = match.Groups(2).Value
+
+                ' Remplacement du titre complet par son abréviation correspondante
+                Select Case titre
+                    Case "Monsieur"
+                        titre = "Mr"
+                    Case "Madame"
+                        titre = "Mme"
+                    Case "Mademoiselle"
+                        titre = "Mlle"
+                    Case "Enfant"
+                        titre = "Enfant"
+                    Case "Maître"
+                        titre = "Me"
+                    Case "Docteur"
+                        titre = "Dr"
+                End Select
+                Dim outputString As String = " " & titre & " " & match.Groups(3).Value.Trim() & " " & match.Groups(6).Value.TrimEnd()
+                PatientNameBox.Text = outputString
+                PatientNameBox.Select(SendTextBox.Text.Length, 0)
+            Else
+                PatientNameBox.Text = "Nul"
+            End If
+
+        End If
+
+
+        Return True
+    End Function
 End Class
 
 
