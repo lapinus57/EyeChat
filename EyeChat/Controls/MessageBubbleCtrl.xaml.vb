@@ -53,7 +53,8 @@ Public Class MessageBubbleCtrl
     Private Sub CopyMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim message As Message = DirectCast(DataContext, Message)
         If message IsNot Nothing Then
-            Dim textToCopy As String = $"{message.Name} & {message.Sender}: {message.Content}, à {message.Timestamp.ToString("HH:mm")}"
+            Dim textToCopy As String = $"{message.Name} & {message.Sender}: {message.Content}, à {message.Timestamp:HH:mm}"
+            'Dim textToCopy As String = $"{message.Name} & {message.Sender}: {message.Content}, à {message.Timestamp.ToString("HH:mm")}"
             Clipboard.SetText(textToCopy)
         End If
     End Sub

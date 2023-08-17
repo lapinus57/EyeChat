@@ -14,7 +14,7 @@ Public Class BooleanToVisibilityConverter
                 Return Visibility.Hidden
             End If
         End If
-        'Return Visibility.Collapsed
+        Return Visibility.Collapsed
     End Function
 
     Public Function ConvertBack(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.ConvertBack

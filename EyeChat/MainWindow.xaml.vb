@@ -27,6 +27,9 @@ Imports MaterialDesignThemes.Wpf
 Imports GalaSoft.MvvmLight.Command
 Imports MahApps.Metro.SimpleChildWindow
 Imports System.Text.RegularExpressions
+Imports System.Globalization
+Imports MS.Internal
+Imports System.Drawing
 
 Public Class MarvinPhrasesData
     Public Property MarvinPhrases As List(Of String)
@@ -61,7 +64,7 @@ Class MainWindow
     Private Const port As Integer = 50545
     Private Const broadcastAddress As String = "255.255.255.255"
     Private receivingClient As UdpClient
-    Private sendingClient As UdpClient
+    Public Shared sendingClient As UdpClient
     Private receivingThread As Thread
 
     Private Shared ReadOnly SuggestionValues As String() = {"/DEBUG", "/ENDDEBUG", "/LSTCOMPUTER", "/DISPCOMPUTER", "TEST"}
@@ -379,7 +382,8 @@ Class MainWindow
         'SelectUserList("Benoit")
         'SelectUserList("benoit")
 
-        'PatientAdd("Mr", "muller", "benoit", "SK", Nothing, "1er", "Green", "benoit")
+        'PatientAdd("Mr", "muller", "benoit", "SK", "od", "RDC", "Blue", "benoit", Date.Now)
+        'PatientAdd("Mr", "durand", "benoit", "SK", Nothing, "1er", "Green", "benoit", Date.Now)
 
 
         jsonData = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "dataphrases.json"))
@@ -466,7 +470,7 @@ Class MainWindow
 
 
 
-    Public Sub updatemsglist()
+    Public Sub Updatemsglist()
         SelectUser(SelectedUser)
         MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(My.Settings.AppSizeDisplay))
     End Sub
@@ -474,8 +478,8 @@ Class MainWindow
 
 #Region "Gestion de l'ajout, suppression et modification d'un patient"
 
-    Public Sub PatientAdd(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Annotation As String, ByVal Position As String, ByVal Colors As String, ByVal Examinator As String)
-        Dim newPatient As New Patient With {.Title = Title, .LastName = LastName, .FirstName = FirstName, .Exams = Exams, .Annotation = Annotation, .Position = Position, .Hold_Time = Date.Now, .IsTaken = False, .Colors = Colors, .Examinator = Examinator}
+    Public Sub PatientAdd(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Annotation As String, ByVal Position As String, ByVal Colors As String, ByVal Examinator As String, ByVal Hold_Time As String)
+        Dim newPatient As New Patient With {.Title = Title, .LastName = LastName, .FirstName = FirstName, .Exams = Exams, .Annotation = Annotation, .Position = Position, .Hold_Time = Hold_Time, .IsTaken = False, .Colors = Colors, .Examinator = Examinator}
 
         PatientsALL.Add(newPatient)
         SavePatientsToJson(PatientsALL)
@@ -488,10 +492,12 @@ Class MainWindow
     End Sub
 
 
-    Public Sub PatientRemove()
-        Dim patientToRemove As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.FirstName = "benoit")
+    Public Sub PatientRemove(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Comments As String, ByVal Floor As String, ByVal Examinator As String, ByVal Hold_Time As String)
+
+        Dim patientToRemove As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.Title = Title And patient.LastName = LastName And patient.FirstName = FirstName And patient.Exams = Exams And patient.Annotation = Comments And patient.Position = Floor And patient.Examinator = Examinator And patient.Hold_Time = Hold_Time)
         If patientToRemove IsNot Nothing Then
 
+            SendTextBox.Text = patientToRemove.ToString
             ' Supprimer le patient de PatientsALL
             PatientsALL.Remove(patientToRemove)
 
@@ -511,6 +517,44 @@ Class MainWindow
         SavePatientsToJson(PatientsALL)
     End Sub
 
+    Public Sub PatientUpdate(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Comments As String, ByVal Floor As String, ByVal Examinator As String, ByVal OldHold_Time As String, ByVal NewHold_Time As String)
+        Dim oldHoldTimeDateTime As DateTime
+        Dim newHoldTimeDateTime As DateTime
+
+        If DateTime.TryParseExact(OldHold_Time, "yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, oldHoldTimeDateTime) AndAlso
+       DateTime.TryParseExact(NewHold_Time, "yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, newHoldTimeDateTime) Then
+
+            Dim patientToUpdate As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.Title = Title And patient.LastName = LastName And patient.FirstName = FirstName And patient.Exams = Exams And patient.Annotation = Comments And patient.Position = Floor And patient.Examinator = Examinator And patient.Hold_Time = oldHoldTimeDateTime)
+
+            If patientToUpdate IsNot Nothing Then
+                ' Retirez le patient de la liste actuelle
+                PatientsALL.Remove(patientToUpdate)
+
+                ' Si le patient est dans PatientsRDC, le supprimer également
+                If patientToUpdate.Position = "RDC" Then
+                    PatientsRDC.Remove(patientToUpdate)
+                ElseIf patientToUpdate.Position = "1er" Then
+                    Patients1er.Remove(patientToUpdate)
+                End If
+
+                ' Mise à jour des propriétés du patient
+                patientToUpdate.Hold_Time = newHoldTimeDateTime
+                ' Vous pouvez également mettre à jour d'autres propriétés si nécessaire
+
+                ' Ajoutez le patient mis à jour aux listes appropriées
+                PatientsALL.Add(patientToUpdate)
+                If patientToUpdate.Position = "RDC" Then
+                    PatientsRDC.Add(patientToUpdate)
+                ElseIf patientToUpdate.Position = "1er" Then
+                    Patients1er.Add(patientToUpdate)
+                End If
+            End If
+
+            SavePatientsToJson(PatientsALL)
+        End If
+    End Sub
+
+
     Public Sub ModifyPatient(ByVal lastName As String, ByVal updatedPatient As Patient)
         For index As Integer = 0 To PatientsALL.Count - 1
             If PatientsALL(index).LastName = lastName Then
@@ -520,23 +564,28 @@ Class MainWindow
         Next
     End Sub
 
+
+
+
 #End Region
 
 #Region "Gestion UDP et messages"
     Private Sub InitializeSender()
-        sendingClient = New UdpClient(broadcastAddress, port)
-        sendingClient.EnableBroadcast = True
+        sendingClient = New UdpClient(broadcastAddress, port) With {
+            .EnableBroadcast = True
+        }
     End Sub
 
     Private Sub InitializeReceiver()
-        Dim receiveThread As New Thread(AddressOf ReceiveMessages)
-        receiveThread.IsBackground = True
+        Dim receiveThread As New Thread(AddressOf ReceiveMessages) With {
+            .IsBackground = True
+        }
         receiveThread.Start()
     End Sub
 
     Private Sub ReceiveMessages()
         receivingClient = New UdpClient(port)
-        Dim endPoint As IPEndPoint = New IPEndPoint(IPAddress.Any, port)
+        Dim endPoint As New IPEndPoint(IPAddress.Any, port)
 
         While True
             Dim receiveBytes As Byte() = receivingClient.Receive(endPoint)
@@ -573,8 +622,39 @@ Class MainWindow
 
 
             Case "PTN01"
-                ' Code de message pour ajouter un patient au RDC
-                ' "PTN01|Titre|Nom|Prénom|Examen|Commentaire|Position|Examinateur"
+                ' Code de message pour ajouter un patient 
+                Try
+                    ' Extraire le contenu du message à partir de la position 5 pour ignorer le code
+                    Dim messageContent As String = receivedMessage.Substring(5)
+
+                    ' Diviser le contenu du message en parties en utilisant le caractère '|'
+                    Dim parts As String() = messageContent.Split("|"c)
+
+                    ' Extraire les informations du patient à partir des parties
+                    Dim Title As String = parts(0)
+                    Dim LastName As String = parts(1)
+                    Dim FirstName As String = parts(2)
+                    Dim Exam As String = parts(3)
+                    Dim Comments As String = parts(4)
+                    Dim Floor As String = parts(5)
+                    Dim Examinator As String = parts(6)
+                    Dim Hold_Time As String = parts(7)
+
+                    ' Appeler la fonction PatientAdd pour ajouter le patient avec les informations extraites
+                    PatientAdd(Title, LastName, FirstName, Exam, Comments, Floor, "Green", Examinator, Hold_Time)
+                Catch ex As Exception
+                    ' Gérer toute exception qui pourrait survenir lors du traitement du message
+                End Try
+
+
+            Case "PTN02"
+                ' Code de message pour la mise à jour d'un patient 
+                ' "PTN02|Nom|Prénom|Autres informations"
+
+
+            Case "PTN03"
+                ' Code de message pour supprimer un patient               
+                ' "PTN03Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|Hold_Time"
                 Try
                     Dim messageContent As String = receivedMessage.Substring(5)
                     Dim parts As String() = messageContent.Split("|"c)
@@ -585,20 +665,36 @@ Class MainWindow
                     Dim Comments As String = parts(4)
                     Dim Floor As String = parts(5)
                     Dim Examinator As String = parts(6)
+                    Dim Hold_Time As String = parts(7)
 
-                    PatientAdd(Title, LastName, FirstName, Exam, Comments, Floor, "Green", Examinator)
+                    PatientRemove(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time)
                 Catch ex As Exception
 
                 End Try
-                'PatientAdd("Mr", "muller", "benoit", "FO", Nothing, "RDC", "Green", "benoit")
 
-            Case "PTN02"
-                ' Code de message pour la mise à jour d'un patient au RDC
-                ' "PTN02|Nom|Prénom|Autres informations"
+            Case "PTN04"
+                ' Code de message pour supprimer un patient               
+                ' "PTN04Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|OldHold_Time|NewHold_Time"
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+                    Dim Title As String = parts(0)
+                    Dim LastName As String = parts(1)
+                    Dim FirstName As String = parts(2)
+                    Dim Exam As String = parts(3)
+                    Dim Comments As String = parts(4)
+                    Dim Floor As String = parts(5)
+                    Dim Examinator As String = parts(6)
+                    Dim OldHold_Time As String = parts(7)
+                    Dim NewHold_Time As String = parts(8)
 
-            Case "PTN03"
-                ' Code de message pour supprimer un patient au RDC
-                ' "PTN03|Nom|Prénom"
+                    PatientUpdate(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, OldHold_Time, NewHold_Time)
+
+
+                    AddMessage("Benoit", "Benoit", messageContent, False, Nothing)
+                Catch ex As Exception
+
+                End Try
 
 
             Case "SYS01"
@@ -647,7 +743,7 @@ Class MainWindow
             Case "MSG01"
 
                 'Ajouter un message
-                '"MSG01|{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+                'Exemple du message envoyé : "MSG01|{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
                 Try
 
                     Dim messageContent As String = receivedMessage.Substring(5)
@@ -706,24 +802,35 @@ Class MainWindow
         End Select
     End Sub
 
-    'Fonction permettant l'envoie d'un code suivit d'un message
+    ' Fonction permettant d'envoyer un code suivi d'un contenu spécifié
     Private Sub SendMessageWithCode(code As String, content As String)
+        ' Vérifier si le code et le contenu ne sont pas nuls
         If code IsNot Nothing And content IsNot Nothing Then
+            ' Concaténer le code et le contenu pour former le message complet
             Dim message As String = code + content
+
+            ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
             Dim messageBytes As Byte() = Encoding.UTF8.GetBytes(message)
+
+            ' Envoyer les octets du message à travers le client d'envoi
             sendingClient.Send(messageBytes, messageBytes.Length)
         End If
-
     End Sub
 
-    ' Fonction premettant l'envoie de message
-    Public Sub Sendmessage(message As String)
+    ' Fonction permettant d'envoyer un message complet
+    Public Shared Sub SendMessage(message As String)
+        ' Vérifier si le message n'est pas vide
         If message <> "" Then
+            ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
             Dim DataMessage() As Byte = Encoding.UTF8.GetBytes(message)
+
+            ' Vérifier si le tableau d'octets du message n'est pas nul
             If DataMessage IsNot Nothing Then
                 Try
+                    ' Envoyer les octets du message à travers le client d'envoi
                     sendingClient.Send(DataMessage, DataMessage.Length)
                 Catch ex As Exception
+                    ' Gérer toute exception qui pourrait survenir lors de l'envoi
                 End Try
             End If
         End If
@@ -731,28 +838,44 @@ Class MainWindow
 
 #End Region
 
-    Private _currentInput As String = ""
-    Private _currentSuggestion As String = ""
-    Private _currentText As String = ""
-    Private _selectionStart As Integer
-    Private _selectionLength As Integer
+#Region "Gestion Suggestion des commandes Sendbox Et envoie message"
+
+    ' Stockage des valeurs actuelles pour gérer les suggestions et la mise en forme du texte
+    Private _currentInput As String = ""            ' Stocke le texte actuel dans la zone de saisie
+    Private _currentSuggestion As String = ""       ' Stocke la suggestion actuelle basée sur le texte saisi
+    Private _currentText As String = ""             ' Stocke le texte complet à afficher (suggestion + texte saisi)
+    Private _selectionStart As Integer              ' Stocke la position de début de la sélection
+    Private _selectionLength As Integer             ' Stocke la longueur de la sélection
 
     Private Sub SuggestionBoxOnTextChanged(sender As Object, e As TextChangedEventArgs) Handles SendTextBox.TextChanged
-
+        ' Récupérer le texte actuellement saisi dans la zone de saisie
         Dim input = SendTextBox.Text
 
+        ' Vérifier si la longueur du texte saisi a augmenté et si le texte est différent de la suggestion actuelle
         If input.Length > _currentInput.Length AndAlso input <> _currentSuggestion Then
+            ' Recherche de la première suggestion qui commence par le texte saisi
             _currentSuggestion = SuggestionValues.FirstOrDefault(Function(x) x.StartsWith(input))
 
+            ' Vérifier si une suggestion a été trouvée
             If _currentSuggestion IsNot Nothing Then
+                ' Mettre à jour le texte complet à afficher avec la suggestion trouvée
                 _currentText = _currentSuggestion
+
+                ' Mémoriser la position de début de la sélection dans le texte
                 _selectionStart = input.Length
+
+                ' Calculer la longueur de la sélection en se basant sur la suggestion trouvée
                 _selectionLength = _currentSuggestion.Length - input.Length
+
+                ' Mettre à jour le texte de la zone de saisie avec le texte complet (suggestion + texte saisi)
                 SendTextBox.Text = _currentText
+
+                ' Sélectionner la partie du texte correspondant à la suggestion
                 SendTextBox.[Select](_selectionStart, _selectionLength)
             End If
         End If
 
+        ' Mettre à jour la valeur de _currentInput avec le texte actuel de la zone de saisie
         _currentInput = input
     End Sub
 
@@ -871,6 +994,7 @@ Class MainWindow
         End If
     End Sub
 
+#End Region
 
     Private Sub ListUseres_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles ListUseres.SelectionChanged
         Dim selectedUser As User = TryCast(ListUseres.SelectedItem, User)
@@ -883,15 +1007,16 @@ Class MainWindow
     End Sub
 
 
-    ' Fonction qui teste la présence d'un user et retourne une boolean
+
     Function IsNameInList(users As ObservableCollection(Of User), nameToSearch As String) As Boolean
+        ' Fonction qui teste la présence d'un user et retourne une boolean
         Return users.Any(Function(u) u.Name = nameToSearch)
     End Function
 
 
 
     Private Function ConnectionButon_Click(sender As Object, e As RoutedEventArgs) As Task
-
+        'PatientRemove()
 
         'If ConnectionButon.Content = "Connection" Then
         'ShowLoginDialogPreview()
@@ -906,6 +1031,7 @@ Class MainWindow
         'My.Settings.Save()
 
         'End If
+
     End Function
 
 
@@ -932,12 +1058,17 @@ Class MainWindow
     End Sub
 
 
-
-
     Private Sub SelectUserByName(userName As String)
+        ' Recherche de l'utilisateur par son nom dans la collection Users
         Dim userToSelect As User = Users.FirstOrDefault(Function(u) u.Name = userName)
+
+        ' Vérification si un utilisateur avec le nom spécifié a été trouvé
         If userToSelect IsNot Nothing Then
+            ' Sélection de l'utilisateur trouvé dans la liste des utilisateurs
             ListUseres.SelectedItem = userToSelect
+
+            ' Appel d'une fonction/méthode pour gérer la sélection de l'utilisateur
+            ' en passant le nom de l'utilisateur trouvé comme argument
             SelectUser(userToSelect.Name)
         End If
     End Sub
@@ -963,32 +1094,78 @@ Class MainWindow
     End Sub
 
     Private Sub ValidPatientBox_OnClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        ' Fermer la boîte de dialogue personnalisée
         Me.CustomDialogBox.Close()
-        Dim Text As String = "PTN01Mr|MULLER|Benoit|"
 
-        Dim selectedExamOption As ExamOption = DirectCast(PatientExamSelect.SelectedItem, ExamOption)
-        If selectedExamOption IsNot Nothing Then
-            Text += selectedExamOption.Name + "|" ' Utilisez le nom de l'option        
+        ' Initialisation des variables pour stocker les informations du patient
+        Dim patientTitre As String = ""
+        Dim patientNom As String = ""
+        Dim patientPrenom As String = ""
+
+        ' Récupérer la chaîne d'entrée à partir de la zone de texte
+        Dim inputString As String = PatientNameBox.Text
+        ' Diviser la chaîne en parties en utilisant l'espace comme délimiteur
+        Dim inputParts As String() = inputString.Split(" "c)
+
+        If inputParts.Length >= 3 Then
+            ' Extraire le titre du patient et le mettre en majuscules
+            patientTitre = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(inputParts(0))
+
+            ' Trouver la dernière partie de la chaîne (normalement le nom de famille)
+            Dim lastIndex As Integer = inputParts.Length - 1
+            ' Vérifier si la dernière partie contient des caractères spéciaux
+            If inputParts(lastIndex).Contains("-") OrElse inputParts(lastIndex).Contains(" ") OrElse inputParts(lastIndex).Contains("'") Then
+                ' Si oui, diviser la dernière partie en parties composées
+                Dim compoundLastNameParts As String() = inputParts(lastIndex).Split("-"c, " "c, "'"c)
+                ' Mettre en majuscules chaque partie
+                For i As Integer = 0 To compoundLastNameParts.Length - 1
+                    compoundLastNameParts(i) = compoundLastNameParts(i).ToUpper()
+                Next
+                ' Joindre les parties composées avec un trait d'union
+                patientNom = String.Join("-", compoundLastNameParts)
+            Else
+                ' Si la dernière partie ne contient pas de caractères spéciaux, mettre en majuscules
+                patientNom = inputParts(lastIndex).ToUpper()
+            End If
+
+            ' Extraire le prénom du patient et le mettre en majuscules
+            patientPrenom = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(inputParts(1))
+        ElseIf inputParts.Length = 2 Then
+            ' Si seulement un nom et un prénom
+            patientNom = inputParts(0).ToUpper()
+            patientPrenom = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(inputParts(1))
+        Else
+            ' Si le format d'entrée n'est pas correct, afficher un message d'erreur et quitter la fonction
+            MessageBox.Show("Le format d'entrée doit être 'Titre Nom Prénom' ou 'Nom Prénom'.")
+            Return
         End If
 
+        ' Créer la chaîne de texte du patient au format souhaité
+        Dim Text As String = "PTN01" & patientTitre & "|" & patientNom & "|" & patientPrenom & "|"
+
+        ' Récupérer l'option d'examen sélectionnée
+        Dim selectedExamOption As ExamOption = DirectCast(PatientExamSelect.SelectedItem, ExamOption)
+        If selectedExamOption IsNot Nothing Then
+            Text += selectedExamOption.Name + "|" ' Utiliser le nom de l'option        
+        End If
+
+        ' Récupérer l'œil du patient et le commentaire
         Dim selectedPatientEye As ComboBoxItem = CType(PatientEyeSelect.SelectedItem, ComboBoxItem)
         If selectedPatientEye IsNot Nothing Then
             Text += selectedPatientEye.Content.ToString() + " " + PatientCommentBox.Text + "|"
         End If
 
+        ' Récupérer l'étage du patient
         Dim selectedPatientFloor As ComboBoxItem = CType(PatientFloorSelect.SelectedItem, ComboBoxItem)
         If selectedPatientFloor IsNot Nothing Then
             Text += selectedPatientFloor.Content.ToString + "|"
         End If
 
+        ' Ajouter le nom de l'utilisateur et l'horodatage actuel
+        Text += My.Settings.UserName + "|" + Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
 
-
-        ' "PTN01|Titre|Nom|Prénom|Examen|Commentaire|Position|Examinateur"
-        Text += My.Settings.UserName
-
+        ' Appeler la fonction Sendmessage avec la chaîne de texte du patient
         Sendmessage(Text)
-
-
     End Sub
 
 
@@ -997,15 +1174,12 @@ Class MainWindow
         GetWindowText(hwnd, windowText, windowText.Capacity)
         Dim text As String = windowText.ToString().Trim()
         If text.Length > 0 Then
-            If text.StartsWith("REFRACTION") OrElse text.Contains("LENTILLES") OrElse text.Contains("PATHOLOGIES") OrElse text.Contains("ORTHOPTIE") Then
-                ''patientstring = text
-                ''patientstring = Microsoft.VisualBasic.Right(patientstring, (patientstring.Length - patientstring.IndexOf(" de") - 3))
-                ''patientstring = Microsoft.VisualBasic.Left(patientstring, patientstring.Length - patientstring.IndexOf(" , ", 0))
+
+            If text.StartsWith("REFRACTION") OrElse text.Contains("LENTILLES") OrElse text.Contains("PATHOLOGIES") OrElse text.Contains("ORTHOPTIE") OrElse text.Contains("TRAITEMENT") Then
 
                 Dim inputString As String = text
                 ' Expression régulière pour extraire le nom complet de la chaîne d'entrée
-                'Dim regexPattern As String = "(REFRACTION de|LENTILLES de|PATHOLOGIES de|ORTHOPTIE de)\s+(Monsieur|Madame|Mademoiselle|Enfant|Maître|Docteur)\s+((?:[A-Z\-']+\s?)+)(?:(Née)\s+([A-Z\-']+\s?)+)?\s+(([A-ZÀ-ÖØ-Ý][a-zà-öø-ý'-]*([ -][A-ZÀ-ÖØ-Ý][a-zà-öø-ý'-]*)*)).*$"
-                Dim regexPattern As String = "(REFRACTION de|LENTILLES de|PATHOLOGIES de|ORTHOPTIE de)\s+(Monsieur|Madame|Mademoiselle|Enfant|Maître|Docteur)\s+((?:[A-ZÀ-ÖØ-Ý\-']+\s?)+)(?:(Née)\s+([A-ZÀ-ÖØ-Ý\-']+\s?)+)?\s+(([A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*([ -][A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*)*)).*$"
+                Dim regexPattern As String = "(REFRACTION de|LENTILLES de|PATHOLOGIES de|ORTHOPTIE de|TRAITEMENT de)\s+(Monsieur|Madame|Mademoiselle|Enfant|Maître|Docteur)\s+((?:[A-ZÀ-ÖØ-Ý\-']+\s?)+)(?:(Née)\s+([A-ZÀ-ÖØ-Ý\-']+\s?)+)?\s+(([A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*([ -][A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*)*)).*$"
 
                 ' Création d'un objet Regex à partir de l'expression régulière
                 Dim regex As New Regex(regexPattern, RegexOptions.IgnoreCase)
@@ -1031,11 +1205,10 @@ Class MainWindow
                     Case "Docteur"
                         titre = "Dr"
                 End Select
-                Dim outputString As String = " " & titre & " " & match.Groups(3).Value.Trim() & " " & match.Groups(6).Value.TrimEnd()
+                Dim outputString As String = titre & " " & match.Groups(3).Value.Trim() & " " & match.Groups(6).Value.TrimEnd()
                 PatientNameBox.Text = outputString
                 PatientNameBox.Select(SendTextBox.Text.Length, 0)
-            Else
-                PatientNameBox.Text = "Nul"
+
             End If
 
         End If

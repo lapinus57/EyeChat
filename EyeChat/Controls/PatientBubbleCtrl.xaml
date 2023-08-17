@@ -123,16 +123,16 @@
                         <TextBlock>
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
-                                <Setter Property="Text" Value="Prendre " />
-                                    <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Text" Value="Prendre : " />
+                                    
                                     <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsTaken}" Value="True">
-                                        <Setter Property="Text" Value="Annuler " />
-                                        <Setter Property="FontSize" Value="12"/>
+                                            <Setter Property="Text" Value="Annuler : " />
                                         </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBlock.Style>
+                           
                     </TextBlock>
                         <TextBlock >                       
                             <Run Text="{Binding Title}" />                          
@@ -152,14 +152,19 @@
                         <TextBlock Text="Effacer "/>
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem  Click="MenuItem_UpClick">
+                <MenuItem  Click="MenuItem_DelteClick">
                     <MenuItem.Header>
-                        <TextBlock Text="Monter "/>
+                        <TextBlock Text="Mettre en haut"/>
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem  >
+                <MenuItem  Click="MenuItem_UpClick">
                     <MenuItem.Header>
-                        <TextBlock Text="Descendre"/>
+                        <TextBlock Text="Monter d'une case"/>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Click="MenuItem_downClick" >
+                    <MenuItem.Header>
+                        <TextBlock Text="Descendre d'une case"/>
                     </MenuItem.Header>
                 </MenuItem>
             </MenuItem>

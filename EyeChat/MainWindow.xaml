@@ -16,8 +16,8 @@
         ShowIconOnTitleBar="True"
         ShowCloseButton="False"
         xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro" 
-        xmlns:simpleChildWindow="http://metro.mahapps.com/winfx/xaml/simplechildwindow"
-        Dialog:DialogParticipation.Register="{Binding}">
+        xmlns:simpleChildWindow="http://metro.mahapps.com/winfx/xaml/simplechildwindow" xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+                 Dialog:DialogParticipation.Register="{Binding}">
 
     <Window.Resources>
         
@@ -111,7 +111,7 @@
                 <StackPanel Grid.Column="1" Grid.Row="1">
                     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                         <Label Margin="10,5">Nom du patient :</Label>
-                        <TextBox x:Name="PatientNameBox" Margin="10,5" Width="400" mah:TextBoxHelper.Watermark="Aucun patient trouvé"/>
+                        <TextBox x:Name="PatientNameBox"  AcceptsReturn="True" Margin="10,5" Width="400" mah:TextBoxHelper.Watermark="Aucun patient trouvé"/>
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                         <Label Margin="12,5">Examen :</Label>
@@ -204,32 +204,63 @@
                              FontSize="22"
                              x:Name="PatientTabCtrl">
         <TabItem Header="RDC"  >
-                <ListBox x:Name="PatientListRDC" ItemsSource="{Binding PatientsRDC}" ScrollViewer.VerticalScrollBarVisibility="Visible">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <local:PatientBubbleCtrl />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    <ListBox x:Name="PatientListRDC" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                        <ListBox.Resources>
+                            <CollectionViewSource x:Key="SortedPatientsRDC" Source="{Binding PatientsRDC}">
+                                <CollectionViewSource.SortDescriptions>
+                                    <scm:SortDescription PropertyName="Hold_Time" Direction="Ascending"/>
+                                </CollectionViewSource.SortDescriptions>
+                            </CollectionViewSource>
+                        </ListBox.Resources>
+                        <ListBox.ItemsSource>
+                            <Binding Source="{StaticResource SortedPatientsRDC}"/>
+                        </ListBox.ItemsSource>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <local:PatientBubbleCtrl />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    
         </TabItem>
         <TabItem Header="1er" >
-                    <ListBox x:Name="PatientList1er" ItemsSource="{Binding Patients1er}" ScrollViewer.VerticalScrollBarVisibility="Visible">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <local:PatientBubbleCtrl />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </TabItem>
+                    <ListBox x:Name="PatientList1er" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                        <ListBox.Resources>
+                            <CollectionViewSource x:Key="SortedPatients1er" Source="{Binding Patients1er}">
+                                <CollectionViewSource.SortDescriptions>
+                                    <scm:SortDescription PropertyName="Hold_Time" Direction="Ascending"/>
+                                </CollectionViewSource.SortDescriptions>
+                            </CollectionViewSource>
+                        </ListBox.Resources>
+                        <ListBox.ItemsSource>
+                            <Binding Source="{StaticResource SortedPatients1er}"/>
+                        </ListBox.ItemsSource>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <local:PatientBubbleCtrl />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
         <TabItem Header="Tous" >
-                    <ListBox x:Name="PatientListAmm" ItemsSource="{Binding PatientsALL}" ScrollViewer.VerticalScrollBarVisibility="Visible">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <local:PatientBubbleCtrl />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </TabItem>
+                    <ListBox x:Name="PatientListAll" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                        <ListBox.Resources>
+                            <CollectionViewSource x:Key="SortedPatientsALL" Source="{Binding PatientsALL}">
+                                <CollectionViewSource.SortDescriptions>
+                                    <scm:SortDescription PropertyName="Hold_Time" Direction="Ascending"/>
+                                </CollectionViewSource.SortDescriptions>
+                            </CollectionViewSource>
+                        </ListBox.Resources>
+                        <ListBox.ItemsSource>
+                            <Binding Source="{StaticResource SortedPatientsALL}"/>
+                        </ListBox.ItemsSource>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <local:PatientBubbleCtrl />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
         </mah:MetroTabControl>
     </Grid>
     </Grid>
