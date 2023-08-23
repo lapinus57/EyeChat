@@ -30,6 +30,9 @@ Imports System.Text.RegularExpressions
 Imports System.Globalization
 Imports MS.Internal
 Imports System.Drawing
+Imports NuGet.Versioning
+Imports System.Reflection
+Imports System.IO.Compression
 
 Public Class MarvinPhrasesData
     Public Property MarvinPhrases As List(Of String)
@@ -71,6 +74,11 @@ Class MainWindow
 
     Dim jsonData As String
     Dim phrasesData As MarvinPhrasesData
+
+    Private Const RepoOwner As String = "lapinus57"
+    Private Const RepoName As String = "EyeChat"
+    Private Const Version As String = "0.0.1" ' Remplacez par votre version actuelle
+
 
 #Region "Gestion Capture nom des fêntre"
     <DllImport("user32.dll")>
@@ -309,6 +317,7 @@ Class MainWindow
         End If
 
 
+
         'Dim Accounts As New List(Of Account)()
         'Accounts.Add(New Account() With {.Name = "Alicia", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
         ' Accounts.Add(New Account() With {.Name = "Alix", .Password = "123", .ParamAvatar = "benoit.png", .ParamColor = "Green", .ParamSize = "normal", .ParamTheme = "Sombre", .ParamRoom = "Nom", .ParamOptinalRoom = ""})
@@ -328,6 +337,8 @@ Class MainWindow
 
 
     Private Sub MainWindow_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
+
+        'CheckForUpdates("beta")
 
         Me.ShowCloseButton = True
 
@@ -382,7 +393,7 @@ Class MainWindow
         'SelectUserList("Benoit")
         'SelectUserList("benoit")
 
-        'PatientAdd("Mr", "muller", "benoit", "SK", "od", "RDC", "Blue", "benoit", Date.Now)
+        PatientAdd("Mr", "muller", "benoit", "SK", "od", "RDC", "Blue", "benoit", Date.Now)
         'PatientAdd("Mr", "durand", "benoit", "SK", Nothing, "1er", "Green", "benoit", Date.Now)
 
 
@@ -549,9 +560,91 @@ Class MainWindow
                     Patients1er.Add(patientToUpdate)
                 End If
             End If
+            SavePatientsToJson(PatientsALL)
 
+        End If
+    End Sub
+
+    Public Sub PatientCheckPass(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Comments As String, ByVal Floor As String, ByVal Examinator As String, ByVal Hold_Time As String, ByVal OperatorName As String)
+        Dim HoldTimeDateTime As DateTime
+
+        DateTime.TryParseExact(Hold_Time, "yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, HoldTimeDateTime)
+
+        Dim patientToUpdate As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.Title = Title And patient.LastName = LastName And patient.FirstName = FirstName And patient.Exams = Exams And patient.Annotation = Comments And patient.Position = Floor And patient.Examinator = Examinator And patient.Hold_Time = HoldTimeDateTime)
+
+        If patientToUpdate IsNot Nothing Then
+            ' Retirez le patient de la liste actuelle
+            PatientsALL.Remove(patientToUpdate)
+
+            ' Si le patient est dans PatientsRDC, le supprimer également
+            If patientToUpdate.Position = "RDC" Then
+                PatientsRDC.Remove(patientToUpdate)
+                If patientToUpdate.Position = "1er" Then
+                    Patients1er.Remove(patientToUpdate)
+                End If
+
+                ' Mise à jour des propriétés du patient
+                patientToUpdate.IsTaken = True
+                patientToUpdate.OperatorName = OperatorName
+                patientToUpdate.Colors = "gray"
+                patientToUpdate.Pick_up_Time = DateTime.Now
+
+                PatientsALL.Add(patientToUpdate)
+
+                ' Vous pouvez également mettre à jour d'autres propriétés si nécessaire
+
+                ' Ajoutez le patient mis à jour aux listes appropriées
+
+                If patientToUpdate.Position = "RDC" Then
+                    PatientsRDC.Add(patientToUpdate)
+                ElseIf patientToUpdate.Position = "1er" Then
+                    Patients1er.Add(patientToUpdate)
+                End If
+            End If
             SavePatientsToJson(PatientsALL)
         End If
+
+    End Sub
+
+    Public Sub PatientUndoPass(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Comments As String, ByVal Floor As String, ByVal Examinator As String, ByVal Hold_Time As String, ByVal OperatorName As String)
+        Dim HoldTimeDateTime As DateTime
+
+        DateTime.TryParseExact(Hold_Time, "yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, HoldTimeDateTime)
+
+        Dim patientToUpdate As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.Title = Title And patient.LastName = LastName And patient.FirstName = FirstName And patient.Exams = Exams And patient.Annotation = Comments And patient.Position = Floor And patient.Examinator = Examinator And patient.Hold_Time = HoldTimeDateTime)
+
+        If patientToUpdate IsNot Nothing Then
+            ' Retirez le patient de la liste actuelle
+            PatientsALL.Remove(patientToUpdate)
+
+            ' Si le patient est dans PatientsRDC, le supprimer également
+            If patientToUpdate.Position = "RDC" Then
+                PatientsRDC.Remove(patientToUpdate)
+            ElseIf patientToUpdate.Position = "1er" Then
+                Patients1er.Remove(patientToUpdate)
+            End If
+
+            ' Mise à jour des propriétés du patient
+            patientToUpdate.IsTaken = False
+            patientToUpdate.OperatorName = Nothing
+            patientToUpdate.Colors = "green"
+            'patientToUpdate.Pick_up_Time = ""
+
+            ' Vous pouvez également mettre à jour d'autres propriétés si nécessaire
+
+            ' Ajoutez le patient mis à jour aux listes appropriées
+
+            If patientToUpdate.Position = "RDC" Then
+                PatientsRDC.Add(patientToUpdate)
+                PatientsALL.Add(patientToUpdate)
+            ElseIf patientToUpdate.Position = "1er" Then
+                Patients1er.Add(patientToUpdate)
+                PatientsALL.Add(patientToUpdate)
+            End If
+            SavePatientsToJson(PatientsALL)
+        End If
+
+
     End Sub
 
 
@@ -603,13 +696,13 @@ Class MainWindow
 
         Select Case messageCode
             Case "USR01"
-                ' Code de message de connexion 
+                ' Code ajout d'un User
                 ' "USR01|UserName|IdentifiantPC|Color"
             Case "USR02"
-                ' Code message de déconnection
+                ' Code modification d'un user
                 ' "USR01|UserName|IdentifiantPC"
             Case "USR03"
-                ' Code message pour le changement de nom
+                ' Code suppresion d'un user
                 '"USR01|UserName Ancien|UserName new"
             Case "USR04"
                  ' Code message pour le changement de coleur
@@ -648,8 +741,25 @@ Class MainWindow
 
 
             Case "PTN02"
-                ' Code de message pour la mise à jour d'un patient 
-                ' "PTN02|Nom|Prénom|Autres informations"
+                ' Code de message pour la mise à jour d'un patient                        
+                ' "PTN02Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|OperatorName"
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+                    Dim Title As String = parts(0)
+                    Dim LastName As String = parts(1)
+                    Dim FirstName As String = parts(2)
+                    Dim Exam As String = parts(3)
+                    Dim Comments As String = parts(4)
+                    Dim Floor As String = parts(5)
+                    Dim Examinator As String = parts(6)
+                    Dim Hold_Time As String = parts(7)
+                    Dim OperatorName As String = parts(7)
+
+                    PatientCheckPass(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time, OperatorName)
+                Catch ex As Exception
+
+                End Try
 
 
             Case "PTN03"
@@ -690,8 +800,27 @@ Class MainWindow
 
                     PatientUpdate(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, OldHold_Time, NewHold_Time)
 
+                Catch ex As Exception
 
-                    AddMessage("Benoit", "Benoit", messageContent, False, Nothing)
+                End Try
+
+            Case "PTN05"
+                ' Code de message pour la mise à jour d'un patient                        
+                ' "PTN05Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|OperatorName"
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+                    Dim Title As String = parts(0)
+                    Dim LastName As String = parts(1)
+                    Dim FirstName As String = parts(2)
+                    Dim Exam As String = parts(3)
+                    Dim Comments As String = parts(4)
+                    Dim Floor As String = parts(5)
+                    Dim Examinator As String = parts(6)
+                    Dim Hold_Time As String = parts(7)
+                    Dim OperatorName As String = parts(7)
+
+                    PatientUndoPass(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time, OperatorName)
                 Catch ex As Exception
 
                 End Try
@@ -782,6 +911,11 @@ Class MainWindow
 
 
             Case "SLN01"
+                'création d'un salon
+            Case "SLN02"
+                'invatition a un salon
+            Case "SLN03"
+                'suppresion d'un salon 
 
 
             Case "DBG01"
@@ -835,6 +969,8 @@ Class MainWindow
             End If
         End If
     End Sub
+
+
 
 #End Region
 
@@ -907,7 +1043,7 @@ Class MainWindow
                         End Try
 
                     Case "/LSTCOMPUTER"
-                        Sendmessage("DBG01")
+                        SendMessage("DBG01")
 
                     Case "/DISPCOMPUTER"
                         Dim computerString As New StringBuilder()
@@ -974,7 +1110,7 @@ Class MainWindow
                                 End If
 
                                 text = "MSG01" & My.Settings.UserName & "|" & selectedUserName & "|" & SendTextBox.Text & "|benoit.png"
-                                Sendmessage(text)
+                                SendMessage(text)
                                 MessageList.ScrollToEnd()
                             End If
 
@@ -1088,6 +1224,8 @@ Class MainWindow
         End Set
     End Property
 
+#Region "Gestion boite de dialogue d'ajout d'un patint"
+
 
     Private Sub ClosePatientBox_OnClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
         Me.CustomDialogBox.Close()
@@ -1165,7 +1303,7 @@ Class MainWindow
         Text += My.Settings.UserName + "|" + Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
 
         ' Appeler la fonction Sendmessage avec la chaîne de texte du patient
-        Sendmessage(Text)
+        SendMessage(Text)
     End Sub
 
 
@@ -1216,6 +1354,172 @@ Class MainWindow
 
         Return True
     End Function
+#End Region
+
+
+#Region "Gestion de la mise a jour"
+
+
+
+    Public Async Sub CheckForUpdates(channel As String)
+        ' Obtient la dernière version du serveur dans le canal spécifié
+        Dim serverVersion As String = Await GetServerVersion(channel)
+
+        If Not String.IsNullOrEmpty(serverVersion) AndAlso CompareVersions(serverVersion, Version) > 0 Then
+
+            ' Récupère la version actuelle et la version de mise à jour
+            Dim currentAppVersion As String = Version
+            Dim updateAppVersion As String = serverVersion
+
+            ' Configure les boutons de la boîte de dialogue
+            Dim dialogSettings As New MetroDialogSettings With {
+            .AffirmativeButtonText = "Mettre à jour",
+            .NegativeButtonText = "Annuler"
+        }
+
+            ' Construit le message de la boîte de dialogue avec les versions
+            Dim message As String = $"Votre version actuelle : {currentAppVersion}{Environment.NewLine}" &
+                                $"Version disponible : {updateAppVersion}{Environment.NewLine}" &
+                                $"Une nouvelle mise à jour est disponible dans le canal {channel}. Voulez-vous mettre à jour maintenant?"
+
+            ' Affiche la boîte de dialogue et attend la réponse de l'utilisateur
+            Dim result As MessageDialogResult = Await ShowMessageAsync("Mise à jour disponible", message, MessageDialogStyle.AffirmativeAndNegative, dialogSettings)
+
+            If result = MessageDialogResult.Affirmative Then
+                ' Si l'utilisateur accepte, lance le téléchargement et l'installation de la mise à jour
+                Await DownloadAndInstallUpdate(channel)
+            End If
+        Else
+            ' Affiche un message si aucune mise à jour n'est disponible
+            Await ShowMessageAsync("Pas de mise à jour", "Vous utilisez la dernière version de l'application.")
+        End If
+    End Sub
+
+
+    ' Cette fonction récupère la version la plus récente du serveur dans le canal spécifié.
+    ' Elle effectue une requête HTTP pour obtenir les informations de version à partir du fichier JSON.
+    ' Paramètre channel : Le canal (par exemple "beta" ou "final") dans lequel chercher la version.
+    ' Renvoie la version la plus récente sous forme de chaîne, ou Nothing en cas d'erreur.
+    Private Async Function GetServerVersion(channel As String) As Task(Of String)
+        Try
+            ' Construit l'URL du fichier JSON de version sur GitHub en fonction du canal
+            Dim apiUrl As String = $"https://raw.githubusercontent.com/{RepoOwner}/{RepoName}/master/releases/{channel}/version.json"
+            Dim webClient As New WebClient()
+
+            ' Télécharge les informations de version en tant que chaîne JSON
+            Dim versionJson As String = Await webClient.DownloadStringTaskAsync(apiUrl)
+            Dim versionObject As JObject = JObject.Parse(versionJson)
+
+            ' Extrait et renvoie la version à partir de l'objet JSON
+            Dim serverVersion As String = versionObject("version").ToString()
+            Return serverVersion
+        Catch ex As Exception
+            ' En cas d'erreur, retourne Nothing
+            Return Nothing
+        End Try
+    End Function
+
+    ' Cette fonction compare deux numéros de version dans le format NuGet et renvoie un résultat de comparaison.
+    ' Paramètres version1 et version2 : Les numéros de version à comparer sous forme de chaînes (format NuGet).
+    ' Renvoie 1 si version1 > version2, -1 si version1 < version2, 0 si version1 = version2.
+    Private Function CompareVersions(version1 As String, version2 As String) As Integer
+        ' Parse les numéros de version en objets NuGetVersion
+        Dim nugetVersion1 As NuGetVersion = NuGetVersion.Parse(version1)
+        Dim nugetVersion2 As NuGetVersion = NuGetVersion.Parse(version2)
+
+        ' Compare les versions en utilisant la méthode CompareTo de NuGetVersion
+        Return nugetVersion1.CompareTo(nugetVersion2)
+    End Function
+
+    ' Cette fonction télécharge et installe la mise à jour en utilisant l'URL de mise à jour obtenu.
+    ' Elle télécharge le fichier de mise à jour (ZIP) à partir de l'URL, puis déclenche l'installation.
+    ' Paramètre channel : Le canal (par exemple "beta" ou "final") dans lequel chercher la mise à jour.
+    Private Async Function DownloadAndInstallUpdate(channel As String) As Task
+        Dim webClient As New WebClient()
+        Dim updateUrl As String = Await GetUpdateUrl(channel) ' Obtient l'URL de mise à jour depuis le fichier JSON
+
+        Try
+            ' Affiche une fenêtre de progression pendant le téléchargement
+            Dim progressController = Await ShowProgressAsync("Téléchargement de la mise à jour", "Téléchargement en cours...")
+
+            ' Démarre le téléchargement du fichier de mise à jour en arrière-plan
+            webClient.DownloadFileAsync(New Uri(updateUrl), "update.zip")
+
+            ' Gère l'événement lorsque le téléchargement est terminé
+            AddHandler webClient.DownloadFileCompleted, Async Sub(sender, args)
+                                                            ' Réinitialise la barre de progression
+                                                            progressController.SetIndeterminate()
+                                                            ' Ferme la fenêtre de progression
+                                                            Await progressController.CloseAsync()
+
+                                                            ' Code pour extraire et installer les fichiers de mise à jour
+                                                            Try
+                                                                ' Chemin vers le fichier ZIP de mise à jour téléchargé
+                                                                Dim updateZipPath As String = "update.zip"
+
+                                                                ' Chemin vers le dossier où les fichiers de mise à jour seront extraits
+                                                                Dim updateExtractPath As String = "update_temp"
+
+                                                                ' Chemin vers le fichier exécutable de mise à jour
+                                                                Dim updateExePath As String = Path.Combine(updateExtractPath, "update.exe")
+
+                                                                ' Chemin vers le dossier de l'application actuelle
+                                                                Dim appDirectory As String = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+
+                                                                ' Extrait les fichiers du ZIP vers le dossier temporaire
+                                                                ZipFile.ExtractToDirectory(updateZipPath, updateExtractPath)
+
+                                                                ' Vérifiez si le fichier de mise à jour exécutable existe
+                                                                If File.Exists(updateExePath) Then
+                                                                    ' Ferme l'application actuelle (peut nécessiter des ajustements pour une fermeture propre)
+                                                                    Me.Close()
+
+                                                                    ' Exécute le fichier de mise à jour
+                                                                    Process.Start(updateExePath)
+
+                                                                    ' Supprime le fichier ZIP et le dossier temporaire
+                                                                    File.Delete(updateZipPath)
+                                                                    'Directory.Delete(updateExtractPath, True)
+                                                                Else
+                                                                    ' En cas d'absence du fichier exécutable de mise à jour, affiche un message d'erreur
+                                                                    Await ShowMessageAsync("Erreur de mise à jour", "Le fichier de mise à jour est incomplet ou endommagé.")
+                                                                End If
+                                                            Catch ex As Exception
+                                                                ' Gestion des erreurs lors de l'extraction et de l'installation des fichiers de mise à jour
+                                                                ' Vous pouvez afficher un message d'erreur ici ou effectuer d'autres actions appropriées
+                                                            End Try
+                                                            ' Affiche un message indiquant que la mise à jour a été installée
+                                                            Await ShowMessageAsync("Mise à jour installée", "La mise à jour a été installée avec succès.")
+                                                        End Sub
+        Catch ex As Exception
+            ' Gère les erreurs qui pourraient se produire lors du téléchargement ou de l'installation de la mise à jour
+        End Try
+    End Function
+
+    ' Cette fonction obtient l'URL de téléchargement de la mise à jour depuis le fichier JSON de version.
+    ' Paramètre channel : Le canal (par exemple "beta" ou "final") dans lequel chercher l'URL de mise à jour.
+    ' Renvoie l'URL de téléchargement de la mise à jour, ou Nothing en cas d'erreur.
+    Private Async Function GetUpdateUrl(channel As String) As Task(Of String)
+        Try
+            ' Construit l'URL du fichier JSON de version sur GitHub en fonction du canal
+            Dim apiUrl As String = $"https://raw.githubusercontent.com/{RepoOwner}/{RepoName}/master/releases/{channel}/version.json"
+            Dim webClient As New WebClient()
+
+            ' Télécharge les informations de version en tant que chaîne JSON
+            Dim versionJson As String = Await webClient.DownloadStringTaskAsync(apiUrl)
+            Dim versionObject As JObject = JObject.Parse(versionJson)
+
+            ' Extrait et renvoie l'URL de mise à jour à partir de l'objet JSON
+            Dim updateUrl As String = versionObject("updateUrl").ToString()
+            Return updateUrl
+        Catch ex As Exception
+            ' En cas d'erreur, retourne Nothing
+            Return Nothing
+        End Try
+    End Function
+
+#End Region
+
 End Class
 
 

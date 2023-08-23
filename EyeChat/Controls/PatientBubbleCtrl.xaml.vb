@@ -19,24 +19,50 @@ Public Class PatientBubbleCtrl
             Dim patient As Patient = DirectCast(menuItem.DataContext, Patient)
 
             If patient.IsTaken = False Then
+
+                ' Formatez Hold_Time avec les fractions de secondes
+                Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+
+                ' Construisez la chaîne de texte à envoyer
+                Dim Text As String = "PTN02" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+
+                ' Envoyez le message
+                SendMessage(Text)
+
+                ' Mettez à jour la liste
+                ' UpdateList()
+
                 ' Mettez à jour la propriété Colors de l'objet Patient
-                patient.Colors = "gray"
-                patient.Pick_up_Time = DateTime.Now
-                patient.IsTaken = True
+                'patient.Colors = "gray"
+                ' patient.Pick_up_Time = DateTime.Now
+                'patient.IsTaken = True
 
             Else
+
+                ' Formatez Hold_Time avec les fractions de secondes
+                Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+
+                ' Construisez la chaîne de texte à envoyer
+                Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+
+                ' Envoyez le message
+                SendMessage(Text)
+
+                ' Mettez à jour la liste
+                UpdateList()
+
                 ' Mettez à jour la propriété Colors de l'objet Patient
-                patient.Pick_up_Time = Nothing
-                If patient.Exams = "FO" Then
-                    patient.Colors = "Red"
-                ElseIf patient.Exams = "SK" Then
-                    patient.Colors = "Yellow"
-                End If
-                patient.IsTaken = False
+                'patient.Pick_up_Time = Nothing
+                'If patient.Exams = "FO" Then
+                'patient.Colors = "Red"
+                'ElseIf patient.Exams = "SK" Then
+                'patient.Colors = "Yellow"
+                'End If
+                'patient.IsTaken = False
 
             End If
 
-            UpdateList()
+            'UpdateList()
 
         End If
     End Sub
@@ -51,7 +77,7 @@ Public Class PatientBubbleCtrl
 
 
 
-            UpdateList()
+            'UpdateList()
         End If
     End Sub
 
@@ -73,7 +99,7 @@ Public Class PatientBubbleCtrl
             Sendmessage(Text)
 
             ' Mettez à jour la liste
-            UpdateList()
+            'UpdateList()
         End If
     End Sub
 
@@ -117,7 +143,7 @@ Public Class PatientBubbleCtrl
                 UpdatePatientHoldTime(patient, newHoldTime)
 
                 ' Mettre à jour la liste des patients
-                UpdateList()
+                'UpdateList()
             End If
         End If
     End Sub
@@ -150,7 +176,7 @@ Public Class PatientBubbleCtrl
                 UpdatePatientHoldTime(patient, newHoldTime)
 
                 ' Mettre à jour la liste des patients
-                UpdateList()
+                'UpdateList()
             End If
         End If
     End Sub
@@ -168,7 +194,7 @@ Public Class PatientBubbleCtrl
 
     Private Sub UpdateList()
         ' Triez la liste des patients par Hold_Time avant de la sauvegarder
-        SortPatientsByHoldTime()
+        'SortPatientsByHoldTime()
         ' Enregistrez la liste triée dans le fichier JSON
         SavePatientsToJson(PatientsALL)
 

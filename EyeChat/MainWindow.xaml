@@ -18,6 +18,7 @@
         xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro" 
         xmlns:simpleChildWindow="http://metro.mahapps.com/winfx/xaml/simplechildwindow" xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
                  Dialog:DialogParticipation.Register="{Binding}">
+    
 
     <Window.Resources>
         
@@ -221,8 +222,8 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    
-        </TabItem>
+
+                </TabItem>
         <TabItem Header="1er" >
                     <ListBox x:Name="PatientList1er" ScrollViewer.VerticalScrollBarVisibility="Visible">
                         <ListBox.Resources>
