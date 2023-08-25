@@ -40,7 +40,7 @@ Public Class PatientBubbleCtrl
             Else
 
                 ' Formatez Hold_Time avec les fractions de secondes
-                Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+                Dim formattedHoldTime As String = patient.Hold_Time.ToString("HH:mm:ss.fff")
 
                 ' Construisez la chaîne de texte à envoyer
                 Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
