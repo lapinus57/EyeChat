@@ -152,7 +152,7 @@
                         <TextBlock Text="Effacer "/>
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem  Click="MenuItem_DelteClick">
+                <MenuItem  Click="MenuItem_TopClick">
                     <MenuItem.Header>
                         <TextBlock Text="Mettre en haut"/>
                     </MenuItem.Header>

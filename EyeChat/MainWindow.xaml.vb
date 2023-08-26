@@ -33,6 +33,8 @@ Imports System.Drawing
 Imports NuGet.Versioning
 Imports System.Reflection
 Imports System.IO.Compression
+Imports EyeChat.PatientBubbleCtrl
+Imports System.Linq
 
 Public Class MarvinPhrasesData
     Public Property MarvinPhrases As List(Of String)
@@ -272,6 +274,10 @@ Class MainWindow
 
 #Region "Fênetre Patient Exams"
 
+    Public Shared Sub Test(customDialogBox As ChildWindow)
+        customDialogBox.SetCurrentValue(ChildWindow.IsOpenProperty, True)
+    End Sub
+
 
     Private Sub OpenPatientDialogue(ByVal Eye As String, ByVal ExamName As String, ByVal Floor As String)
         Me.CustomDialogBox.SetCurrentValue(ChildWindow.IsOpenProperty, True)
@@ -393,7 +399,7 @@ Class MainWindow
         'SelectUserList("Benoit")
         'SelectUserList("benoit")
 
-        PatientAdd("Mr", "muller", "benoit", "SK", "od", "RDC", "Blue", "benoit", Date.Now)
+        'PatientAdd("Mr", "muller", "benoit", "SK", "od", "RDC", "Blue", "benoit", Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff"))
         'PatientAdd("Mr", "durand", "benoit", "SK", Nothing, "1er", "Green", "benoit", Date.Now)
 
 
@@ -489,17 +495,27 @@ Class MainWindow
 
 #Region "Gestion de l'ajout, suppression et modification d'un patient"
 
-    Public Sub PatientAdd(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Annotation As String, ByVal Position As String, ByVal Colors As String, ByVal Examinator As String, ByVal Hold_Time As String)
-        Dim newPatient As New Patient With {.Title = Title, .LastName = LastName, .FirstName = FirstName, .Exams = Exams, .Annotation = Annotation, .Position = Position, .Hold_Time = Hold_Time, .IsTaken = False, .Colors = Colors, .Examinator = Examinator}
+    Public Sub PatientAdd(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Annotation As String, ByVal Position As String, ByVal Examinator As String, ByVal Hold_Time As String)
 
-        PatientsALL.Add(newPatient)
+        ' Obtenir la couleur en fonction du type d'examen du patient
+        Dim examType As String = Exams ' Remplacez cela par le type d'examen réel du patient
+        Dim examOption As ExamOption = ExamOptions.FirstOrDefault(Function(ExamOptions) ExamOptions.Name = examType)
+        If examOption IsNot Nothing Then
+            Dim patientColor As String = examOption.Color
+            ' Utilisez la couleur pour mettre à jour la propriété Colors du patient
+            Dim newPatient As New Patient With {.Title = Title, .LastName = LastName, .FirstName = FirstName, .Exams = Exams, .Annotation = Annotation, .Position = Position, .Hold_Time = Hold_Time, .IsTaken = False, .Colors = patientColor, .Examinator = Examinator}
+            PatientsALL.Add(newPatient)
+            SavePatientsToJson(PatientsALL)
+
+            If newPatient.Position = "RDC" Then
+                PatientsRDC.Add(newPatient)
+            ElseIf newPatient.Position = "1er" Then
+                Patients1er.Add(newPatient)
+            End If
+        End If
+        UpdateList()
         SavePatientsToJson(PatientsALL)
 
-        If newPatient.Position = "RDC" Then
-            PatientsRDC.Add(newPatient)
-        ElseIf newPatient.Position = "1er" Then
-            Patients1er.Add(newPatient)
-        End If
     End Sub
 
 
@@ -524,7 +540,7 @@ Class MainWindow
                 Patients1er.Remove(patientToRemove)
             End If
         End If
-
+        UpdateList()
         SavePatientsToJson(PatientsALL)
     End Sub
 
@@ -560,7 +576,12 @@ Class MainWindow
                     Patients1er.Add(patientToUpdate)
                 End If
             End If
+
             SavePatientsToJson(PatientsALL)
+            ' Effacez les listes existantes pour préparer la mise à jour
+            UpdateList()
+            SavePatientsToJson(PatientsALL)
+
 
         End If
     End Sub
@@ -587,7 +608,8 @@ Class MainWindow
                 patientToUpdate.IsTaken = True
                 patientToUpdate.OperatorName = OperatorName
                 patientToUpdate.Colors = "gray"
-                patientToUpdate.Pick_up_Time = DateTime.Now
+                patientToUpdate.Pick_up_Time = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+                patientToUpdate.Time_Order = patientToUpdate.Pick_up_Time - patientToUpdate.Hold_Time
 
                 PatientsALL.Add(patientToUpdate)
 
@@ -601,6 +623,8 @@ Class MainWindow
                     Patients1er.Add(patientToUpdate)
                 End If
             End If
+            SavePatientsToJson(PatientsALL)
+            UpdateList()
             SavePatientsToJson(PatientsALL)
         End If
 
@@ -625,10 +649,20 @@ Class MainWindow
             End If
 
             ' Mise à jour des propriétés du patient
+            ' Obtenir la couleur en fonction du type d'examen du patient
+            Dim examType As String = patientToUpdate.Exams ' Remplacez cela par le type d'examen réel du patient
+            Dim examOption As ExamOption = ExamOptions.FirstOrDefault(Function(ExamOptions) ExamOptions.Name = examType)
+
+            If examOption IsNot Nothing Then
+                Dim patientColor As String = examOption.Color
+                ' Utilisez la couleur pour mettre à jour la propriété Colors du patient
+                patientToUpdate.Colors = patientColor
+            End If
+
             patientToUpdate.IsTaken = False
             patientToUpdate.OperatorName = Nothing
-            patientToUpdate.Colors = "green"
-            'patientToUpdate.Pick_up_Time = ""
+            patientToUpdate.Pick_up_Time = Nothing
+            patientToUpdate.Time_Order = Nothing
 
             ' Vous pouvez également mettre à jour d'autres propriétés si nécessaire
 
@@ -641,6 +675,8 @@ Class MainWindow
                 Patients1er.Add(patientToUpdate)
                 PatientsALL.Add(patientToUpdate)
             End If
+            SavePatientsToJson(PatientsALL)
+            UpdateList()
             SavePatientsToJson(PatientsALL)
         End If
 
@@ -716,6 +752,7 @@ Class MainWindow
 
             Case "PTN01"
                 ' Code de message pour ajouter un patient 
+                ' exemple de message "PTN01Mr|BENOIT|Muller|FO|ODG |RDC|Benoit|2023-08-25T16:33:30.496"
                 Try
                     ' Extraire le contenu du message à partir de la position 5 pour ignorer le code
                     Dim messageContent As String = receivedMessage.Substring(5)
@@ -734,7 +771,7 @@ Class MainWindow
                     Dim Hold_Time As String = parts(7)
 
                     ' Appeler la fonction PatientAdd pour ajouter le patient avec les informations extraites
-                    PatientAdd(Title, LastName, FirstName, Exam, Comments, Floor, "Green", Examinator, Hold_Time)
+                    PatientAdd(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time)
                 Catch ex As Exception
                     ' Gérer toute exception qui pourrait survenir lors du traitement du message
                 End Try
@@ -754,7 +791,7 @@ Class MainWindow
                     Dim Floor As String = parts(5)
                     Dim Examinator As String = parts(6)
                     Dim Hold_Time As String = parts(7)
-                    Dim OperatorName As String = parts(7)
+                    Dim OperatorName As String = parts(8)
 
                     PatientCheckPass(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time, OperatorName)
                 Catch ex As Exception
@@ -785,6 +822,7 @@ Class MainWindow
             Case "PTN04"
                 ' Code de message pour supprimer un patient               
                 ' "PTN04Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|OldHold_Time|NewHold_Time"
+                SendTextBox.Text = receivedMessage
                 Try
                     Dim messageContent As String = receivedMessage.Substring(5)
                     Dim parts As String() = messageContent.Split("|"c)
@@ -798,6 +836,7 @@ Class MainWindow
                     Dim OldHold_Time As String = parts(7)
                     Dim NewHold_Time As String = parts(8)
 
+                    SendTextBox.Text = messageContent
                     PatientUpdate(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, OldHold_Time, NewHold_Time)
 
                 Catch ex As Exception
@@ -818,7 +857,7 @@ Class MainWindow
                     Dim Floor As String = parts(5)
                     Dim Examinator As String = parts(6)
                     Dim Hold_Time As String = parts(7)
-                    Dim OperatorName As String = parts(7)
+                    Dim OperatorName As String = parts(8)
 
                     PatientUndoPass(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time, OperatorName)
                 Catch ex As Exception
@@ -1304,6 +1343,7 @@ Class MainWindow
 
         ' Appeler la fonction Sendmessage avec la chaîne de texte du patient
         SendMessage(Text)
+        SendTextBox.Text = Text
     End Sub
 
 

@@ -2,6 +2,8 @@
 Imports System.Globalization
 Imports EyeChat.MainWindow
 Imports EyeChat.Patient
+Imports MahApps.Metro.Controls.Dialogs
+
 Public Class PatientBubbleCtrl
     Inherits UserControl
     Public Sub New()
@@ -40,7 +42,7 @@ Public Class PatientBubbleCtrl
             Else
 
                 ' Formatez Hold_Time avec les fractions de secondes
-                Dim formattedHoldTime As String = patient.Hold_Time.ToString("HH:mm:ss.fff")
+                Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
 
                 ' Construisez la chaîne de texte à envoyer
                 Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
@@ -49,7 +51,7 @@ Public Class PatientBubbleCtrl
                 SendMessage(Text)
 
                 ' Mettez à jour la liste
-                UpdateList()
+                'UpdateList()&
 
                 ' Mettez à jour la propriété Colors de l'objet Patient
                 'patient.Pick_up_Time = Nothing
@@ -96,7 +98,7 @@ Public Class PatientBubbleCtrl
             Dim Text As String = "PTN03" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime
 
             ' Envoyez le message
-            Sendmessage(Text)
+            SendMessage(Text)
 
             ' Mettez à jour la liste
             'UpdateList()
@@ -106,6 +108,8 @@ Public Class PatientBubbleCtrl
     Private Sub MenuItem_upClick(sender As Object, e As RoutedEventArgs)
         ' Gère le clic sur le bouton "Up" afin de déplacer le patient sélectionné vers le haut d'une case
 
+        PatientsALL = New ObservableCollection(Of Patient)(PatientsALL.OrderBy(Function(p) p.Hold_Time))
+
         If TypeOf sender Is MenuItem Then
             Dim menuItem As MenuItem = DirectCast(sender, MenuItem)
             Dim patient As Patient = DirectCast(menuItem.DataContext, Patient)
@@ -113,13 +117,30 @@ Public Class PatientBubbleCtrl
             ' Obtenir l'index du patient actuel dans la liste
             Dim index As Integer = PatientsALL.IndexOf(patient)
 
-            If index > 1 Then ' Au moins deux patients précédents sont nécessaires
-                ' Obtenir les patients N-1 et N-2
-                Dim patientN1 As Patient = PatientsALL(index - 1)
-                Dim patientN2 As Patient = PatientsALL(index - 2)
+            ' Trouver le patient N-1 au même étage (position)
+            Dim patientN1 As Patient = Nothing
+            For i As Integer = index - 1 To 0 Step -1
+                If PatientsALL(i).Position = patient.Position Then
+                    patientN1 = PatientsALL(i)
+                    Exit For
+                End If
+            Next
 
+            ' Trouver le patient N-2 au même étage (position)
+            Dim patientN2 As Patient = Nothing
+            If patientN1 IsNot Nothing Then
+                For i As Integer = PatientsALL.IndexOf(patientN1) - 1 To 0 Step -1
+                    If PatientsALL(i).Position = patient.Position Then
+                        patientN2 = PatientsALL(i)
+                        Exit For
+                    End If
+                Next
+            End If
+
+            If patientN1 IsNot Nothing And patientN2 IsNot Nothing Then
+                ' Vous avez trouvé les patients N-1 et N-2 au même étage
                 ' Calculer la différence de temps entre N-1 et N-2
-                Dim timeDiffN1N2 As TimeSpan = patientN2.Hold_Time.Subtract(patientN1.Hold_Time)
+                Dim timeDiffN1N2 As TimeSpan = patientN1.Hold_Time.Subtract(patientN2.Hold_Time)
 
                 ' Calculer l'ajustement en ajoutant la moitié de la différence de temps
                 Dim adjustment As TimeSpan = TimeSpan.FromTicks(timeDiffN1N2.Ticks / 2)
@@ -129,27 +150,21 @@ Public Class PatientBubbleCtrl
 
                 ' Mettre à jour l'horaire du patient
                 UpdatePatientHoldTime(patient, newHoldTime)
-
-                ' Mettre à jour la liste des patients
-                UpdateList()
-            ElseIf index = 1 Then ' Si le patient est le deuxième dans la liste
-                ' Obtenir le patient N-1
-                Dim patientN1 As Patient = PatientsALL(index - 1)
-
+            ElseIf patientN1 IsNot Nothing Then
+                ' Vous avez trouvé le patient N-1 au même étage
                 ' Soustraire 2 minutes de l'heure du patient N-1
                 Dim newHoldTime As DateTime = patientN1.Hold_Time.Subtract(TimeSpan.FromMinutes(2))
 
                 ' Mettre à jour l'horaire du patient
                 UpdatePatientHoldTime(patient, newHoldTime)
-
-                ' Mettre à jour la liste des patients
-                'UpdateList()
             End If
         End If
     End Sub
 
     Private Sub MenuItem_downClick(sender As Object, e As RoutedEventArgs)
         ' Gère le clic sur le bouton "Down" afin de déplacer le patient sélectionné vers le bas d'une case
+
+        PatientsALL = New ObservableCollection(Of Patient)(PatientsALL.OrderBy(Function(p) p.Hold_Time))
 
         If TypeOf sender Is MenuItem Then
             Dim menuItem As MenuItem = DirectCast(sender, MenuItem)
@@ -158,11 +173,28 @@ Public Class PatientBubbleCtrl
             ' Obtenir l'index du patient actuel dans la liste
             Dim index As Integer = PatientsALL.IndexOf(patient)
 
-            If index < PatientsALL.Count - 2 Then ' Au moins deux patients suivants sont nécessaires
-                ' Obtenir les patients N+1 et N+2
-                Dim patientN1 As Patient = PatientsALL(index + 1)
-                Dim patientN2 As Patient = PatientsALL(index + 2)
+            ' Trouver le patient N+1 au même étage (position)
+            Dim patientN1 As Patient = Nothing
+            For i As Integer = index + 1 To PatientsALL.Count - 1
+                If PatientsALL(i).Position = patient.Position Then
+                    patientN1 = PatientsALL(i)
+                    Exit For
+                End If
+            Next
 
+            ' Trouver le patient N+2 au même étage (position)
+            Dim patientN2 As Patient = Nothing
+            If patientN1 IsNot Nothing Then
+                For i As Integer = PatientsALL.IndexOf(patientN1) + 1 To PatientsALL.Count - 1
+                    If PatientsALL(i).Position = patient.Position Then
+                        patientN2 = PatientsALL(i)
+                        Exit For
+                    End If
+                Next
+            End If
+
+            If patientN1 IsNot Nothing And patientN2 IsNot Nothing Then
+                ' Vous avez trouvé les patients N+1 et N+2 au même étage
                 ' Calculer la différence de temps entre N+2 et N+1
                 Dim timeDiffN1N2 As TimeSpan = patientN2.Hold_Time.Subtract(patientN1.Hold_Time)
 
@@ -174,25 +206,79 @@ Public Class PatientBubbleCtrl
 
                 ' Mettre à jour l'horaire du patient
                 UpdatePatientHoldTime(patient, newHoldTime)
+            ElseIf patientN1 IsNot Nothing Then
+                ' Vous avez trouvé le patient N+1 au même étage
+                ' Ajouter 2 minutes à l'heure du patient N+1
+                Dim newHoldTime As DateTime = patientN1.Hold_Time.Add(TimeSpan.FromMinutes(2))
 
-                ' Mettre à jour la liste des patients
-                'UpdateList()
+                ' Mettre à jour l'horaire du patient
+                UpdatePatientHoldTime(patient, newHoldTime)
+            End If
+        End If
+    End Sub
+
+    Private Sub MenuItem_TopClick(sender As Object, e As RoutedEventArgs)
+        PatientsALL = New ObservableCollection(Of Patient)(PatientsALL.OrderBy(Function(p) p.Hold_Time))
+        If TypeOf sender Is MenuItem Then
+            Dim menuItem As MenuItem = DirectCast(sender, MenuItem)
+            Dim patient As Patient = DirectCast(menuItem.DataContext, Patient)
+
+            ' Obtenir le premier patient non pris (IsTaken = False) au même étage (position)
+            Dim firstAvailablePatient As Patient = PatientsALL.FirstOrDefault(Function(p) p.Position = patient.Position AndAlso Not p.IsTaken)
+            ' Obtenir le dernier patient pris (IsTaken = True) au même étage (position)
+            Dim lastAvailablePatient As Patient = PatientsALL.LastOrDefault(Function(p) p.Position = patient.Position AndAlso p.IsTaken)
+
+            If firstAvailablePatient IsNot Nothing And lastAvailablePatient Is Nothing Then
+                ' Calculer l'ajustement en fonction de l'écart entre l'horaire du premier patient disponible et l'horaire actuel
+                'Dim adjustment As TimeSpan = firstAvailablePatient.Hold_Time.Subtract(TimeSpan.FromMinutes(5))
+
+                Dim random As New Random()
+                Dim randomSeconds As Integer = random.Next(60, 361) ' Generates a random number between 60 and 360 (inclusive)
+                Dim randomTimeSpan As TimeSpan = TimeSpan.FromSeconds(randomSeconds)
+
+                ' Calculer le nouvel horaire en reculant de l'ajustement
+                'Dim newHoldTime As DateTime = patient.Hold_Time.Subtract(adjustment)
+                Dim newHoldTime As DateTime = firstAvailablePatient.Hold_Time.Subtract(randomTimeSpan)
+
+                ' Mettre à jour l'horaire du patient
+                UpdatePatientHoldTime(patient, newHoldTime)
+            ElseIf firstAvailablePatient IsNot Nothing And lastAvailablePatient IsNot Nothing Then
+
+                ' Calculer le temps moyen entre les deux heures de patients
+                Dim averageTimeSpan As TimeSpan = TimeSpan.FromTicks((lastAvailablePatient.Hold_Time - firstAvailablePatient.Hold_Time).Ticks \ 2)
+
+                ' Générer un décalage aléatoire dans une certaine plage autour de la moyenne
+                Dim random As New Random()
+                Dim randomOffsetTicks As Long = random.Next(-averageTimeSpan.Ticks, averageTimeSpan.Ticks + 1)
+                Dim randomTimeSpan As TimeSpan = TimeSpan.FromTicks(averageTimeSpan.Ticks + randomOffsetTicks)
+
+                ' Calculer la nouvelle heure de prise en soustrayant le laps de temps aléatoire
+                Dim newHoldTime As DateTime = lastAvailablePatient.Hold_Time.Subtract(randomTimeSpan)
+
+                ' Mettre à jour l'heure de prise du patient
+                UpdatePatientHoldTime(patient, newHoldTime)
+
+            Else
+                ' Si aucun patient non pris n'est disponible, ajuster en ajoutant 5 minutes à l'horaire actuel
+                'Dim newHoldTime As DateTime = patient.Hold_Time.Subtract(TimeSpan.FromMinutes(5))
+                'UpdatePatientHoldTime(patient, newHoldTime)
             End If
         End If
     End Sub
 
     Private Sub UpdatePatientHoldTime(patient As Patient, newHoldTime As DateTime)
         ' Mise à jour de l'heure Hold_Time du patient
-        patient.Hold_Time = newHoldTime
+        'patient.Hold_Time = newHoldTime
 
         ' Envoyer le message avec la nouvelle heure Hold_Time au serveur
-        Dim formattedHoldTime As String = newHoldTime.ToString("yyyy-MM-ddTHH:mm:ss.fff")
-        Dim Text As String = "PTN04" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime
-        Sendmessage(Text)
+        Dim formattedNewHoldTime As String = newHoldTime.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+        Dim formattedOldHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+        Dim Text As String = "PTN04" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedOldHoldTime & "|" & formattedNewHoldTime
+        SendMessage(Text)
     End Sub
 
 
-    Private Sub UpdateList()
+    Public Shared Sub UpdateList()
         ' Triez la liste des patients par Hold_Time avant de la sauvegarder
         'SortPatientsByHoldTime()
         ' Enregistrez la liste triée dans le fichier JSON

@@ -209,7 +209,9 @@
                         <ListBox.Resources>
                             <CollectionViewSource x:Key="SortedPatientsRDC" Source="{Binding PatientsRDC}">
                                 <CollectionViewSource.SortDescriptions>
-                                    <scm:SortDescription PropertyName="Hold_Time" Direction="Ascending"/>
+                                    <scm:SortDescription PropertyName="IsTaken" Direction="Descending"/>
+                                    <scm:SortDescription PropertyName="Pick_up_Time" Direction="Ascending" />
+                                    <scm:SortDescription PropertyName="Hold_Time" Direction="Ascending" />
                                 </CollectionViewSource.SortDescriptions>
                             </CollectionViewSource>
                         </ListBox.Resources>
@@ -229,7 +231,9 @@
                         <ListBox.Resources>
                             <CollectionViewSource x:Key="SortedPatients1er" Source="{Binding Patients1er}">
                                 <CollectionViewSource.SortDescriptions>
-                                    <scm:SortDescription PropertyName="Hold_Time" Direction="Ascending"/>
+                                    <scm:SortDescription PropertyName="IsTaken" Direction="Descending"/>
+                                    <scm:SortDescription PropertyName="Pick_up_Time" Direction="Ascending" />
+                                    <scm:SortDescription PropertyName="Hold_Time" Direction="Ascending" />
                                 </CollectionViewSource.SortDescriptions>
                             </CollectionViewSource>
                         </ListBox.Resources>
@@ -248,7 +252,9 @@
                         <ListBox.Resources>
                             <CollectionViewSource x:Key="SortedPatientsALL" Source="{Binding PatientsALL}">
                                 <CollectionViewSource.SortDescriptions>
-                                    <scm:SortDescription PropertyName="Hold_Time" Direction="Ascending"/>
+                                    <scm:SortDescription PropertyName="IsTaken" Direction="Descending"/>
+                                    <scm:SortDescription PropertyName="Pick_up_Time" Direction="Ascending" />
+                                    <scm:SortDescription PropertyName="Hold_Time" Direction="Ascending" />
                                 </CollectionViewSource.SortDescriptions>
                             </CollectionViewSource>
                         </ListBox.Resources>

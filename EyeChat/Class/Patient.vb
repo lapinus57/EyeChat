@@ -1,6 +1,7 @@
 ﻿Imports System.Collections.ObjectModel
 Imports System.IO
 Imports Newtonsoft.Json
+Imports System.Linq
 
 Public Class Patient
 
