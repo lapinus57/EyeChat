@@ -1,10 +1,12 @@
-﻿<UserControl xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"  
+﻿<UserControl xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"  
              x:Class="SettingsWindows"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:EyeChat"
+             xmlns:SystemColors="clr-namespace:System.Windows;assembly=PresentationFramework"
+               xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:EyeChat"                         
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600">
@@ -312,7 +314,15 @@
                 </Expander.Header>
                 <Expander.Content>
                     <StackPanel>
-                        <DataGrid x:Name="ExamDataGrid" ItemsSource="{Binding Path=ExamOptions, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="True"/>
+                        <DataGrid x:Name="ExamDataGrid" ItemsSource="{Binding Path=ExamOptions, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Index" Binding="{Binding index}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                                <DataGridTextColumn Header="Color" Binding="{Binding Color}" />
+                                <DataGridTextColumn Header="CodeMSG" Binding="{Binding CodeMSG}" />
+                                <DataGridTextColumn Header="Annotation" Binding="{Binding Annotation}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
                         <Button Content="Enregistrer les modifications" Click="SaveChangesButton_Click"/>
 
                     </StackPanel>

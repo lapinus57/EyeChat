@@ -14,6 +14,7 @@ Imports EyeChat
 Imports System.IO
 Imports Newtonsoft.Json
 
+
 Public Class SettingsViewModel
     Implements INotifyPropertyChanged
 
@@ -565,6 +566,15 @@ Public Class SettingsViewModel
             ' Gérer les erreurs de sauvegarde (par exemple, journaliser l'erreur)
         End Try
     End Sub
+    Public ReadOnly Property PredefinedColors As List(Of Color)
+        Get
+            For Each colorProperty As PropertyInfo In GetType(Colors).GetProperties()
+                Dim color As Color = DirectCast(colorProperty.GetValue(Nothing), Color)
+                Call New List(Of Color)().Add(color)
+            Next
+            Return New List(Of Color)()
+        End Get
+    End Property
 
 End Class
 

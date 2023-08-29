@@ -1152,7 +1152,7 @@ Class MainWindow
         _currentInput = input
     End Sub
 
-    Private Sub SendTextBox_KeyDown(sender As Object, e As KeyEventArgs) Handles SendTextBox.KeyDown
+    Private Async Function SendTextBox_KeyDownAsync(sender As Object, e As KeyEventArgs) As Task Handles SendTextBox.KeyDown
         If e.Key = Key.Enter Then
             SendTextBox.Text = SendTextBox.Text.TrimEnd()
             If Not String.IsNullOrEmpty(SendTextBox.Text) Then
@@ -1210,53 +1210,91 @@ Class MainWindow
 
                     Case Else
 
-                        'Formate le message sous la forme "MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
-                        Try
-                            Dim text As String
-                            Dim selectedUser As User = TryCast(ListUseres.SelectedItem, User)
-                            If selectedUser IsNot Nothing Then
-                                Dim selectedUserName As String = selectedUser.Name
-                                ' Faites quelque chose avec le nom de l'utilisateur sélectionné
-                                ' ...
+                        Dim startsWithCodeMSG As Boolean = False
+                        Dim matchedOption As ExamOption = Nothing
 
-                                If SendTextBox.Text.Contains("marvin") Then
-                                    ' Créer une instance de la classe Random
-                                    Dim random As New Random()
+                        For Each Exaoption As ExamOption In ExamOptions
+                            If SendTextBox.Text.StartsWith(Exaoption.CodeMSG) Then
+                                startsWithCodeMSG = True
+                                matchedOption = Exaoption
+                                Exit For
+                            End If
+                        Next
 
-                                    ' Vérifier si la liste contient des phrases
-                                    If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 Then
-                                        ' Générer un index aléatoire dans la plage des indices de la liste
-                                        Dim randomIndex As Integer = random.Next(0, phrasesData.MarvinPhrases.Count)
+                        If startsWithCodeMSG AndAlso matchedOption IsNot Nothing Then
+                            Dim codeMSG As String = matchedOption.CodeMSG
+                            Dim annotation As String = matchedOption.Annotation
+                            ' Utilisez la variable codeMSG comme vous le souhaitez...
+                            Dim spaceIndex As Integer = SendTextBox.Text.IndexOf(" ", codeMSG.Length)
 
-                                        ' Récupérer la phrase aléatoire en utilisant l'index généré
-                                        Dim randomPhrase As String = phrasesData.MarvinPhrases(randomIndex)
 
-                                        ' Vérifie si Marvin est dans la liste des users
-                                        If IsNameInList(Users, "Marvin") Then
-                                            ' Marvin est présent dans la liste, on ajoute le message
-                                            Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                                            AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
-                                        Else
-                                            ' Marvin n'est pas présent dans la liste, on créer le user et on ajoute le message
-                                            Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                                            Users.Add(New User With {.Name = "Marvin", .Room = "Sytem", .Avatar = avatarPath, .Status = "Don't Panic"})
-                                            AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
-                                        End If
-                                    End If
+                            Dim patientTitre As String = ""
+                            Dim patientNom As String = ""
+                            Dim patientPrenom As String = ""
+                            codeMSG = codeMSG.Replace("=", "")
 
-                                End If
 
-                                text = "MSG01" & My.Settings.UserName & "|" & selectedUserName & "|" & SendTextBox.Text & "|benoit.png"
-                                SendMessage(text)
-                                MessageList.ScrollToEnd()
+                            ' Vérifier s'il y a un espace après le CodeMSG
+                            If spaceIndex > codeMSG.Length Then
+                                'il y a un espace après le codeMSG
+                                ExtractInfoFromInput(SendTextBox.Text.Substring(spaceIndex + 1), patientTitre, patientNom, patientPrenom)
+                            Else
+                                ' Pas d'espace après le CodeMSG
+                                ExtractInfoFromInput(SendTextBox.Text.Substring(codeMSG.Length), patientTitre, patientNom, patientPrenom)
                             End If
 
+                            Dim Text As String = "PTN01" & patientTitre & "|" & patientNom & "|" & patientPrenom & "|" & codeMSG & "|" & annotation & "|RDC|" & My.Settings.UserName & "|" & Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+                            SendMessage(Text)
+                        Else
 
-                        Catch ex As Exception
 
-                        End Try
+                            'Formate le message sous la forme "MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+                            Try
+                                Dim text As String
+                                Dim selectedUser As User = TryCast(ListUseres.SelectedItem, User)
+                                If selectedUser IsNot Nothing Then
+                                    Dim selectedUserName As String = selectedUser.Name
+                                    ' Faites quelque chose avec le nom de l'utilisateur sélectionné
+                                    ' ...
+
+                                    If SendTextBox.Text.Contains("marvin") Then
+                                        ' Créer une instance de la classe Random
+                                        Dim random As New Random()
+
+                                        ' Vérifier si la liste contient des phrases
+                                        If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 Then
+                                            ' Générer un index aléatoire dans la plage des indices de la liste
+                                            Dim randomIndex As Integer = random.Next(0, phrasesData.MarvinPhrases.Count)
+
+                                            ' Récupérer la phrase aléatoire en utilisant l'index généré
+                                            Dim randomPhrase As String = phrasesData.MarvinPhrases(randomIndex)
+
+                                            ' Vérifie si Marvin est dans la liste des users
+                                            If IsNameInList(Users, "Marvin") Then
+                                                ' Marvin est présent dans la liste, on ajoute le message
+                                                Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
+                                                AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
+                                            Else
+                                                ' Marvin n'est pas présent dans la liste, on créer le user et on ajoute le message
+                                                Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
+                                                Users.Add(New User With {.Name = "Marvin", .Room = "Sytem", .Avatar = avatarPath, .Status = "Don't Panic"})
+                                                AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
+                                            End If
+                                        End If
+
+                                    End If
+
+                                    text = "MSG01" & My.Settings.UserName & "|" & selectedUserName & "|" & SendTextBox.Text & "|benoit.png"
+                                    SendMessage(text)
+                                    MessageList.ScrollToEnd()
+                                End If
 
 
+                            Catch ex As Exception
+
+                            End Try
+
+                        End If
 
 
                 End Select
@@ -1265,7 +1303,7 @@ Class MainWindow
 
             SendTextBox.Clear()
         End If
-    End Sub
+    End Function
 
 #End Region
 
@@ -1492,6 +1530,35 @@ Class MainWindow
 
         Return True
     End Function
+
+    Private Sub ExtractInfoFromInput(inputText As String, ByRef patientTitre As String, ByRef patientNom As String, ByRef patientPrenom As String)
+        ' Modèle pour extraire le titre
+        Dim patternTitle As String = "^(?<title>Mr|Mme|Mlle|En|Enfant|Me|Dr)?"
+
+        ' Modèle pour extraire le nom
+        Dim patternName As String = "^\s*(?<name>[^\s]+)"
+
+        ' Modèle pour extraire le prénom
+        Dim patternFirstName As String = "(?<firstName>[^\s]+)$"
+
+        Dim matchTitle As Match = Regex.Match(inputText, patternTitle)
+        Dim matchName As Match = Regex.Match(inputText, patternName)
+        Dim matchFirstName As Match = Regex.Match(inputText, patternFirstName)
+
+        Dim titre As String = matchTitle.Groups("title").Value
+        patientNom = matchName.Groups("name").Value
+        patientPrenom = matchFirstName.Groups("firstName").Value
+
+        Select Case titre
+            Case "En "
+                patientTitre = "Enfant"
+            Case ""
+                patientTitre = "Iel"
+            Case Else
+                patientTitre = titre
+        End Select
+    End Sub
+
 #End Region
 
 
@@ -1675,7 +1742,7 @@ Class MainWindow
             Directory.CreateDirectory(dossier)
         End If
 
-        dossier = "HistoricCore"
+        dossier = "Core"
         ' Vérifier si le dossier existe
         If Not Directory.Exists(dossier) Then
             ' Créer le dossier s'il n'existe pas

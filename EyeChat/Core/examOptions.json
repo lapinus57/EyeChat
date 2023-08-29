@@ -1,26 +1,58 @@
 [
   {
+    "index": 1,
     "Name": "FO",
-    "Color": "#FF0000"
+    "Color": "red",
+    "CodeMSG": "FO=",
+    "Annotation": null
   },
   {
+    "index": 2,
     "Name": "SK",
-    "Color": "#00FF00"
+    "Color": "red",
+    "CodeMSG": "SK=",
+    "Annotation": null
   },
   {
+    "index": 3,
     "Name": "AT",
-    "Color": "#0000FF"
+    "Color": "red",
+    "CodeMSG": "AT=",
+    "Annotation": null
   },
   {
+    "index": 4,
     "Name": "AT-SK",
-    "Color": "#FF00FF"
+    "Color": "red",
+    "CodeMSG": "ATSK=",
+    "Annotation": null
   },
   {
+    "index": 5,
     "Name": "AT-FO",
-    "Color": "#FFFF00"
+    "Color": "red",
+    "CodeMSG": "ATFO=",
+    "Annotation": null
   },
   {
+    "index": 6,
     "Name": "AT-CV",
-    "Color": "#00FFFF"
+    "Color": "red",
+    "CodeMSG": "ATCV=",
+    "Annotation": null
+  },
+  {
+    "index": 7,
+    "Name": "FO",
+    "Color": "red",
+    "CodeMSG": "FO*",
+    "Annotation": "Gouttes dés arrivée"
+  },
+  {
+    "index": 8,
+    "Name": "SK",
+    "Color": "red",
+    "CodeMSG": "SK*",
+    "Annotation": "Gouttes dés arrivée"
   }
 ]

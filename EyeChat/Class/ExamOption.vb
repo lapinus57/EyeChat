@@ -3,6 +3,19 @@
 Public Class ExamOption
     Implements INotifyPropertyChanged
 
+    Private _index As Integer
+    Public Property index As Integer
+        Get
+            Return _index
+        End Get
+        Set(value As Integer)
+            If _index <> value Then
+                _index = value
+                NotifyPropertyChanged("Index")
+            End If
+        End Set
+    End Property
+
     Private _name As String
     Public Property Name As String
         Get
@@ -29,15 +42,28 @@ Public Class ExamOption
         End Set
     End Property
 
-    Private _index As String
-    Public Property index As String
+    Private _CodeMSG As String
+    Public Property CodeMSG As String
         Get
-            Return _index
+            Return _CodeMSG
         End Get
         Set(value As String)
-            If _index <> value Then
-                _index = value
-                NotifyPropertyChanged("Index")
+            If _CodeMSG <> value Then
+                _CodeMSG = value
+                NotifyPropertyChanged("CodeMSG")
+            End If
+        End Set
+    End Property
+
+    Private _Annotation As String
+    Public Property Annotation As String
+        Get
+            Return _Annotation
+        End Get
+        Set(value As String)
+            If _Annotation <> value Then
+                _Annotation = value
+                NotifyPropertyChanged("Annotation")
             End If
         End Set
     End Property

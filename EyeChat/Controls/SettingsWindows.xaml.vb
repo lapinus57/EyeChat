@@ -101,6 +101,15 @@ Public Class SettingsWindows
 
         SaveExamOptionsToJson(examOptionCollection)
     End Sub
+
+    Private Sub ExamDataGrid_AddingNewItem(sender As Object, e As AddingNewItemEventArgs) Handles ExamDataGrid.AddingNewItem
+        ' Créez un nouvel objet ExamOption et attribuez-lui l'index approprié
+        Dim newExamOption As New ExamOption()
+        newExamOption.index = Settings.ExamOptions.Count + 1 ' Incrémente l'index à chaque ajout
+
+        ' Assurez-vous que l'objet nouvellement créé est associé à l'élément ajouté
+        e.NewItem = newExamOption
+    End Sub
 End Class
 
 
