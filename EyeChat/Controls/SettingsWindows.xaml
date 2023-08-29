@@ -7,7 +7,7 @@
              xmlns:converters="clr-namespace:EyeChat"
              xmlns:local="clr-namespace:EyeChat"                         
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="500">
+             d:DesignHeight="450" d:DesignWidth="600">
 
 
     <UserControl.Resources>
@@ -306,6 +306,18 @@
                 </Expander.Content>
             </Expander>
 
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Text="{StaticResource ExamHeaderLabel}" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                </Expander.Header>
+                <Expander.Content>
+                    <StackPanel>
+                        <DataGrid x:Name="ExamDataGrid" ItemsSource="{Binding Path=ExamOptions, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="True"/>
+                        <Button Content="Enregistrer les modifications" Click="SaveChangesButton_Click"/>
+
+                    </StackPanel>
+                </Expander.Content>
+            </Expander>
             <Expander>
                 <Expander.Header>
                     <TextBlock Text="Fonctionalité" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />

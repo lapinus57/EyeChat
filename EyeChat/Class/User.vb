@@ -26,7 +26,7 @@ Public Class User
         Room = String.Empty
     End Sub
 
-    Public Shared Function LoadUsersFromJson() As ObservableCollection(Of User)
+    Public Shared Function LoadUsersFromJson(Optional userNameToExclude As String = Nothing) As ObservableCollection(Of User)
         Dim Users As ObservableCollection(Of User) = Nothing
 
         If File.Exists(UsersFilePath) Then
@@ -36,10 +36,21 @@ Public Class User
                     Users = serializer.Deserialize(Of ObservableCollection(Of User))(jsonReader)
                 End Using
             End Using
+
+            ' Si un nom d'utilisateur est spécifié pour exclusion
+            If Not String.IsNullOrEmpty(userNameToExclude) Then
+                ' Vérifier si l'utilisateur à exclure est présent dans la liste
+                Dim userToRemove As User = Users.FirstOrDefault(Function(user) user.Name = userNameToExclude)
+
+                If userToRemove IsNot Nothing Then
+                    Users.Remove(userToRemove) ' Supprimer l'utilisateur de la liste
+                End If
+            End If
         End If
 
         Return Users
     End Function
+
 
     ' Enregistrement des messages dans le fichier JSON
     Public Shared Sub SaveUsersToJson(ByVal Users As ObservableCollection(Of User))

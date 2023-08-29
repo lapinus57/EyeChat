@@ -18,6 +18,8 @@
     
     <system:String x:Key="SecretaryMode">Mode Secrétaire :</system:String>
     <system:String x:Key="DoctorMode">Mode Médecin :</system:String>
+
+    <system:String x:Key="ExamHeaderLabel">Liste d'examens</system:String>
     
     
 </ResourceDictionary>

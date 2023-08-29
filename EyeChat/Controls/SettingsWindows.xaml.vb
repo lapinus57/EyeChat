@@ -5,6 +5,8 @@ Imports EyeChat
 Imports EyeChat.SettingsViewModel
 Imports EyeChat.MainWindow
 Imports EyeChat.User
+Imports EyeChat.ExamOption
+Imports System.Collections.ObjectModel
 
 Public Class SettingsWindows
 
@@ -42,6 +44,7 @@ Public Class SettingsWindows
         Dim settings As New SettingsViewModel()
         Me.DataContext = settings
 
+
     End Sub
 
 
@@ -72,6 +75,31 @@ Public Class SettingsWindows
         For Each user In loadedUsers
             Users.Add(user)
         Next
+    End Sub
+
+    Private Sub ExamDataGrid_CellEditEnding(sender As Object, e As DataGridCellEditEndingEventArgs) Handles ExamDataGrid.CellEditEnding
+        Dim editedItem As ExamOption = TryCast(e.Row.Item, ExamOption)
+
+        If editedItem IsNot Nothing Then
+            ' Mettre à jour les données dans la collection _examOptions
+            ' en fonction des modifications apportées dans le DataGrid
+            Dim editedValue As String = TryCast((TryCast(e.EditingElement, TextBox))?.Text, String)
+            If e.Column.Header.ToString() = "Name" Then
+                editedItem.Name = editedValue
+            ElseIf e.Column.Header.ToString() = "Color" Then
+                editedItem.Color = editedValue
+                ' ... Répéter pour d'autres propriétés ...
+            End If
+
+            ' Sauvegarder les modifications dans le fichier JSON
+            'Settings.SaveExamOptionsToJson()
+        End If
+    End Sub
+    Private Sub SaveChangesButton_Click(sender As Object, e As RoutedEventArgs)
+        Dim examOptionList As List(Of ExamOption) = ExamDataGrid.ItemsSource.Cast(Of ExamOption)().ToList()
+        Dim examOptionCollection As New ObservableCollection(Of ExamOption)(examOptionList)
+
+        SaveExamOptionsToJson(examOptionCollection)
     End Sub
 End Class
 

@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel
 Imports EyeChat.MainWindow
 Imports Newtonsoft.Json
+Imports EyeChat.User
 
 Public Class UsersBubbleCtrl
     Inherits UserControl
@@ -101,6 +102,7 @@ Public Class UsersBubbleCtrl
                 Users.Move(currentIndex, currentIndex - 1)
             End If
         End If
+        SaveUsersToJson(Users)
     End Sub
 
     Private Sub MenuItemMoveDown_Click(sender As Object, e As RoutedEventArgs)
@@ -120,6 +122,7 @@ Public Class UsersBubbleCtrl
                 Users.Move(currentIndex, currentIndex + 1)
             End If
         End If
+        SaveUsersToJson(Users)
     End Sub
 
     Private Function FindParentListBoxItem(element As DependencyObject) As ListBoxItem

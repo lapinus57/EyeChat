@@ -82,6 +82,15 @@ Class MainWindow
     Private Const Version As String = "0.0.1" ' Remplacez par votre version actuelle
 
 
+    Structure UserUpdateInfo
+        Dim UserName As String
+        Dim LastIdentifiantPC As String
+    End Structure
+
+    ' Stocker les informations de mise à jour pour chaque utilisateur
+    Dim userUpdates As New Dictionary(Of String, UserUpdateInfo)()
+
+
 #Region "Gestion Capture nom des fêntre"
     <DllImport("user32.dll")>
     Private Shared Function EnumWindows(ByVal lpEnumFunc As EnumWindowsDelegate, ByVal lParam As IntPtr) As Boolean
@@ -367,6 +376,9 @@ Class MainWindow
         My.Settings.NameDisplayUsers = Visibility.Collapsed
 
 
+        'test si les dossier sont présent
+        Filetest()
+
 
         ' Initialise la collection de messages
         Messages = If(LoadMessagesFromJson(), New ObservableCollection(Of Message)())
@@ -412,7 +424,7 @@ Class MainWindow
         MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(My.Settings.AppSizeDisplay))
 
 
-
+        SendMessage("USR01Benoit|" & Environment.UserName)
 
     End Sub
 
@@ -732,11 +744,95 @@ Class MainWindow
 
         Select Case messageCode
             Case "USR01"
-                ' Code ajout d'un User
-                ' "USR01|UserName|IdentifiantPC|Color"
-            Case "USR02"
-                ' Code modification d'un user
+                ' Connexion d'un User
                 ' "USR01|UserName|IdentifiantPC"
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+
+                    If parts.Length >= 2 Then
+                        Dim UserName As String = parts(0)
+                        Dim IdentifiantPC As String = parts(1)
+
+                        Dim userToUpdate As User = Users.FirstOrDefault(Function(user) user.Name = UserName)
+
+                        If userToUpdate IsNot Nothing Then
+                            ' Vérifier si l'utilisateur n'a pas réagi au même IdentifiantPC précédent
+                            Dim storedUpdateInfo As UserUpdateInfo = Nothing
+                            If userUpdates.TryGetValue(UserName, storedUpdateInfo) AndAlso storedUpdateInfo.LastIdentifiantPC = IdentifiantPC Then
+                                Exit Sub ' Éviter la boucle infinie
+                            End If
+
+                            ' Mettre à jour le statut de l'utilisateur
+                            If userToUpdate.Status = "Offline" Then
+                                userToUpdate.Status = IdentifiantPC
+                            Else
+                                userToUpdate.Status += " | " & IdentifiantPC
+                            End If
+
+                            SaveUsersToJson(Users)
+
+                            ' Enregistrer le dernier IdentifiantPC mis à jour
+                            userUpdates(UserName) = New UserUpdateInfo With {
+                           .UserName = UserName,
+                           .LastIdentifiantPC = IdentifiantPC
+                }
+
+                            ' Envoyer un message de confirmation à l'utilisateur
+                            SendMessage("USR01" & UserName & "|" & Environment.UserName)
+                        Else
+                            ' Gérer le cas où l'utilisateur n'est pas trouvé
+                        End If
+                    Else
+                        ' Gérer le cas où le message n'a pas le bon nombre de parties
+                    End If
+                Catch ex As Exception
+                    ' Gérer l'exception liée au traitement du message d'ajout d'utilisateur
+                End Try
+
+                ' Déconnexion d'un utilisateur
+                ' "USR02UserName|IdentifiantPC"
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+
+                    If parts.Length >= 2 Then
+                        Dim UserName As String = parts(0)
+                        Dim IdentifiantPC As String = parts(1)
+
+                        Dim userToUpdate As User = Users.FirstOrDefault(Function(user) user.Name = UserName)
+
+                        If userToUpdate IsNot Nothing Then
+                            ' Vérifier si l'utilisateur n'a pas réagi au même IdentifiantPC précédent
+                            Dim storedUpdateInfo As UserUpdateInfo = Nothing
+                            Dim key As String = UserName & "-" & IdentifiantPC
+                            If userUpdates.TryGetValue(key, storedUpdateInfo) AndAlso storedUpdateInfo.LastIdentifiantPC = IdentifiantPC Then
+                                Exit Sub ' Éviter la boucle infinie
+                            End If
+
+                            ' Mettre à jour le statut de l'utilisateur
+                            If userToUpdate.Status = IdentifiantPC Then
+                                userToUpdate.Status = "Offline"
+                                ' Supprimer l'utilisateur de la liste des mises à jour
+                                userUpdates.Remove(key)
+                            Else
+                                ' Mettre à jour le statut avec le poste retiré
+                                userToUpdate.Status = userToUpdate.Status.Replace(" | " & IdentifiantPC, "")
+                            End If
+
+                            SaveUsersToJson(Users)
+
+                        Else
+                            ' Gérer le cas où l'utilisateur n'est pas trouvé
+                        End If
+                    Else
+                        ' Gérer le cas où le message n'a pas le bon nombre de parties
+                    End If
+                Catch ex As Exception
+                    ' Gérer l'exception liée au traitement du message de déconnexion d'utilisateur
+                End Try
+
+
             Case "USR03"
                 ' Code suppresion d'un user
                 '"USR01|UserName Ancien|UserName new"
@@ -908,10 +1004,12 @@ Class MainWindow
                     logger.Error("Erreur lors de la déconnexion à distance : " & ex.Message)
                 End Try
 
+
+
             Case "MSG01"
 
                 'Ajouter un message
-                'Exemple du message envoyé : "MSG01|{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+                'Exemple du message envoyé : "MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
                 Try
 
                     Dim messageContent As String = receivedMessage.Substring(5)
@@ -1559,6 +1657,33 @@ Class MainWindow
     End Function
 
 #End Region
+
+
+    Private Sub Filetest()
+
+        Dim dossier As String = "HistoricPatient"
+        ' Vérifier si le dossier existe
+        If Not Directory.Exists(dossier) Then
+            ' Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(dossier)
+        End If
+
+        dossier = "HistoricMsg"
+        ' Vérifier si le dossier existe
+        If Not Directory.Exists(dossier) Then
+            ' Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(dossier)
+        End If
+
+        dossier = "HistoricCore"
+        ' Vérifier si le dossier existe
+        If Not Directory.Exists(dossier) Then
+            ' Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(dossier)
+        End If
+
+
+    End Sub
 
 End Class
 

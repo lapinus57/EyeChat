@@ -30,7 +30,7 @@
             <mah:Flyout Header="Paramètres" 
                         IsOpen="{Binding ElementName=ToggleButtonOpenSettings, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
-                        Width="500">
+                        Width="1000">
 
                 <local:SettingsWindows />
 
@@ -41,7 +41,7 @@
             <mah:Flyout Header="Github / A Propos" 
                         IsOpen="{Binding ElementName=ToggleButtonOpenGithub, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
-                        Width="500">
+                        Width="600">
 
                 <!-- The content goes here -->
 
