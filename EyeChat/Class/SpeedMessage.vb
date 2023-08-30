@@ -16,15 +16,15 @@ Public Class SpeedMessage
         End Set
     End Property
 
-    Private _Tilte As String
-    Public Property Tilte As String
+    Private _Title As String
+    Public Property Title As String
         Get
-            Return _Tilte
+            Return _Title
         End Get
         Set(value As String)
-            If _Tilte <> value Then
-                _Tilte = value
-                NotifyPropertyChanged("Tilte")
+            If _Title <> value Then
+                _Title = value
+                NotifyPropertyChanged("Title")
             End If
         End Set
     End Property

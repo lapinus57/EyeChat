@@ -192,7 +192,22 @@
             <TextBox x:Name="SendTextBox" 
                  mah:TextBoxHelper.Watermark="Message"               
                  Height="auto" 
-                 Margin="3"/>
+                 Margin="3">
+                    <TextBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Messages"
+                      ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=SpeedMessages}">
+                                <MenuItem.ItemContainerStyle>
+                                    <Style TargetType="MenuItem">
+                                        <Setter Property="Header" Value="{Binding Title}" />
+                                        <Setter Property="Command" Value="{Binding Path=DataContext.MessageMenuItemCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                        <Setter Property="CommandParameter" Value="{Binding}" />
+                                    </Style>
+                                </MenuItem.ItemContainerStyle>
+                            </MenuItem>
+                        </ContextMenu>
+                    </TextBox.ContextMenu>
+                </TextBox>
             
         </Grid>
         

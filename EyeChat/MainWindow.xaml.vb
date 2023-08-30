@@ -35,6 +35,7 @@ Imports System.Reflection
 Imports System.IO.Compression
 Imports EyeChat.PatientBubbleCtrl
 Imports System.Linq
+Imports System.Windows.Controls
 
 Public Class MarvinPhrasesData
     Public Property MarvinPhrases As List(Of String)
@@ -424,10 +425,37 @@ Class MainWindow
         MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(My.Settings.AppSizeDisplay))
 
 
+        ' Charger les messages à partir du fichier JSON
+        json = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "SpeedMessage.json"))
+        Dim speedMessages As List(Of SpeedMessage) = JsonConvert.DeserializeObject(Of List(Of SpeedMessage))(json)
+
+        ' Créer un ContextMenu pour la TextBox
+        Dim contextMenu As New ContextMenu()
+
+        ' Ajouter les messages au menu contextuel
+        For Each message In speedMessages
+            Dim menuItem As New System.Windows.Controls.MenuItem()
+            menuItem.Header = message.Title
+            menuItem.Tag = message
+            AddHandler menuItem.Click, AddressOf MessageMenuItem_Click
+            contextMenu.Items.Add(menuItem)
+        Next
+
+        ' Affecter le ContextMenu à la TextBox
+        SendTextBox.ContextMenu = contextMenu
+
+
+
+
+
         SendMessage("USR01Benoit|" & Environment.UserName)
 
     End Sub
 
+    Private Sub MessageMenuItem_Click(sender As Object, e As RoutedEventArgs)
+        Dim selectedMessage As SpeedMessage = DirectCast(DirectCast(sender, System.Windows.Controls.MenuItem).Tag, SpeedMessage)
+        SendTextBox.Text = selectedMessage.Message.Replace("[ROOM]", Environment.UserName) + "|" + selectedMessage.Destinataire + "|" + selectedMessage.Options
+    End Sub
 
 
     Private Async Function LaunchGitHubSiteAsync() As Task
