@@ -1,0 +1,17 @@
+[
+  {
+    "Index": 1,
+    "Tilte": "Chef tu peux venir",
+    "Destinataire": "MédecinRDC",
+    "Message": "tu peux venir STP dans la salle [ROOM]",
+    "Options": "0|2|A"
+  },
+  {
+    "Index": 2,
+    "Tilte": "Alix tu peux venir",
+    "Destinataire": "Alix",
+    "Message": "tu peux venir STP dans la salle [ROOM]",
+    "Options": "0|2|A"
+  }
+
+]

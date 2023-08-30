@@ -23,6 +23,9 @@ Public Class SettingsViewModel
     Public Property DebugLevels As New ObservableCollection(Of String)() From {"DEBUG", "INFO", "WARN", "ERROR"}
 
     Private _examOptions As New ObservableCollection(Of ExamOption)()
+    Private _SpeedMessage As New ObservableCollection(Of SpeedMessage)()
+
+
 
     Public Event PropertyChanged As PropertyChangedEventHandler _
     Implements INotifyPropertyChanged.PropertyChanged
@@ -40,6 +43,22 @@ Public Class SettingsViewModel
                 _examOptions.Add(ption)
             Next
         End If
+
+        _SpeedMessage = New ObservableCollection(Of SpeedMessage)()
+
+        ' Charger les options d'examen à partir du JSON
+        jsonFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "SpeedMessage.json")
+        If File.Exists(jsonFilePath) Then
+            Dim json As String = File.ReadAllText(jsonFilePath)
+            Dim ptions As List(Of SpeedMessage) = JsonConvert.DeserializeObject(Of List(Of SpeedMessage))(json)
+
+            For Each ption As SpeedMessage In ptions
+                _SpeedMessage.Add(ption)
+            Next
+        End If
+
+
+
 
     End Sub
 
@@ -552,6 +571,18 @@ Public Class SettingsViewModel
             NotifyPropertyChanged("ExamOptions")
         End Set
     End Property
+
+    Public Property SpeedMessage As ObservableCollection(Of SpeedMessage)
+        Get
+            Return _SpeedMessage
+        End Get
+        Set(value As ObservableCollection(Of SpeedMessage))
+            _SpeedMessage = value
+            NotifyPropertyChanged("SpeedMessage")
+        End Set
+    End Property
+
+
 
     Public Shared Sub SaveExamOptionsToJson(ByVal exams As ObservableCollection(Of ExamOption))
         Try

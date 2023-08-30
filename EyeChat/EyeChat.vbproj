@@ -200,6 +200,7 @@
     <Compile Include="Class\MultiplyByTwoConverter.vb" />
     <Compile Include="Class\NameToEnabledConverter.vb" />
     <Compile Include="Class\Patient.vb" />
+    <Compile Include="Class\SpeedMessage.vb" />
     <Compile Include="Class\User.vb" />
     <Compile Include="Controls\MessageBubbleCtrl.xaml.vb">
       <DependentUpon>MessageBubbleCtrl.xaml</DependentUpon>
@@ -316,6 +317,9 @@
     <EmbeddedResource Include="Core\examOptions.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Include="Core\SpeedMessage.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

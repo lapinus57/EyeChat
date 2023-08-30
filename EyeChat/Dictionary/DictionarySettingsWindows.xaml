@@ -20,6 +20,11 @@
     <system:String x:Key="DoctorMode">Mode Médecin :</system:String>
 
     <system:String x:Key="ExamHeaderLabel">Liste d'examens</system:String>
+
+
+
+    <system:String x:Key="SpeedMessageHeaderLabel">Messages rapide</system:String>
     
-    
+
+
 </ResourceDictionary>

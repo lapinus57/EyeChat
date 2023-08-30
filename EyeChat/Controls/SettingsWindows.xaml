@@ -328,6 +328,28 @@
                     </StackPanel>
                 </Expander.Content>
             </Expander>
+
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Text="{StaticResource SpeedMessageHeaderLabel}" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                </Expander.Header>
+                <Expander.Content>
+                    <StackPanel>
+                        <DataGrid x:Name="SpeedMessageDataGrid" ItemsSource="{Binding Path=SpeedMessage, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                            <DataGridTextColumn Header="Index" Binding="{Binding Index}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Titre" Binding="{Binding Tilte}" />
+                            <DataGridTextColumn Header="Destinataire" Binding="{Binding Destinataire}" />
+                            <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
+                            <DataGridTextColumn Header="Options" Binding="{Binding Options}" />
+                          </DataGrid.Columns>
+                        </DataGrid>
+                        <Button Content="Enregistrer les modifications" />
+
+                    </StackPanel>
+                </Expander.Content>
+            </Expander>
+
             <Expander>
                 <Expander.Header>
                     <TextBlock Text="Fonctionalité" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
