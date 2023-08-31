@@ -216,9 +216,9 @@
         
         <mah:MetroTabControl Grid.Column="0" 
                              mah:HeaderedControlHelper.HeaderFontSize="{Binding AppSizeDisplay}"
-                             mah:HeaderedControlHelper.HeaderFontWeight="Bold"
+                             mah:HeaderedControlHelper.HeaderFontWeight="Bold"                            
                              FontSize="22"
-                             x:Name="PatientTabCtrl">
+                             x:Name="PatientTabCtrl" >
         <TabItem Header="RDC"  >
                     <ListBox x:Name="PatientListRDC" ScrollViewer.VerticalScrollBarVisibility="Visible">
                         <ListBox.Resources>

@@ -36,6 +36,8 @@ Imports System.IO.Compression
 Imports EyeChat.PatientBubbleCtrl
 Imports System.Linq
 Imports System.Windows.Controls
+Imports System.Net.NetworkInformation
+Imports EyeChat.Computer
 
 Public Class MarvinPhrasesData
     Public Property MarvinPhrases As List(Of String)
@@ -48,6 +50,7 @@ Class MainWindow
 
     Public Shared selectedUserName As String
     Public Shared Property Computers As ObservableCollection(Of Computer)
+
     'Liste des patients du RDC
     Public Shared Property PatientsRDC As ObservableCollection(Of Patient)
     'Liste des parients du 1er
@@ -387,9 +390,8 @@ Class MainWindow
         Users = If(LoadUsersFromJson(), New ObservableCollection(Of User)())
         ' Initialise la collection des patients
         LoadPatientsFromJson()
-        'Patients = If(LoadPatientsFromJson(), New ObservableCollection(Of Patient)())
         ' Initialise la collection des ordinateurs 
-        Computers = New ObservableCollection(Of Computer)
+        LoadComputersFromJson()
         ' Initialisez la collection de messages selectionné
         SelectedUserMessages = New ObservableCollection(Of Message)()
 
@@ -1085,16 +1087,21 @@ Class MainWindow
 
             Case "DBG01"
                 'Code pour envoyer l'ID du PC au autres application
-                Dim IDmessage As String = My.Settings.UniqueId
+                Dim localIPAddress As IPAddress = GetLocalIPAddress()
 
-                SendMessageWithCode("DBG02", My.Settings.UniqueId)
+                SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
             Case "DBG02"
                 'Code pour enregistrer l'ID des autre PC dans la collection computer
                 Dim messageContent As String = receivedMessage.Substring(5)
-                If Not Computers.Any(Function(c) c.ComputerID = messageContent) Then
-                    Computers.Add(New Computer With {.ComputerID = messageContent})
-                End If
+                Dim parts As String() = messageContent.Split("|"c)
+                Dim ComputerID As String = parts(0)
+                Dim ComputerUser As String = parts(1)
+                Dim ComputerIP As String = parts(2)
 
+                If Not Computers.Any(Function(c) c.ComputerID = ComputerID) Then
+                    Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIp = ComputerIP})
+                    SaveComputersToJson() ' Sauvegarder la liste mise à jour dans le fichier JSON
+                End If
             Case Else
                 ' Code pour les messages non reconnus
                 ' ...
@@ -1214,7 +1221,7 @@ Class MainWindow
                         Dim computerString As New StringBuilder()
                         computerString.AppendLine("Actuellement il y a :")
                         For Each computer In Computers
-                            computerString.AppendLine(computer.ComputerID)
+                            computerString.AppendLine(computer.ComputerUser)
                         Next
                         Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
                         AddMessage("Marvin", "Marvin", computerString.ToString, False, avatarPath)
@@ -1332,6 +1339,14 @@ Class MainWindow
             End If
 
             SendTextBox.Clear()
+        ElseIf e.Key = Key.Tab Then
+            ' Insérer la suggestion dans la zone de texte
+            If Not String.IsNullOrEmpty(_currentSuggestion) Then
+                SendTextBox.Text = _currentSuggestion
+                SendTextBox.SelectionStart = SendTextBox.Text.Length
+            End If
+            ' Empêcher le focus de se déplacer vers le contrôle suivant
+            e.Handled = True
         End If
     End Function
 
@@ -1777,6 +1792,26 @@ Class MainWindow
 
 
     End Sub
+
+    Public Shared Function GetLocalIPAddress() As IPAddress
+        Dim networkInterfaces As NetworkInterface() = NetworkInterface.GetAllNetworkInterfaces()
+
+        For Each networkInterface As NetworkInterface In networkInterfaces
+            If networkInterface.OperationalStatus = OperationalStatus.Up Then
+                Dim ipProperties As IPInterfaceProperties = networkInterface.GetIPProperties()
+                Dim unicastIPAddresses As UnicastIPAddressInformationCollection = ipProperties.UnicastAddresses
+
+                For Each ipAddressInfo As UnicastIPAddressInformation In unicastIPAddresses
+                    If ipAddressInfo.Address.AddressFamily = AddressFamily.InterNetwork Then
+                        Return ipAddressInfo.Address
+                    End If
+                Next
+            End If
+        Next
+
+        Return Nothing
+    End Function
+
 
 End Class
 

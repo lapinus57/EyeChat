@@ -196,6 +196,8 @@
     <Compile Include="Class\Computer.vb" />
     <Compile Include="Class\ContainsStringToVisibilityConverter.vb" />
     <Compile Include="Class\ExamOption.vb" />
+    <Compile Include="Class\FileReceiver.vb" />
+    <Compile Include="Class\FileSender.vb" />
     <Compile Include="Class\Message.vb" />
     <Compile Include="Class\MultiplyByTwoConverter.vb" />
     <Compile Include="Class\NameToEnabledConverter.vb" />
