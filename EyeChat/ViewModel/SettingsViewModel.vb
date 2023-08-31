@@ -597,6 +597,22 @@ Public Class SettingsViewModel
             ' Gérer les erreurs de sauvegarde (par exemple, journaliser l'erreur)
         End Try
     End Sub
+
+    Public Shared Sub SaveSpeedMessageToJson(ByVal exams As ObservableCollection(Of SpeedMessage))
+        Try
+            Dim jsonFilePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "SpeedMessage.json")
+
+            ' Convertir les options d'examen en format JSON
+            Dim optionsJson As String = JsonConvert.SerializeObject(exams.ToList(), Formatting.Indented)
+
+            ' Écrire le JSON dans le fichier
+            File.WriteAllText(jsonFilePath, optionsJson)
+        Catch ex As Exception
+            ' Gérer les erreurs de sauvegarde (par exemple, journaliser l'erreur)
+        End Try
+    End Sub
+
+
     Public ReadOnly Property PredefinedColors As List(Of Color)
         Get
             For Each colorProperty As PropertyInfo In GetType(Colors).GetProperties()

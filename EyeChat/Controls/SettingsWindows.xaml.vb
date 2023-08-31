@@ -95,11 +95,20 @@ Public Class SettingsWindows
             'Settings.SaveExamOptionsToJson()
         End If
     End Sub
-    Private Sub SaveChangesButton_Click(sender As Object, e As RoutedEventArgs)
+    Private Sub SaveExamChangesButton_Click(sender As Object, e As RoutedEventArgs)
         Dim examOptionList As List(Of ExamOption) = ExamDataGrid.ItemsSource.Cast(Of ExamOption)().ToList()
         Dim examOptionCollection As New ObservableCollection(Of ExamOption)(examOptionList)
 
         SaveExamOptionsToJson(examOptionCollection)
+    End Sub
+
+
+
+    Private Sub SaveSpeedMessageChangesButton_Click(sender As Object, e As RoutedEventArgs)
+        Dim SpeedMessageList As List(Of SpeedMessage) = SpeedMessageDataGrid.ItemsSource.Cast(Of SpeedMessage)().ToList()
+        Dim SpeedMessageCollection As New ObservableCollection(Of SpeedMessage)(SpeedMessageList)
+
+        SaveSpeedMessageToJson(SpeedMessageCollection)
     End Sub
 
     Private Sub ExamDataGrid_AddingNewItem(sender As Object, e As AddingNewItemEventArgs) Handles ExamDataGrid.AddingNewItem
@@ -109,6 +118,25 @@ Public Class SettingsWindows
 
         ' Assurez-vous que l'objet nouvellement créé est associé à l'élément ajouté
         e.NewItem = newExamOption
+
+        Dim examOptionList As List(Of ExamOption) = ExamDataGrid.ItemsSource.Cast(Of ExamOption)().ToList()
+        Dim examOptionCollection As New ObservableCollection(Of ExamOption)(examOptionList)
+
+        SaveExamOptionsToJson(examOptionCollection)
+    End Sub
+
+    Private Sub SpeedMessageGrid_AddingNewItem(sender As Object, e As AddingNewItemEventArgs) Handles SpeedMessageDataGrid.AddingNewItem
+        ' Créez un nouvel objet SpeedMessage et attribuez-lui l'index approprié
+        Dim newSpeedMessage As New SpeedMessage()
+        newSpeedMessage.Index = Settings.SpeedMessage.Count + 1 ' Incrémente l'index à chaque ajout
+
+        ' Assurez-vous que l'objet nouvellement créé est associé à l'élément ajouté
+        e.NewItem = newSpeedMessage
+
+        Dim SpeedMessageList As List(Of SpeedMessage) = SpeedMessageDataGrid.ItemsSource.Cast(Of SpeedMessage)().ToList()
+        Dim SpeedMessageCollection As New ObservableCollection(Of SpeedMessage)(SpeedMessageList)
+
+        SaveSpeedMessageToJson(SpeedMessageCollection)
     End Sub
 End Class
 

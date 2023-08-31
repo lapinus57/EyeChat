@@ -1273,6 +1273,8 @@ Class MainWindow
 
                             Dim Text As String = "PTN01" & patientTitre & "|" & patientNom & "|" & patientPrenom & "|" & codeMSG & "|" & annotation & "|RDC|" & My.Settings.UserName & "|" & Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
                             SendMessage(Text)
+                            MessageBox.Show(Text)
+
                         Else
 
 
@@ -1561,24 +1563,20 @@ Class MainWindow
 
     Private Sub ExtractInfoFromInput(inputText As String, ByRef patientTitre As String, ByRef patientNom As String, ByRef patientPrenom As String)
         ' Modèle pour extraire le titre
-        Dim patternTitle As String = "^(?<title>Mr|Mme|Mlle|En|Enfant|Me|Dr)?"
+        Dim patternTitle As String = "^(?i)(Mr|Mme|Me|Dr|Enfant)"
 
-        ' Modèle pour extraire le nom
-        Dim patternName As String = "^\s*(?<name>[^\s]+)"
-
-        ' Modèle pour extraire le prénom
-        Dim patternFirstName As String = "(?<firstName>[^\s]+)$"
+        ' Modèle pour extraire le nom et le prénom
+        Dim patternName As String = "^\s*(?<name>[^\d\s\-]+)\s+(?<firstName>[^\s]+)"
 
         Dim matchTitle As Match = Regex.Match(inputText, patternTitle)
         Dim matchName As Match = Regex.Match(inputText, patternName)
-        Dim matchFirstName As Match = Regex.Match(inputText, patternFirstName)
 
-        Dim titre As String = matchTitle.Groups("title").Value
+        Dim titre As String = matchTitle.Groups(1).Value
         patientNom = matchName.Groups("name").Value
-        patientPrenom = matchFirstName.Groups("firstName").Value
+        patientPrenom = matchName.Groups("firstName").Value
 
-        Select Case titre
-            Case "En "
+        Select Case titre.ToLower()
+            Case "enfant"
                 patientTitre = "Enfant"
             Case ""
                 patientTitre = "Iel"
