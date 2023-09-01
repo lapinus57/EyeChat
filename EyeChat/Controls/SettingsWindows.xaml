@@ -33,35 +33,45 @@
                 </Expander.Header>
 
                 <Expander.Content>
-                    <!-- Contenu collapsible -->
-                    <StackPanel>
+
+                    <Grid Margin="10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
                         <TextBlock Text="{StaticResource ComputerNameLabel}" 
-                                   Margin="10,0,0,0" 
-                                   FontSize="{Binding AppSizeDisplay}"/>
+                                   FontSize="{Binding AppSizeDisplay}"
+                                   Grid.Column="0" Grid.Row="0"/>
                         <TextBox Text="{Binding ComputerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 Margin="10,0,10,0"
+                                 Grid.Column="2" Grid.Row="0"
                                  FontSize="{Binding AppSizeDisplay}"
                                  IsReadOnly="True"/>
-
                         <TextBlock Text="{StaticResource WindowsNameLabel}" 
-                                   Margin="10,0,0,0" 
+                                   Grid.Column="0" Grid.Row="1" 
                                    FontSize="{Binding AppSizeDisplay}"/>
                         <TextBox Text="{Binding WindowsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 Margin="10,0,10,0"
+                                 Grid.Column="2" Grid.Row="1"
                                  FontSize="{Binding AppSizeDisplay}"
                                  IsReadOnly="True"/>
-
                         <TextBlock Text="{StaticResource UserNameLabel}" 
-                                   Margin="10,0,0,0" 
+                                   Grid.Column="0" Grid.Row="2" 
                                    FontSize="{Binding AppSizeDisplay}"/>
                         <TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 Margin="10,0,10,0"
+                                 Grid.Column="2" Grid.Row="2"
                                  FontSize="{Binding AppSizeDisplay}"/>
-
                         <TextBlock Text="{StaticResource AvatarLabel}" 
-                                   Margin="10,0,0,0" 
+                                   Grid.Column="0" Grid.Row="3"
                                    FontSize="{Binding AppSizeDisplay}"/>
-                    </StackPanel>
+                    </Grid>
+                    
+                    
 
 
                 </Expander.Content>
@@ -76,25 +86,36 @@
 
                 </Expander.Header>
                 <Expander.Content>
-                    <!-- Contenu collapsible -->
-                    <StackPanel>
+                    <Grid Margin="10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
                         <TextBlock Text="{StaticResource AppThemeLabel}" 
-                                   Margin="10,0,0,0" 
+                                   Grid.Column="0" Grid.Row="0"
                                    FontSize="{Binding AppSizeDisplay}"/>
                         <ComboBox SelectedValuePath="Content" 
                                   SelectedValue="{Binding AppTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                  Margin="10,0,10,0" SelectionChanged="AppThemeChanged" 
+                                  Grid.Column="2" Grid.Row="0"
+                                  SelectionChanged="AppThemeChanged" 
                                   FontSize="{Binding AppSizeDisplay}">
                             <ComboBoxItem Content="Clair" />
                             <ComboBoxItem Content="Sombre" />
                         </ComboBox>
 
+                        
                         <TextBlock Text="{StaticResource AppColorLabel}" 
-                                   Margin="10,0,0,0" 
+                                   Grid.Column="0" Grid.Row="1" 
                                    FontSize="{Binding AppSizeDisplay}" />
-
                         <ComboBox x:Name="cboColors" 
-                                  Margin="10,0" 
+                                  Grid.Column="2" Grid.Row="1" 
                                   SelectedValue="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                   SelectedValuePath="Tag"  
                                   IsEditable="False" 
@@ -127,11 +148,13 @@
                                 <ComboBoxItem Content="Sienna" Tag="Sienna" />
                             </ComboBox.Items>
                         </ComboBox>
+                        
+                        
                         <TextBlock Text="{StaticResource AppSizeLabel}" 
-                                   Margin="10,0,0,0" 
+                                   Grid.Column="0" Grid.Row="2"
                                    FontSize="{Binding AppSizeDisplay}"/>
                         <ComboBox x:Name="cboSize" 
-                                  Margin="10,0" 
+                                  Grid.Column="2" Grid.Row="2" 
                                   SelectedValue="{Binding AppSizeDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                   SelectedValuePath="Tag"  
                                   IsEditable="False" 
@@ -146,11 +169,13 @@
 
                             </ComboBox.Items>
                         </ComboBox>
+                        
+                        
                         <TextBlock Text="{StaticResource DisplayRoom}" 
-                                   Margin="10,0,0,0" 
+                                   Grid.Column="0" Grid.Row="3"
                                    FontSize="{Binding AppSizeDisplay}"/>
                         <ComboBox x:Name="cbodisplay" 
-                                  Margin="10,0" 
+                                  Grid.Column="2" Grid.Row="3" 
                                   SelectedValue="{Binding AppNameDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                   SelectedValuePath="Tag"  
                                   IsEditable="False"  
@@ -161,7 +186,10 @@
                                 <ComboBoxItem Content="Nom (Salle)" Tag="C" />
                             </ComboBox.Items>
                         </ComboBox>
-                    </StackPanel>
+
+                    </Grid>
+
+                        
 
 
                 </Expander.Content>
@@ -181,8 +209,8 @@
 
                         <Grid Margin="10,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150"/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="300"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
 
@@ -199,7 +227,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Ctrl + F9" Margin="10,0,0,0" 
+                            <TextBlock Text="Ctrl + F9" 
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="0" 
                                        VerticalAlignment="Center">
@@ -225,9 +253,10 @@
                                       SelectedValuePath="Name"
                                       SelectedValue="{Binding CtrlF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=CtrlF9Switch}"
-                                      FontSize="{Binding AppSizeDisplay}" 
-                                      Margin="10,0,10,0"/>
-                            <TextBlock Text="Ctrl + F10" Margin="10,0,0,8" 
+                                      FontSize="{Binding AppSizeDisplay}" />
+                            
+                            
+                            <TextBlock Text="Ctrl + F10"  
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="1" 
                                        VerticalAlignment="Bottom">
@@ -253,9 +282,10 @@
                                       SelectedValuePath="Name"
                                       SelectedValue="{Binding CtrlF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=CtrlF10Switch}"
-                                      FontSize="{Binding AppSizeDisplay}" 
-                                      Margin="10,0,10,0"/>
-                            <TextBlock Text="Ctrl + F11" Margin="10,0,0,0" 
+                                      FontSize="{Binding AppSizeDisplay}"/>
+                            
+                            
+                            <TextBlock Text="Ctrl + F11" 
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="2" 
                                        VerticalAlignment="Center">
@@ -281,10 +311,10 @@
                                       SelectedValuePath="Name"
                                       SelectedValue="{Binding CtrlF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=CtrlF11Switch}"
-                                      FontSize="{Binding AppSizeDisplay}" 
-                                      Margin="10,0,10,0"/>
+                                      FontSize="{Binding AppSizeDisplay}"/>
                             
-                            <TextBlock Text="Ctrl + F12" Margin="10,0,0,0" 
+                            
+                            <TextBlock Text="Ctrl + F12"
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="3" 
                                        VerticalAlignment="Center">
@@ -310,10 +340,10 @@
                                       SelectedValuePath="Name"
                                       SelectedValue="{Binding CtrlF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=CtrlF12Switch}"
-                                      FontSize="{Binding AppSizeDisplay}" 
-                                      Margin="10,0,10,0"/>
+                                      FontSize="{Binding AppSizeDisplay}"/>
                             
-                            <TextBlock Text="Shift + F9" Margin="10,0,0,0" 
+                            
+                            <TextBlock Text="Shift + F9"
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="4" 
                                        VerticalAlignment="Center">
@@ -339,10 +369,10 @@
                                       SelectedValuePath="Name"
                                       SelectedValue="{Binding ShiftF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=ShiftF9Switch}"
-                                      FontSize="{Binding AppSizeDisplay}" 
-                                      Margin="10,0,10,0"/>
+                                      FontSize="{Binding AppSizeDisplay}"/>
                             
-                            <TextBlock Text="Shift + F10" Margin="10,0,0,0" 
+                            
+                            <TextBlock Text="Shift + F10" 
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="5" 
                                        VerticalAlignment="Center">
@@ -368,10 +398,10 @@
                                       SelectedValuePath="Name"
                                       SelectedValue="{Binding ShiftF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=ShiftF10Switch}"
-                                      FontSize="{Binding AppSizeDisplay}" 
-                                      Margin="10,0,10,0"/>
+                                      FontSize="{Binding AppSizeDisplay}"/>
                             
-                            <TextBlock Text="Shift + F11" Margin="10,0,0,0" 
+                            
+                            <TextBlock Text="Shift + F11" 
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="6" 
                                        VerticalAlignment="Center">
@@ -397,10 +427,10 @@
                                       SelectedValuePath="Name"
                                       SelectedValue="{Binding ShiftF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=ShiftF11Switch}"
-                                      FontSize="{Binding AppSizeDisplay}" 
-                                      Margin="10,0,10,0"/>
+                                      FontSize="{Binding AppSizeDisplay}"/>
                             
-                            <TextBlock Text="Shift + F12" Margin="10,0,0,0" 
+                            
+                            <TextBlock Text="Shift + F12" 
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="7" 
                                        VerticalAlignment="Center">
@@ -426,8 +456,7 @@
                                       SelectedValuePath="Name"
                                       SelectedValue="{Binding ShiftF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=ShiftF12Switch}"
-                                      FontSize="{Binding AppSizeDisplay}" 
-                                      Margin="10,0,10,0"/>
+                                      FontSize="{Binding AppSizeDisplay}"/>
                         </Grid>
 
                     </StackPanel>
@@ -489,18 +518,72 @@
 
             <Expander>
                 <Expander.Header>
+                    <TextBlock Text="Planning" 
+                               FontSize="{Binding AppSizeDisplay}" 
+                               VerticalAlignment="Center" />
+                </Expander.Header>
+                <Grid Margin="10,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Mode Planning :"
+                                   FontSize="{Binding AppSizeDisplay}" 
+                                   Grid.Column="0"/>
+                        <mah:ToggleSwitch FontSize="{Binding AppSizeDisplay}" 
+                                          OffContent="Désactivé" 
+                                          OnContent="Activé" 
+                                          x:Name="PlanningSwitch" 
+                                          Grid.Column="1"/>
+                    </Grid>
+                    
+                        
+                        
+                    
+
+                </Grid>
+                
+            </Expander>
+
+            <Expander>
+                <Expander.Header>
                     <TextBlock Text="Fonctionalité" 
                                FontSize="{Binding AppSizeDisplay}" 
                                VerticalAlignment="Center" />
                 </Expander.Header>
                 <Expander.Content>
-                    <!-- Contenu collapsible -->
-                    <StackPanel>
-                        <TextBlock Text="{StaticResource SecretaryMode}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
-                        <mah:ToggleSwitch OffContent="Désactivé" OnContent="Activé" FontSize="{Binding AppSizeDisplay}" Margin="10,0,0,0"/>
-                        <TextBlock Text="{StaticResource DoctorMode}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
-                        <mah:ToggleSwitch OffContent="Désactivé" OnContent="Activé" FontSize="{Binding AppSizeDisplay}" Margin="10,0,0,0"/>
-                    </StackPanel>
+                    <Grid Margin="10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                            <TextBlock Text="{StaticResource SecretaryMode}" 
+                                       FontSize="{Binding AppSizeDisplay}"
+                                       Grid.Column="0" Grid.Row="0"/>
+                            <mah:ToggleSwitch OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              FontSize="{Binding AppSizeDisplay}"
+                                              Grid.Column="1" Grid.Row="0"/>
+                            <TextBlock Text="{StaticResource DoctorMode}" 
+                                       FontSize="{Binding AppSizeDisplay}"
+                                       Grid.Column="0" Grid.Row="1"/>
+                            <mah:ToggleSwitch OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              FontSize="{Binding AppSizeDisplay}" 
+                                              Grid.Column="1" Grid.Row="1"/>
+                        
+                    </Grid>
+                    
+                    
 
 
                 </Expander.Content>
