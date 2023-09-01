@@ -553,7 +553,7 @@ Class MainWindow
     ' Méthode pour ajouter un nouveau message
     Public Sub AddMessage(ByVal name As String, ByVal sender As String, ByVal content As String, ByVal isAlignedRight As Boolean, ByVal avatar As String)
         If Messages IsNot Nothing Then
-            Messages.Add(New Message With {.Name = name, .Sender = sender, .Content = content, .IsAlignedRight = isAlignedRight, .Timestamp = DateTime.Now, .Avatar = avatar})
+            Messages.Add(New Message With {.name = name, .sender = sender, .content = content, .isAlignedRight = isAlignedRight, .Timestamp = DateTime.Now, .avatar = avatar})
             SaveMessagesToJson(Messages)
         End If
     End Sub
@@ -1169,7 +1169,7 @@ Class MainWindow
                 Dim ComputerIP As String = parts(2)
 
                 If Not Computers.Any(Function(c) c.ComputerID = ComputerID) Then
-                    Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIp = ComputerIP})
+                    Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIP = ComputerIP})
                     SaveComputersToJson() ' Sauvegarder la liste mise à jour dans le fichier JSON
                 End If
             Case Else
