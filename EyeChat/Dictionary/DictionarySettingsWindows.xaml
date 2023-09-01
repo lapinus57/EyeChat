@@ -2,13 +2,17 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:local="clr-namespace:EyeChat">
-    
 
+
+
+    <system:String x:Key="GeneralSettingsLabel">Affichage</system:String>
     <system:String x:Key="UserNameLabel">Nom :</system:String>
     <system:String x:Key="ComputerNameLabel">Identifiant du PC :</system:String>
     <system:String x:Key="WindowsNameLabel">Nom du PC :</system:String>
     <system:String x:Key="AvatarLabel">Avatar :</system:String>
-    
+
+
+    <system:String x:Key="ScreenSettingsLabel">Affichage</system:String>
     <system:String x:Key="AppThemeLabel">Thème :</system:String>
     <system:String x:Key="AppColorLabel">Couleur :</system:String>
     <system:String x:Key="AppSizeLabel">Taille de l'interface :</system:String>

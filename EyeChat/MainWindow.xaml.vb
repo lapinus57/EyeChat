@@ -170,13 +170,13 @@ Class MainWindow
         End If
 
 
-        If My.Settings.AltF9Enabled Then
+        If My.Settings.ShiftF9Enabled Then
             RegisterHotKey(helper.Handle, HOTKEY_ID4, MOD_SHIFT, VK_F9)
         End If
-        If My.Settings.AltF10Enabled Then
+        If My.Settings.ShiftF10Enabled Then
             RegisterHotKey(helper.Handle, HOTKEY_ID5, MOD_SHIFT, VK_F10)
         End If
-        If My.Settings.AltF11Enabled Then
+        If My.Settings.ShiftF11Enabled Then
             RegisterHotKey(helper.Handle, HOTKEY_ID6, MOD_SHIFT, VK_F11)
         End If
     End Sub

@@ -15,7 +15,7 @@ Option Explicit On
 Namespace My
     
     <Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute(),  _
-     Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.6.0.0"),  _
+     Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.7.0.0"),  _
      Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
     Partial Friend NotInheritable Class MySettings
         Inherits Global.System.Configuration.ApplicationSettingsBase
@@ -177,48 +177,48 @@ Namespace My
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("e")>  _
-        Public Property AltF9() As String
+        Public Property ShiftF9() As String
             Get
-                Return CType(Me("AltF9"),String)
+                Return CType(Me("ShiftF9"),String)
             End Get
             Set
-                Me("AltF9") = value
+                Me("ShiftF9") = value
             End Set
         End Property
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("f")>  _
-        Public Property AltF10() As String
+        Public Property ShiftF10() As String
             Get
-                Return CType(Me("AltF10"),String)
+                Return CType(Me("ShiftF10"),String)
             End Get
             Set
-                Me("AltF10") = value
+                Me("ShiftF10") = value
             End Set
         End Property
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("g")>  _
-        Public Property AltF11() As String
+        Public Property ShiftF11() As String
             Get
-                Return CType(Me("AltF11"),String)
+                Return CType(Me("ShiftF11"),String)
             End Get
             Set
-                Me("AltF11") = value
+                Me("ShiftF11") = value
             End Set
         End Property
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("h")>  _
-        Public Property AltF12() As String
+        Public Property ShiftF12() As String
             Get
-                Return CType(Me("AltF12"),String)
+                Return CType(Me("ShiftF12"),String)
             End Get
             Set
-                Me("AltF12") = value
+                Me("ShiftF12") = value
             End Set
         End Property
         
@@ -273,48 +273,48 @@ Namespace My
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property AltF9Enabled() As Boolean
+        Public Property ShiftF9Enabled() As Boolean
             Get
-                Return CType(Me("AltF9Enabled"),Boolean)
+                Return CType(Me("ShiftF9Enabled"),Boolean)
             End Get
             Set
-                Me("AltF9Enabled") = value
+                Me("ShiftF9Enabled") = value
             End Set
         End Property
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property AltF10Enabled() As Boolean
+        Public Property ShiftF10Enabled() As Boolean
             Get
-                Return CType(Me("AltF10Enabled"),Boolean)
+                Return CType(Me("ShiftF10Enabled"),Boolean)
             End Get
             Set
-                Me("AltF10Enabled") = value
+                Me("ShiftF10Enabled") = value
             End Set
         End Property
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property AltF11Enabled() As Boolean
+        Public Property ShiftF11Enabled() As Boolean
             Get
-                Return CType(Me("AltF11Enabled"),Boolean)
+                Return CType(Me("ShiftF11Enabled"),Boolean)
             End Get
             Set
-                Me("AltF11Enabled") = value
+                Me("ShiftF11Enabled") = value
             End Set
         End Property
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property AltF12Enabled() As Boolean
+        Public Property ShiftF12Enabled() As Boolean
             Get
-                Return CType(Me("AltF12Enabled"),Boolean)
+                Return CType(Me("ShiftF12Enabled"),Boolean)
             End Get
             Set
-                Me("AltF12Enabled") = value
+                Me("ShiftF12Enabled") = value
             End Set
         End Property
         

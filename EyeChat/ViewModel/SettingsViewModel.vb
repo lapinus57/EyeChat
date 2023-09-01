@@ -526,177 +526,177 @@ Public Class SettingsViewModel
             End Try
         End Set
     End Property
-    Public Property AltF9 As String
+    Public Property ShiftF9 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété AltF9 : {My.Settings.AltF9}")
-                Return My.Settings.AltF9
+                logger.Debug($"Lecture de la propriété ShiftF9 : {My.Settings.ShiftF9}")
+                Return My.Settings.ShiftF9
             Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété AltF9 : {ex.Message}")
+                logger.Error($"Erreur lors de la lecture de la propriété ShiftF9 : {ex.Message}")
                 Return String.Empty
             End Try
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.AltF9 = value
+                My.Settings.ShiftF9 = value
                 My.Settings.Save()
-                NotifyPropertyChanged("AltF9")
-                logger.Info($"La propriété AltF9 a été modifiée : {value}")
+                NotifyPropertyChanged("ShiftF9")
+                logger.Info($"La propriété ShiftF9 a été modifiée : {value}")
             Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété AltF9 : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété ShifttF9 : {ex.Message}")
             End Try
         End Set
     End Property
 
-    Public Property AltF9Enabled As Boolean
+    Public Property ShiftF9Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété AltF9Enabled : {My.Settings.AltF9Enabled}")
-                Return My.Settings.AltF9Enabled
+                logger.Debug($"Lecture de la propriété ShiftF9Enabled : {My.Settings.ShiftF9Enabled}")
+                Return My.Settings.ShiftF9Enabled
             Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété AltF9Enabled : {ex.Message}")
+                logger.Error($"Erreur lors de la lecture de la propriété ShiftF9Enabled : {ex.Message}")
                 Return False
             End Try
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.AltF9Enabled = value
+                My.Settings.ShiftF9Enabled = value
                 My.Settings.Save()
-                NotifyPropertyChanged("AltF9Enabled")
-                logger.Info($"La propriété AltF9Enabled a été modifiée : {value}")
+                NotifyPropertyChanged("ShiftF9Enabled")
+                logger.Info($"La propriété ShiftF9Enabled a été modifiée : {value}")
             Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété AltF9Enabled : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété ShiftF9Enabled : {ex.Message}")
             End Try
         End Set
     End Property
 
-    Public Property AltF10 As String
+    Public Property ShiftF10 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété AltF10 : {My.Settings.AltF10}")
-                Return My.Settings.AltF10
+                logger.Debug($"Lecture de la propriété ShiftF10 : {My.Settings.ShiftF10}")
+                Return My.Settings.ShiftF10
             Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété AltF10 : {ex.Message}")
+                logger.Error($"Erreur lors de la lecture de la propriété ShiftF10 : {ex.Message}")
                 Return String.Empty
             End Try
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.AltF10 = value
+                My.Settings.ShiftF10 = value
                 My.Settings.Save()
-                NotifyPropertyChanged("AltF10")
-                logger.Info($"La propriété AltF10 a été modifiée : {value}")
+                NotifyPropertyChanged("ShiftF10")
+                logger.Info($"La propriété ShiftF10 a été modifiée : {value}")
             Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété AltF10 : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété ShiftF10 : {ex.Message}")
             End Try
         End Set
     End Property
 
-    Public Property AltF10Enabled As Boolean
+    Public Property ShiftF10Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété AltF10Enabled : {My.Settings.AltF10Enabled}")
-                Return My.Settings.AltF10Enabled
+                logger.Debug($"Lecture de la propriété ShiftF10Enabled : {My.Settings.ShiftF10Enabled}")
+                Return My.Settings.ShiftF10Enabled
             Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété AltF10Enabled : {ex.Message}")
+                logger.Error($"Erreur lors de la lecture de la propriété ShiftF10Enabled : {ex.Message}")
                 Return False
             End Try
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.AltF10Enabled = value
+                My.Settings.ShiftF10Enabled = value
                 My.Settings.Save()
-                NotifyPropertyChanged("AltF10Enabled")
-                logger.Info($"La propriété AltF9Enabled a été modifiée : {value}")
+                NotifyPropertyChanged("ShiftF10Enabled")
+                logger.Info($"La propriété ShiftF9Enabled a été modifiée : {value}")
             Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété AltF10Enabled : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété ShiftF10Enabled : {ex.Message}")
             End Try
         End Set
     End Property
 
-    Public Property AltF11 As String
+    Public Property ShiftF11 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété AltF11 : {My.Settings.AltF11}")
-                Return My.Settings.AltF11
+                logger.Debug($"Lecture de la propriété ShiftF11 : {My.Settings.ShiftF11}")
+                Return My.Settings.ShiftF11
             Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété AltF11 : {ex.Message}")
+                logger.Error($"Erreur lors de la lecture de la propriété ShiftF11 : {ex.Message}")
                 Return String.Empty
             End Try
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.AltF11 = value
+                My.Settings.ShiftF11 = value
                 My.Settings.Save()
-                NotifyPropertyChanged("AltF11")
-                logger.Info($"La propriété AltF11 a été modifiée : {value}")
+                NotifyPropertyChanged("ShiftF11")
+                logger.Info($"La propriété ShiftF11 a été modifiée : {value}")
             Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété AltF11 : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété ShiftF11 : {ex.Message}")
             End Try
         End Set
     End Property
 
-    Public Property AltF11Enabled As Boolean
+    Public Property ShiftF11Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété AltF11Enabled : {My.Settings.AltF11Enabled}")
-                Return My.Settings.AltF11Enabled
+                logger.Debug($"Lecture de la propriété ShiftF11Enabled : {My.Settings.ShiftF11Enabled}")
+                Return My.Settings.ShiftF11Enabled
             Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété AltF11Enabled : {ex.Message}")
+                logger.Error($"Erreur lors de la lecture de la propriété ShiftF11Enabled : {ex.Message}")
                 Return False
             End Try
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.AltF11Enabled = value
+                My.Settings.ShiftF11Enabled = value
                 My.Settings.Save()
-                NotifyPropertyChanged("AltF11Enabled")
-                logger.Info($"La propriété AltF11Enabled a été modifiée : {value}")
+                NotifyPropertyChanged("ShiftF11Enabled")
+                logger.Info($"La propriété ShiftF11Enabled a été modifiée : {value}")
             Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété AltF11Enabled : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété ShiftF11Enabled : {ex.Message}")
             End Try
         End Set
     End Property
 
-    Public Property AltF12 As String
+    Public Property ShiftF12 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété AltF12 : {My.Settings.AltF12}")
-                Return My.Settings.AltF12
+                logger.Debug($"Lecture de la propriété ShiftF12 : {My.Settings.ShiftF12}")
+                Return My.Settings.ShiftF12
             Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété AltF12 : {ex.Message}")
+                logger.Error($"Erreur lors de la lecture de la propriété ShiftF12 : {ex.Message}")
                 Return String.Empty
             End Try
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.AltF12 = value
+                My.Settings.ShiftF12 = value
                 My.Settings.Save()
-                NotifyPropertyChanged("AltF12")
-                logger.Info($"La propriété AltF12 a été modifiée : {value}")
+                NotifyPropertyChanged("ShiftF12")
+                logger.Info($"La propriété ShiftF12 a été modifiée : {value}")
             Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété AltF12 : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété ShiftF12 : {ex.Message}")
             End Try
         End Set
     End Property
-    Public Property AltF12Enabled As Boolean
+    Public Property ShiftF12Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété AltF12Enabled : {My.Settings.AltF12Enabled}")
-                Return My.Settings.AltF12Enabled
+                logger.Debug($"Lecture de la propriété ShiftF12Enabled : {My.Settings.ShiftF12Enabled}")
+                Return My.Settings.ShiftF12Enabled
             Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété AltF12Enabled : {ex.Message}")
+                logger.Error($"Erreur lors de la lecture de la propriété ShiftF12Enabled : {ex.Message}")
                 Return False
             End Try
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.AltF12Enabled = value
+                My.Settings.ShiftF12Enabled = value
                 My.Settings.Save()
-                NotifyPropertyChanged("AltF12Enabled")
-                logger.Info($"La propriété AltF12Enabled a été modifiée : {value}")
+                NotifyPropertyChanged("ShiftF12Enabled")
+                logger.Info($"La propriété ShiftF12Enabled a été modifiée : {value}")
             Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété AltF12Enabled : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété ShiftF12Enabled : {ex.Message}")
             End Try
         End Set
     End Property
