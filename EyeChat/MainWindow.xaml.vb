@@ -86,6 +86,7 @@ Class MainWindow
     Private Const Version As String = "0.0.1" ' Remplacez par votre version actuelle
 
 
+
     Structure UserUpdateInfo
         Dim UserName As String
         Dim LastIdentifiantPC As String
@@ -146,6 +147,8 @@ Class MainWindow
 
 
     Private Sub RegisterHotKey()
+        UnregisterHotKey() ' Désenregistrement de tous les raccourcis existants
+
         Dim helper = New WindowInteropHelper(Me)
         Const VK_E As UInteger = &H45
         Const MOD_CTRL As UInteger = &H2
@@ -154,22 +157,28 @@ Class MainWindow
         Const VK_F10 As UInteger = &H79
         Const VK_F11 As UInteger = &H7A
 
-        ' handle error
-        If Not RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_CTRL, VK_E) Then
+        RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_CTRL, VK_E)
+
+        If My.Settings.CtrlF9Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID1, MOD_CTRL, VK_F9)
         End If
-        If Not RegisterHotKey(helper.Handle, HOTKEY_ID1, MOD_CTRL, VK_F9) Then
+        If My.Settings.CtrlF10Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID2, MOD_CTRL, VK_F10)
         End If
-        If Not RegisterHotKey(helper.Handle, HOTKEY_ID2, MOD_CTRL, VK_F10) Then
-        End If
-        If Not RegisterHotKey(helper.Handle, HOTKEY_ID3, MOD_CTRL, VK_F11) Then
-        End If
-        If Not RegisterHotKey(helper.Handle, HOTKEY_ID4, MOD_SHIFT, VK_F9) Then
-        End If
-        If Not RegisterHotKey(helper.Handle, HOTKEY_ID5, MOD_SHIFT, VK_F10) Then
-        End If
-        If Not RegisterHotKey(helper.Handle, HOTKEY_ID6, MOD_SHIFT, VK_F11) Then
+        If My.Settings.CtrlF11Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID3, MOD_CTRL, VK_F11)
         End If
 
+
+        If My.Settings.AltF9Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID4, MOD_SHIFT, VK_F9)
+        End If
+        If My.Settings.AltF10Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID5, MOD_SHIFT, VK_F10)
+        End If
+        If My.Settings.AltF11Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID6, MOD_SHIFT, VK_F11)
+        End If
     End Sub
 
     Private Sub UnregisterHotKey()
@@ -456,7 +465,9 @@ Class MainWindow
 
     Private Sub MessageMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim selectedMessage As SpeedMessage = DirectCast(DirectCast(sender, System.Windows.Controls.MenuItem).Tag, SpeedMessage)
-        SendTextBox.Text = selectedMessage.Message.Replace("[ROOM]", Environment.UserName) + "|" + selectedMessage.Destinataire + "|" + selectedMessage.Options
+        '"SMF01UserName|Destinataitre|message|Option1|Option2|Option3"
+        SendMessage("SMF01" & My.Settings.UserName & "|" & selectedMessage.Destinataire & "|" & selectedMessage.Message.Replace("[ROOM]", Environment.UserName) & "|" & selectedMessage.Options)
+
     End Sub
 
 
@@ -873,7 +884,29 @@ Class MainWindow
             Case "USR11"
                 ' Code message
 
+            Case "SMF01"
+                'Reception d'un SpeedMessage envoyer 
+                ' exemple d'une message reçu "SMF01UserName|Destinataitre|message|Option1|Option2|Option3"
+                Try
+                    ' Extraire le contenu du message à partir de la position 5 pour ignorer le code
+                    Dim messageContent As String = receivedMessage.Substring(5)
 
+                    ' Diviser le contenu du message en parties en utilisant le caractère '|'
+                    Dim parts As String() = messageContent.Split("|"c)
+                    Dim UserSend As String = parts(0)
+                    Dim Destinataire As String = parts(1)
+                    Dim Message As String = parts(2)
+                    Dim Option1 As String = parts(3)
+                    Dim Option2 As String = parts(4)
+                    Dim Option3 As String = parts(5)
+
+                    If Destinataire = My.Settings.UserName Then
+                        SpeedMessageDialog(UserSend, UserSend & Message, Option1, Option2, Option3)
+                    End If
+
+                Catch ex As Exception
+
+                End Try
 
 
             Case "PTN01"
@@ -1143,6 +1176,25 @@ Class MainWindow
     End Sub
 
 
+    Private Async Sub SpeedMessageDialog(ByVal Titre As String, ByVal Message As String, ByVal option1 As String, ByVal option2 As String, ByVal option3 As String)
+        Dim dialogSettings As New MetroDialogSettings With {
+            .AffirmativeButtonText = option1,
+            .NegativeButtonText = option2,
+            .FirstAuxiliaryButtonText = option3
+        }
+
+        Dim result As MessageDialogResult = Await DialogCoordinator.Instance.ShowMessageAsync(Me, Titre, Message, MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary, dialogSettings)
+
+        If result = MessageDialogResult.Affirmative Then
+            ' Bouton 1 cliqué
+        ElseIf result = MessageDialogResult.Negative Then
+            ' Bouton 2 cliqué
+        ElseIf result = MessageDialogResult.FirstAuxiliary Then
+            ' Bouton 3 cliqué
+        End If
+    End Sub
+
+
 
 #End Region
 
@@ -1187,7 +1239,7 @@ Class MainWindow
         _currentInput = input
     End Sub
 
-    Private Async Function SendTextBox_KeyDownAsync(sender As Object, e As KeyEventArgs) As Task Handles SendTextBox.KeyDown
+    Private Function SendTextBox_KeyDownAsync(sender As Object, e As KeyEventArgs) As Task Handles SendTextBox.KeyDown
         If e.Key = Key.Enter Then
             SendTextBox.Text = SendTextBox.Text.TrimEnd()
             If Not String.IsNullOrEmpty(SendTextBox.Text) Then

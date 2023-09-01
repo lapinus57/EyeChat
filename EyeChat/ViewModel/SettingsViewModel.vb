@@ -374,6 +374,27 @@ Public Class SettingsViewModel
             End Try
         End Set
     End Property
+    Public Property CtrlF9Enabled As Boolean
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété CtrlF9Enabled : {My.Settings.CtrlF9Enabled}")
+                Return My.Settings.CtrlF9Enabled
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété CtrlF9Enabled : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.CtrlF9Enabled = value
+                My.Settings.Save()
+                NotifyPropertyChanged("CtrlF9Enabled")
+                logger.Info($"La propriété CtrlF9Enabled a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété CtrlF9Enabled : {ex.Message}")
+            End Try
+        End Set
+    End Property
 
     Public Property CtrlF10 As String
         Get
@@ -393,6 +414,28 @@ Public Class SettingsViewModel
                 logger.Info($"La propriété CtrlF10 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF10 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property CtrlF10Enabled As Boolean
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété CtrlF10Enabled : {My.Settings.CtrlF10Enabled}")
+                Return My.Settings.CtrlF10Enabled
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété CtrlF10Enabled : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.CtrlF10Enabled = value
+                My.Settings.Save()
+                NotifyPropertyChanged("CtrlF10Enabled")
+                logger.Info($"La propriété CtrlF10Enabled a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété CtrlF10Enabled : {ex.Message}")
             End Try
         End Set
     End Property
@@ -418,6 +461,27 @@ Public Class SettingsViewModel
             End Try
         End Set
     End Property
+    Public Property CtrlF11Enabled As Boolean
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété CtrlF11Enabled : {My.Settings.CtrlF11Enabled}")
+                Return My.Settings.CtrlF11Enabled
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété CtrlF11Enabled : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.CtrlF11Enabled = value
+                My.Settings.Save()
+                NotifyPropertyChanged("CtrlF11Enabled")
+                logger.Info($"La propriété CtrlF9Enabled a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété CtrlF11Enabled : {ex.Message}")
+            End Try
+        End Set
+    End Property
 
     Public Property CtrlF12 As String
         Get
@@ -440,6 +504,28 @@ Public Class SettingsViewModel
             End Try
         End Set
     End Property
+
+    Public Property CtrlF12Enabled As Boolean
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété CtrlF12Enabled : {My.Settings.CtrlF12Enabled}")
+                Return My.Settings.CtrlF12Enabled
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété CtrlF12Enabled : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.CtrlF9Enabled = value
+                My.Settings.Save()
+                NotifyPropertyChanged("CtrlF12Enabled")
+                logger.Info($"La propriété CtrlF12Enabled a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété CtrlF12Enabled : {ex.Message}")
+            End Try
+        End Set
+    End Property
     Public Property AltF9 As String
         Get
             Try
@@ -458,6 +544,28 @@ Public Class SettingsViewModel
                 logger.Info($"La propriété AltF9 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété AltF9 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property AltF9Enabled As Boolean
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété AltF9Enabled : {My.Settings.AltF9Enabled}")
+                Return My.Settings.AltF9Enabled
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AltF9Enabled : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.AltF9Enabled = value
+                My.Settings.Save()
+                NotifyPropertyChanged("AltF9Enabled")
+                logger.Info($"La propriété AltF9Enabled a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété AltF9Enabled : {ex.Message}")
             End Try
         End Set
     End Property
@@ -484,6 +592,28 @@ Public Class SettingsViewModel
         End Set
     End Property
 
+    Public Property AltF10Enabled As Boolean
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété AltF10Enabled : {My.Settings.AltF10Enabled}")
+                Return My.Settings.AltF10Enabled
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AltF10Enabled : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.AltF10Enabled = value
+                My.Settings.Save()
+                NotifyPropertyChanged("AltF10Enabled")
+                logger.Info($"La propriété AltF9Enabled a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété AltF10Enabled : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
     Public Property AltF11 As String
         Get
             Try
@@ -506,6 +636,28 @@ Public Class SettingsViewModel
         End Set
     End Property
 
+    Public Property AltF11Enabled As Boolean
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété AltF11Enabled : {My.Settings.AltF11Enabled}")
+                Return My.Settings.AltF11Enabled
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AltF11Enabled : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.AltF11Enabled = value
+                My.Settings.Save()
+                NotifyPropertyChanged("AltF11Enabled")
+                logger.Info($"La propriété AltF11Enabled a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété AltF11Enabled : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
     Public Property AltF12 As String
         Get
             Try
@@ -524,6 +676,27 @@ Public Class SettingsViewModel
                 logger.Info($"La propriété AltF12 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété AltF12 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+    Public Property AltF12Enabled As Boolean
+        Get
+            Try
+                logger.Debug($"Lecture de la propriété AltF12Enabled : {My.Settings.AltF12Enabled}")
+                Return My.Settings.AltF12Enabled
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AltF12Enabled : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.AltF12Enabled = value
+                My.Settings.Save()
+                NotifyPropertyChanged("AltF12Enabled")
+                logger.Info($"La propriété AltF12Enabled a été modifiée : {value}")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété AltF12Enabled : {ex.Message}")
             End Try
         End Set
     End Property

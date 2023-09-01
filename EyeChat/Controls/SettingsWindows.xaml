@@ -17,7 +17,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Dictionary/DictionarySettingsWindows.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
+
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -29,10 +29,10 @@
                 <Expander.Header>
                     <TextBlock Text="Général" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
                 </Expander.Header>
-                
-				<Expander.Content>
-					<!-- Contenu collapsible -->
-					<StackPanel>
+
+                <Expander.Content>
+                    <!-- Contenu collapsible -->
+                    <StackPanel>
                         <TextBlock Text="{StaticResource ComputerNameLabel}" 
                                    Margin="10,0,0,0" 
                                    FontSize="{Binding AppSizeDisplay}"/>
@@ -55,16 +55,16 @@
                         <TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  Margin="10,0,10,0"
                                  FontSize="{Binding AppSizeDisplay}"/>
-                        
-                        
+
+
                         <TextBlock Text="{StaticResource AvatarLabel}" 
                                    Margin="10,0,0,0" 
                                    FontSize="{Binding AppSizeDisplay}"/>
-					</StackPanel>
-					
-					
-				</Expander.Content>
-			</Expander>
+                    </StackPanel>
+
+
+                </Expander.Content>
+            </Expander>
 
             <Expander >
                 <Expander.Header>
@@ -75,8 +75,8 @@
 
                 </Expander.Header>
                 <Expander.Content>
-					<!-- Contenu collapsible -->
-					<StackPanel>
+                    <!-- Contenu collapsible -->
+                    <StackPanel>
                         <TextBlock Text="{StaticResource AppThemeLabel}" 
                                    Margin="10,0,0,0" 
                                    FontSize="{Binding AppSizeDisplay}"/>
@@ -84,9 +84,9 @@
                                   SelectedValue="{Binding AppTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                   Margin="10,0,10,0" SelectionChanged="AppThemeChanged" 
                                   FontSize="{Binding AppSizeDisplay}">
-							<ComboBoxItem Content="Clair" />
-							<ComboBoxItem Content="Sombre" />
-						</ComboBox>
+                            <ComboBoxItem Content="Clair" />
+                            <ComboBoxItem Content="Sombre" />
+                        </ComboBox>
 
                         <TextBlock Text="{StaticResource AppColorLabel}" 
                                    Margin="10,0,0,0" 
@@ -142,7 +142,7 @@
                                 <ComboBoxItem Content="Moyen" Tag="16" />
                                 <ComboBoxItem Content="Grand" Tag="18" />
                                 <ComboBoxItem Content="Très Grand" Tag="20" />
-                                
+
                             </ComboBox.Items>
                         </ComboBox>
                         <TextBlock Text="{StaticResource DisplayRoom}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
@@ -156,14 +156,14 @@
                     </StackPanel>
 
 
-				</Expander.Content>
-			</Expander>
+                </Expander.Content>
+            </Expander>
 
             <Expander>
                 <Expander.Header>
-                   
-                 <TextBlock Text="Raccourcis clavier" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
-                       
+
+                    <TextBlock Text="Raccourcis clavier" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+
                 </Expander.Header>
                 <Expander.Content>
                     <!-- Contenu collapsible -->
@@ -200,10 +200,10 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="0" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF9Switch"/>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="0" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF9Switch" IsOn= "{Binding CtrlF9Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Text="{Binding CtrlF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="0" IsEnabled="{Binding IsOn, ElementName=CtrlF9Switch}"/>
 
-                            <TextBlock Text="Ctrl + F10" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">
+                            <TextBlock Text="Ctrl + F10" Margin="10,0,0,8" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Bottom">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -214,7 +214,7 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="1" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF10Switch"/>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="1" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF10Switch" IsOn= "{Binding CtrlF10Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Text="{Binding CtrlF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="1" IsEnabled="{Binding IsOn, ElementName=CtrlF10Switch}"/>
 
                             <TextBlock Text="Ctrl + F11" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center">
@@ -228,7 +228,7 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="2" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF11Switch"/>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="2" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF11Switch" IsOn= "{Binding CtrlF11Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Text="{Binding CtrlF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="2" IsEnabled="{Binding IsOn, ElementName=CtrlF11Switch}"/>
 
                             <TextBlock Text="Ctrl + F12" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center">
@@ -242,7 +242,7 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="3" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF12Switch"/>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="3" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF12Switch" IsOn= "{Binding CtrlF12Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Text="{Binding CtrlF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="3" IsEnabled="{Binding IsOn, ElementName=CtrlF12Switch}"/>
 
                             <TextBlock Text="Alt + F9" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center">
@@ -256,7 +256,7 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="4" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF9Switch"/>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="4" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF9Switch" IsOn= "{Binding AltF9Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Text="{Binding AltF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="4" IsEnabled="{Binding IsOn, ElementName=AltF9Switch}"/>
 
                             <TextBlock Text="Alt + F10" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="5" VerticalAlignment="Center">
@@ -270,7 +270,7 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="5" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF10Switch"/>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="5" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF10Switch" IsOn= "{Binding AltF10Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Text="{Binding AltF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="5" IsEnabled="{Binding IsOn, ElementName=AltF10Switch}"/>
 
                             <TextBlock Text="Alt + F11" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="6" VerticalAlignment="Center">
@@ -284,7 +284,7 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="6" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF11Switch"/>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="6" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF11Switch" IsOn= "{Binding AltF11Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Text="{Binding AltF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="6" IsEnabled="{Binding IsOn, ElementName=AltF11Switch}"/>
 
                             <TextBlock Text="Alt + F12" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="7" VerticalAlignment="Center">
@@ -298,7 +298,7 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="7" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF12Switch"/>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="7" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF12Switch" IsOn= "{Binding AltF12Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBox Text="{Binding AltF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="7" IsEnabled="{Binding IsOn, ElementName=AltF12Switch}"/>
                         </Grid>
 
@@ -337,12 +337,12 @@
                     <StackPanel>
                         <DataGrid x:Name="SpeedMessageDataGrid" ItemsSource="{Binding Path=SpeedMessage, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False">
                             <DataGrid.Columns>
-                            <DataGridTextColumn Header="Index" Binding="{Binding Index}" IsReadOnly="True" />
-                            <DataGridTextColumn Header="Titre" Binding="{Binding Title}" />
-                            <DataGridTextColumn Header="Destinataire" Binding="{Binding Destinataire}" />
-                            <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
-                            <DataGridTextColumn Header="Options" Binding="{Binding Options}" />
-                          </DataGrid.Columns>
+                                <DataGridTextColumn Header="Index" Binding="{Binding Index}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="Titre" Binding="{Binding Title}" />
+                                <DataGridTextColumn Header="Destinataire" Binding="{Binding Destinataire}" />
+                                <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
+                                <DataGridTextColumn Header="Options" Binding="{Binding Options}" />
+                            </DataGrid.Columns>
                         </DataGrid>
                         <Button Content="Enregistrer les modifications" Click="SaveSpeedMessageChangesButton_Click"/>
 
@@ -355,8 +355,8 @@
                     <TextBlock Text="Fonctionalité" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
                 </Expander.Header>
                 <Expander.Content>
-					<!-- Contenu collapsible -->
-					<StackPanel>
+                    <!-- Contenu collapsible -->
+                    <StackPanel>
                         <TextBlock Text="{StaticResource SecretaryMode}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
                         <mah:ToggleSwitch OffContent="Désactivé" OnContent="Activé" FontSize="{Binding AppSizeDisplay}" Margin="10,0,0,0"/>
                         <TextBlock Text="{StaticResource DoctorMode}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
@@ -364,8 +364,8 @@
                     </StackPanel>
 
 
-				</Expander.Content>
-			</Expander>
+                </Expander.Content>
+            </Expander>
             <Expander Visibility="{Binding RoomDisplayStr}">
                 <Expander.Header>
                     <TextBlock Text="Débug" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
