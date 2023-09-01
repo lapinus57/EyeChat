@@ -128,6 +128,9 @@ Class MainWindow
     Private Const HOTKEY_ID4 As Integer = 9004
     Private Const HOTKEY_ID5 As Integer = 9005
     Private Const HOTKEY_ID6 As Integer = 9006
+    Private Const HOTKEY_ID7 As Integer = 9007
+    Private Const HOTKEY_ID8 As Integer = 9008
+    Private Const HOTKEY_ID9 As Integer = 9009
 
 
     Protected Overrides Sub OnSourceInitialized(e As EventArgs)
@@ -156,6 +159,8 @@ Class MainWindow
         Const VK_F9 As UInteger = &H78
         Const VK_F10 As UInteger = &H79
         Const VK_F11 As UInteger = &H7A
+        Const VK_F12 As UInteger = &H7B
+
 
         RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_CTRL, VK_E)
 
@@ -168,17 +173,24 @@ Class MainWindow
         If My.Settings.CtrlF11Enabled Then
             RegisterHotKey(helper.Handle, HOTKEY_ID3, MOD_CTRL, VK_F11)
         End If
+        If My.Settings.CtrlF12Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID4, MOD_CTRL, VK_F12)
+        End If
 
 
-        If My.Settings.AltF9Enabled Then
-            RegisterHotKey(helper.Handle, HOTKEY_ID4, MOD_SHIFT, VK_F9)
+        If My.Settings.ShiftF9Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID5, MOD_SHIFT, VK_F9)
         End If
-        If My.Settings.AltF10Enabled Then
-            RegisterHotKey(helper.Handle, HOTKEY_ID5, MOD_SHIFT, VK_F10)
+        If My.Settings.ShiftF10Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID6, MOD_SHIFT, VK_F10)
         End If
-        If My.Settings.AltF11Enabled Then
-            RegisterHotKey(helper.Handle, HOTKEY_ID6, MOD_SHIFT, VK_F11)
+        If My.Settings.ShiftF11Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID7, MOD_SHIFT, VK_F11)
         End If
+        If My.Settings.ShiftF12Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID8, MOD_SHIFT, VK_F12)
+        End If
+
     End Sub
 
     Private Sub UnregisterHotKey()
@@ -190,6 +202,8 @@ Class MainWindow
         UnregisterHotKey(helper.Handle, HOTKEY_ID4)
         UnregisterHotKey(helper.Handle, HOTKEY_ID5)
         UnregisterHotKey(helper.Handle, HOTKEY_ID6)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID7)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID8)
     End Sub
 
     Private Function HwndHook(hwnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As IntPtr, ByRef handled As Boolean) As IntPtr
@@ -198,9 +212,7 @@ Class MainWindow
             Case WM_HOTKEY
                 Select Case wParam.ToInt32()
                     Case HOTKEY_ID
-                        'Mettre Eyechat au premier pland
                         OnHotKeyPressed0()
-                        handled = True
                     Case HOTKEY_ID1
                         OnHotKeyPressed1()
                     Case HOTKEY_ID2
@@ -213,6 +225,10 @@ Class MainWindow
                         OnHotKeyPressed5()
                     Case HOTKEY_ID6
                         OnHotKeyPressed6()
+                    Case HOTKEY_ID7
+                        OnHotKeyPressed7()
+                    Case HOTKEY_ID8
+                        OnHotKeyPressed8()
                         Exit Select
                 End Select
                 Exit Select
@@ -261,8 +277,18 @@ Class MainWindow
 
     End Sub
 
-    'Raccourci Shift + F9
+    'Raccourci Ctrl + F12
     Private Sub OnHotKeyPressed4()
+        Me.WindowState = WindowState.Normal
+        Me.Topmost = True
+        Me.Topmost = False
+        Me.Focus()
+        OpenPatientDialogue("ODG", "AT", "RDC")
+
+    End Sub
+
+    'Raccourci Shift + F9
+    Private Sub OnHotKeyPressed5()
         Me.WindowState = WindowState.Normal
         Me.Topmost = True
         Me.Topmost = False
@@ -273,7 +299,7 @@ Class MainWindow
 
 
     'Raccourci Shift + F10
-    Private Sub OnHotKeyPressed5()
+    Private Sub OnHotKeyPressed6()
         Me.WindowState = WindowState.Normal
         Me.Topmost = True
         Me.Topmost = False
@@ -283,7 +309,7 @@ Class MainWindow
     End Sub
 
     'Raccourci Shift + F11
-    Private Sub OnHotKeyPressed6()
+    Private Sub OnHotKeyPressed7()
         Me.WindowState = WindowState.Normal
         Me.Topmost = True
         Me.Topmost = False
@@ -291,6 +317,17 @@ Class MainWindow
         OpenPatientDialogue("ODG", "AT", "1er")
 
     End Sub
+
+    'Raccourci Shift + F11
+    Private Sub OnHotKeyPressed8()
+        Me.WindowState = WindowState.Normal
+        Me.Topmost = True
+        Me.Topmost = False
+        Me.Focus()
+        OpenPatientDialogue("ODG", "AT", "1er")
+
+    End Sub
+
 
 #End Region
 

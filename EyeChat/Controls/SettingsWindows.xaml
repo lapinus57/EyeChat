@@ -27,7 +27,9 @@
         <StackPanel>
             <Expander >
                 <Expander.Header>
-                    <TextBlock Text="Général" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                    <TextBlock Text="{StaticResource GeneralSettingsLabel}" 
+                               FontSize="{Binding AppSizeDisplay}" 
+                               VerticalAlignment="Center" />
                 </Expander.Header>
 
                 <Expander.Content>
@@ -56,7 +58,6 @@
                                  Margin="10,0,10,0"
                                  FontSize="{Binding AppSizeDisplay}"/>
 
-
                         <TextBlock Text="{StaticResource AvatarLabel}" 
                                    Margin="10,0,0,0" 
                                    FontSize="{Binding AppSizeDisplay}"/>
@@ -69,7 +70,7 @@
             <Expander >
                 <Expander.Header>
 
-                    <TextBlock Text="Affichage" 
+                    <TextBlock Text="{StaticResource ScreenSettingsLabel}" 
                                FontSize="{Binding AppSizeDisplay}" 
                                VerticalAlignment="Center" />
 
@@ -145,8 +146,15 @@
 
                             </ComboBox.Items>
                         </ComboBox>
-                        <TextBlock Text="{StaticResource DisplayRoom}" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}"/>
-                        <ComboBox x:Name="cbodisplay" Margin="10,0" SelectedValue="{Binding AppNameDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag"  IsEditable="False"  FontSize="{Binding AppSizeDisplay}">
+                        <TextBlock Text="{StaticResource DisplayRoom}" 
+                                   Margin="10,0,0,0" 
+                                   FontSize="{Binding AppSizeDisplay}"/>
+                        <ComboBox x:Name="cbodisplay" 
+                                  Margin="10,0" 
+                                  SelectedValue="{Binding AppNameDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                  SelectedValuePath="Tag"  
+                                  IsEditable="False"  
+                                  FontSize="{Binding AppSizeDisplay}">
                             <ComboBox.Items>
                                 <ComboBoxItem Content="Nom" Tag="A" />
                                 <ComboBoxItem Content="Salle (Nom)" Tag="B" />
@@ -162,7 +170,9 @@
             <Expander>
                 <Expander.Header>
 
-                    <TextBlock Text="Raccourcis clavier" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                    <TextBlock Text="Raccourcis clavier" 
+                               FontSize="{Binding AppSizeDisplay}" 
+                               VerticalAlignment="Center" />
 
                 </Expander.Header>
                 <Expander.Content>
@@ -189,7 +199,10 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Ctrl + F9" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
+                            <TextBlock Text="Ctrl + F9" Margin="10,0,0,0" 
+                                       FontSize="{Binding AppSizeDisplay}" 
+                                       Grid.Column="0" Grid.Row="0" 
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -200,10 +213,24 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="0" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF9Switch" IsOn= "{Binding CtrlF9Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Text="{Binding CtrlF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="0" IsEnabled="{Binding IsOn, ElementName=CtrlF9Switch}"/>
-
-                            <TextBlock Text="Ctrl + F10" Margin="10,0,0,8" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Bottom">
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="0" 
+                                              FontSize="{Binding AppSizeDisplay}" 
+                                              OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              x:Name="CtrlF9Switch" 
+                                              IsOn= "{Binding CtrlF9Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Column="2" Grid.Row="0"
+                                      ItemsSource="{Binding ExamOptions}" 
+                                      DisplayMemberPath="Name" 
+                                      SelectedValuePath="Name"
+                                      SelectedValue="{Binding CtrlF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding IsOn, ElementName=CtrlF9Switch}"
+                                      FontSize="{Binding AppSizeDisplay}" 
+                                      Margin="10,0,10,0"/>
+                            <TextBlock Text="Ctrl + F10" Margin="10,0,0,8" 
+                                       FontSize="{Binding AppSizeDisplay}" 
+                                       Grid.Column="0" Grid.Row="1" 
+                                       VerticalAlignment="Bottom">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -214,10 +241,24 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="1" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF10Switch" IsOn= "{Binding CtrlF10Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Text="{Binding CtrlF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="1" IsEnabled="{Binding IsOn, ElementName=CtrlF10Switch}"/>
-
-                            <TextBlock Text="Ctrl + F11" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center">
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="1" 
+                                              FontSize="{Binding AppSizeDisplay}" 
+                                              OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              x:Name="CtrlF10Switch" 
+                                              IsOn= "{Binding CtrlF10Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Column="2" Grid.Row="1"
+                                      ItemsSource="{Binding ExamOptions}" 
+                                      DisplayMemberPath="Name" 
+                                      SelectedValuePath="Name"
+                                      SelectedValue="{Binding CtrlF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding IsOn, ElementName=CtrlF10Switch}"
+                                      FontSize="{Binding AppSizeDisplay}" 
+                                      Margin="10,0,10,0"/>
+                            <TextBlock Text="Ctrl + F11" Margin="10,0,0,0" 
+                                       FontSize="{Binding AppSizeDisplay}" 
+                                       Grid.Column="0" Grid.Row="2" 
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -228,10 +269,25 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="2" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF11Switch" IsOn= "{Binding CtrlF11Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Text="{Binding CtrlF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="2" IsEnabled="{Binding IsOn, ElementName=CtrlF11Switch}"/>
-
-                            <TextBlock Text="Ctrl + F12" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center">
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="2" 
+                                              FontSize="{Binding AppSizeDisplay}" 
+                                              OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              x:Name="CtrlF11Switch" 
+                                              IsOn= "{Binding CtrlF11Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Column="2" Grid.Row="2"
+                                      ItemsSource="{Binding ExamOptions}" 
+                                      DisplayMemberPath="Name" 
+                                      SelectedValuePath="Name"
+                                      SelectedValue="{Binding CtrlF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding IsOn, ElementName=CtrlF11Switch}"
+                                      FontSize="{Binding AppSizeDisplay}" 
+                                      Margin="10,0,10,0"/>
+                            
+                            <TextBlock Text="Ctrl + F12" Margin="10,0,0,0" 
+                                       FontSize="{Binding AppSizeDisplay}" 
+                                       Grid.Column="0" Grid.Row="3" 
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -242,64 +298,136 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="3" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="CtrlF12Switch" IsOn= "{Binding CtrlF12Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Text="{Binding CtrlF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="3" IsEnabled="{Binding IsOn, ElementName=CtrlF12Switch}"/>
-
-                            <TextBlock Text="Alt + F9" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center">
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="3" 
+                                              FontSize="{Binding AppSizeDisplay}" 
+                                              OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              x:Name="CtrlF12Switch" 
+                                              IsOn= "{Binding CtrlF12Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Column="2" Grid.Row="3"
+                                      ItemsSource="{Binding ExamOptions}" 
+                                      DisplayMemberPath="Name" 
+                                      SelectedValuePath="Name"
+                                      SelectedValue="{Binding CtrlF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding IsOn, ElementName=CtrlF12Switch}"
+                                      FontSize="{Binding AppSizeDisplay}" 
+                                      Margin="10,0,10,0"/>
+                            
+                            <TextBlock Text="Shift + F9" Margin="10,0,0,0" 
+                                       FontSize="{Binding AppSizeDisplay}" 
+                                       Grid.Column="0" Grid.Row="4" 
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsOn, ElementName=AltF9Switch}" Value="False">
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=ShiftF9Switch}" Value="False">
                                                 <Setter Property="TextDecorations" Value="Strikethrough"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="4" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF9Switch" IsOn= "{Binding AltF9Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Text="{Binding AltF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="4" IsEnabled="{Binding IsOn, ElementName=AltF9Switch}"/>
-
-                            <TextBlock Text="Alt + F10" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="5" VerticalAlignment="Center">
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="4" 
+                                              FontSize="{Binding AppSizeDisplay}" 
+                                              OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              x:Name="ShiftF9Switch" 
+                                              IsOn= "{Binding ShiftF9Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Column="2" Grid.Row="4"
+                                      ItemsSource="{Binding ExamOptions}" 
+                                      DisplayMemberPath="Name" 
+                                      SelectedValuePath="Name"
+                                      SelectedValue="{Binding ShiftF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding IsOn, ElementName=ShiftF9Switch}"
+                                      FontSize="{Binding AppSizeDisplay}" 
+                                      Margin="10,0,10,0"/>
+                            
+                            <TextBlock Text="Shift + F10" Margin="10,0,0,0" 
+                                       FontSize="{Binding AppSizeDisplay}" 
+                                       Grid.Column="0" Grid.Row="5" 
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsOn, ElementName=AltF10Switch}" Value="False">
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=ShiftF10Switch}" Value="False">
                                                 <Setter Property="TextDecorations" Value="Strikethrough"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="5" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF10Switch" IsOn= "{Binding AltF10Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Text="{Binding AltF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="5" IsEnabled="{Binding IsOn, ElementName=AltF10Switch}"/>
-
-                            <TextBlock Text="Alt + F11" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="6" VerticalAlignment="Center">
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="5" 
+                                              FontSize="{Binding AppSizeDisplay}" 
+                                              OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              x:Name="ShiftF10Switch" 
+                                              IsOn= "{Binding ShiftF10Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Column="2" Grid.Row="5"
+                                      ItemsSource="{Binding ExamOptions}" 
+                                      DisplayMemberPath="Name" 
+                                      SelectedValuePath="Name"
+                                      SelectedValue="{Binding ShiftF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding IsOn, ElementName=ShiftF10Switch}"
+                                      FontSize="{Binding AppSizeDisplay}" 
+                                      Margin="10,0,10,0"/>
+                            
+                            <TextBlock Text="Shift + F11" Margin="10,0,0,0" 
+                                       FontSize="{Binding AppSizeDisplay}" 
+                                       Grid.Column="0" Grid.Row="6" 
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsOn, ElementName=AltF11Switch}" Value="False">
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=ShiftF11Switch}" Value="False">
                                                 <Setter Property="TextDecorations" Value="Strikethrough"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="6" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF11Switch" IsOn= "{Binding AltF11Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Text="{Binding AltF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="6" IsEnabled="{Binding IsOn, ElementName=AltF11Switch}"/>
-
-                            <TextBlock Text="Alt + F12" Margin="10,0,0,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="0" Grid.Row="7" VerticalAlignment="Center">
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="6" 
+                                              FontSize="{Binding AppSizeDisplay}" 
+                                              OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              x:Name="ShiftF11Switch" 
+                                              IsOn= "{Binding ShiftF11Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Column="2" Grid.Row="6"
+                                      ItemsSource="{Binding ExamOptions}" 
+                                      DisplayMemberPath="Name" 
+                                      SelectedValuePath="Name"
+                                      SelectedValue="{Binding ShiftF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding IsOn, ElementName=ShiftF11Switch}"
+                                      FontSize="{Binding AppSizeDisplay}" 
+                                      Margin="10,0,10,0"/>
+                            
+                            <TextBlock Text="Shift + F12" Margin="10,0,0,0" 
+                                       FontSize="{Binding AppSizeDisplay}" 
+                                       Grid.Column="0" Grid.Row="7" 
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsOn, ElementName=AltF12Switch}" Value="False">
+                                            <DataTrigger Binding="{Binding IsOn, ElementName=ShiftF12Switch}" Value="False">
                                                 <Setter Property="TextDecorations" Value="Strikethrough"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="7" FontSize="{Binding AppSizeDisplay}" OffContent="Désactivé" OnContent="Activé" x:Name="AltF12Switch" IsOn= "{Binding AltF12Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBox Text="{Binding AltF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" FontSize="{Binding AppSizeDisplay}" Grid.Column="2" Grid.Row="7" IsEnabled="{Binding IsOn, ElementName=AltF12Switch}"/>
+                            <mah:ToggleSwitch Grid.Column="1" Grid.Row="7" 
+                                              FontSize="{Binding AppSizeDisplay}" 
+                                              OffContent="Désactivé" 
+                                              OnContent="Activé" 
+                                              x:Name="ShiftF12Switch" 
+                                              IsOn= "{Binding ShiftF12Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Column="2" Grid.Row="7"
+                                      ItemsSource="{Binding ExamOptions}" 
+                                      DisplayMemberPath="Name" 
+                                      SelectedValuePath="Name"
+                                      SelectedValue="{Binding ShiftF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding IsOn, ElementName=ShiftF12Switch}"
+                                      FontSize="{Binding AppSizeDisplay}" 
+                                      Margin="10,0,10,0"/>
                         </Grid>
 
                     </StackPanel>
@@ -310,11 +438,16 @@
 
             <Expander>
                 <Expander.Header>
-                    <TextBlock Text="{StaticResource ExamHeaderLabel}" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                    <TextBlock Text="{StaticResource ExamHeaderLabel}" 
+                               FontSize="{Binding AppSizeDisplay}" 
+                               VerticalAlignment="Center" />
                 </Expander.Header>
                 <Expander.Content>
                     <StackPanel>
-                        <DataGrid x:Name="ExamDataGrid" ItemsSource="{Binding Path=ExamOptions, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False">
+                        <DataGrid x:Name="ExamDataGrid" 
+                                  ItemsSource="{Binding Path=ExamOptions, UpdateSourceTrigger=PropertyChanged}" 
+                                  AutoGenerateColumns="False" 
+                                  FontSize="{Binding AppSizeDisplay}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Index" Binding="{Binding index}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
@@ -335,7 +468,10 @@
                 </Expander.Header>
                 <Expander.Content>
                     <StackPanel>
-                        <DataGrid x:Name="SpeedMessageDataGrid" ItemsSource="{Binding Path=SpeedMessage, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False">
+                        <DataGrid x:Name="SpeedMessageDataGrid" 
+                                  ItemsSource="{Binding Path=SpeedMessage, UpdateSourceTrigger=PropertyChanged}"
+                                  AutoGenerateColumns="False" 
+                                  FontSize="{Binding AppSizeDisplay}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Index" Binding="{Binding Index}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Titre" Binding="{Binding Title}" />
@@ -344,7 +480,8 @@
                                 <DataGridTextColumn Header="Options" Binding="{Binding Options}" />
                             </DataGrid.Columns>
                         </DataGrid>
-                        <Button Content="Enregistrer les modifications" Click="SaveSpeedMessageChangesButton_Click"/>
+                        <Button Content="Enregistrer les modifications" 
+                                Click="SaveSpeedMessageChangesButton_Click"/>
 
                     </StackPanel>
                 </Expander.Content>
@@ -352,7 +489,9 @@
 
             <Expander>
                 <Expander.Header>
-                    <TextBlock Text="Fonctionalité" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
+                    <TextBlock Text="Fonctionalité" 
+                               FontSize="{Binding AppSizeDisplay}" 
+                               VerticalAlignment="Center" />
                 </Expander.Header>
                 <Expander.Content>
                     <!-- Contenu collapsible -->

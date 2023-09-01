@@ -32,16 +32,16 @@
     <Setting Name="CtrlF12" Type="System.String" Scope="User">
       <Value Profile="(Default)">d</Value>
     </Setting>
-    <Setting Name="AltF9" Type="System.String" Scope="User">
+    <Setting Name="ShiftF9" Type="System.String" Scope="User">
       <Value Profile="(Default)">e</Value>
     </Setting>
-    <Setting Name="AltF10" Type="System.String" Scope="User">
+    <Setting Name="ShiftF10" Type="System.String" Scope="User">
       <Value Profile="(Default)">f</Value>
     </Setting>
-    <Setting Name="AltF11" Type="System.String" Scope="User">
+    <Setting Name="ShiftF11" Type="System.String" Scope="User">
       <Value Profile="(Default)">g</Value>
     </Setting>
-    <Setting Name="AltF12" Type="System.String" Scope="User">
+    <Setting Name="ShiftF12" Type="System.String" Scope="User">
       <Value Profile="(Default)">h</Value>
     </Setting>
     <Setting Name="CtrlF9Enabled" Type="System.Boolean" Scope="User">
@@ -56,16 +56,16 @@
     <Setting Name="CtrlF12Enabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="AltF9Enabled" Type="System.Boolean" Scope="User">
+    <Setting Name="ShiftF9Enabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="AltF10Enabled" Type="System.Boolean" Scope="User">
+    <Setting Name="ShiftF10Enabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="AltF11Enabled" Type="System.Boolean" Scope="User">
+    <Setting Name="ShiftF11Enabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="AltF12Enabled" Type="System.Boolean" Scope="User">
+    <Setting Name="ShiftF12Enabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="UniqueId" Type="System.String" Scope="User">
