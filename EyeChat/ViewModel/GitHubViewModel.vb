@@ -31,9 +31,8 @@ Public Class GitHubViewModel
         Public Property AppSizeDisplay As Integer
             Get
                 Try
-                    Return My.Settings.AppSizeDisplay
-                    logger.Debug($"Lecture de la propriété AppSizeDisplay : {My.Settings.AppSizeDisplay}")
-                Catch ex As Exception
+                Return My.Settings.AppSizeDisplay
+            Catch ex As Exception
                     logger.Error($"Erreur lors de la lecture de la propriété AppSizeDisplay : {ex.Message}")
                     Return "14"
                 End Try
@@ -44,9 +43,8 @@ Public Class GitHubViewModel
                     My.Settings.AppSizeDisplay = value
                     My.Settings.Save()
                     NotifyPropertyChanged("AppSizeDisplay")
-                    NotifyPropertyChanged("ArrowSize")
-                    logger.Info($"La propriété AppSizeDisplay a été modifiée : {value}")
-                Catch ex As Exception
+                NotifyPropertyChanged("ArrowSize")
+            Catch ex As Exception
                     ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                     logger.Error($"Erreur lors de la modification de la propriété AppSizeDisplay : {ex.Message}")
                 End Try
@@ -89,9 +87,8 @@ Public Class GitHubViewModel
                 Dim companyAttribute As AssemblyCompanyAttribute = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyCompanyAttribute)), AssemblyCompanyAttribute)
                 Company = companyAttribute.Company
 
-                Trademark = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyTrademarkAttribute)), AssemblyTrademarkAttribute).Trademark
-                logger.Debug("Lecture de la propriété GetAssemblyInfos")
-            Catch ex As Exception
+            Trademark = DirectCast(assembly.GetCustomAttribute(GetType(AssemblyTrademarkAttribute)), AssemblyTrademarkAttribute).Trademark
+        Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété GetAssemblyInfos : {ex.Message}")
             End Try
 

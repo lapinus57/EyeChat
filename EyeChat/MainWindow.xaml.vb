@@ -38,6 +38,7 @@ Imports System.Linq
 Imports System.Windows.Controls
 Imports System.Net.NetworkInformation
 Imports EyeChat.Computer
+Imports EyeChat.Planning
 
 Public Class MarvinPhrasesData
     Public Property MarvinPhrases As List(Of String)
@@ -59,7 +60,7 @@ Class MainWindow
     Public Shared Property PatientsALL As ObservableCollection(Of Patient)
     Public Property ExamOptions As New List(Of ExamOption)()
 
-
+    Public Shared Property Plannings As New ObservableCollection(Of Planning)()
     Public Shared Property Messages As ObservableCollection(Of Message)
     Public Shared Property Users As ObservableCollection(Of User)
     Public Shared Property SelectedUserMessages As ObservableCollection(Of Message)
@@ -438,6 +439,9 @@ Class MainWindow
         LoadPatientsFromJson()
         ' Initialise la collection des ordinateurs 
         LoadComputersFromJson()
+        ' Initialise la collection du planning
+        'LoadPlanningFromJson()
+
         ' Initialisez la collection de messages selectionné
         SelectedUserMessages = New ObservableCollection(Of Message)()
 
@@ -492,12 +496,31 @@ Class MainWindow
         ' Affecter le ContextMenu à la TextBox
         SendTextBox.ContextMenu = contextMenu
 
+        If My.Settings.PlanningMode = True Then
+            Dim dayTranslations As New Dictionary(Of String, String)() From {
+                {"Monday", "Lundi"},
+                {"Tuesday", "Mardi"},
+                {"Wednesday", "Mercredi"},
+                {"Thursday", "Jeudi"},
+                {"Friday", "Vendredi"},
+                {"Saturday", "Samedi"},
+                {"Sunday", "Dimanche"}
+    }
+
+            Dim today = DateTime.Now.DayOfWeek.ToString() ' Récupère le jour actuel de la semaine en anglais
+            Dim frenchDay As String = dayTranslations(today) ' Traduction française du jour
+
+            ' Recherche le planning correspondant au jour en cours dans la liste des plannings
+            Dim planningForToday = Plannings.FirstOrDefault(Function(p) p.Day = frenchDay)
+
+            ' Mise à jour du nom d'utilisateur dans les paramètres
+            My.Settings.UserName = planningForToday.User
+            My.Settings.Save()
+        End If
 
 
 
-
-        SendMessage("USR01Benoit|" & Environment.UserName)
-
+        SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
     End Sub
 
     Private Sub MessageMenuItem_Click(sender As Object, e As RoutedEventArgs)
@@ -838,6 +861,14 @@ Class MainWindow
                             ' Vérifier si l'utilisateur n'a pas réagi au même IdentifiantPC précédent
                             Dim storedUpdateInfo As UserUpdateInfo = Nothing
                             If userUpdates.TryGetValue(UserName, storedUpdateInfo) AndAlso storedUpdateInfo.LastIdentifiantPC = IdentifiantPC Then
+                                ' Mettre à jour le statut de l'utilisateur
+                                If userToUpdate.Status = "Offline" Then
+                                    userToUpdate.Status = IdentifiantPC
+                                Else
+                                    userToUpdate.Status += " | " & IdentifiantPC
+                                End If
+
+                                SaveUsersToJson(Users)
                                 Exit Sub ' Éviter la boucle infinie
                             End If
 
@@ -852,14 +883,12 @@ Class MainWindow
 
                             ' Enregistrer le dernier IdentifiantPC mis à jour
                             userUpdates(UserName) = New UserUpdateInfo With {
-                           .UserName = UserName,
-                           .LastIdentifiantPC = IdentifiantPC
+                    .UserName = UserName,
+                    .LastIdentifiantPC = IdentifiantPC
                 }
 
                             ' Envoyer un message de confirmation à l'utilisateur
                             SendMessage("USR01" & UserName & "|" & Environment.UserName)
-                        Else
-                            ' Gérer le cas où l'utilisateur n'est pas trouvé
                         End If
                     Else
                         ' Gérer le cas où le message n'a pas le bon nombre de parties
@@ -867,6 +896,7 @@ Class MainWindow
                 Catch ex As Exception
                     ' Gérer l'exception liée au traitement du message d'ajout d'utilisateur
                 End Try
+
 
                 ' Déconnexion d'un utilisateur
                 ' "USR02UserName|IdentifiantPC"

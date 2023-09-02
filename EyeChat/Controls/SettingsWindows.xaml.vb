@@ -6,6 +6,7 @@ Imports EyeChat.SettingsViewModel
 Imports EyeChat.MainWindow
 Imports EyeChat.User
 Imports EyeChat.ExamOption
+Imports EyeChat.Planning
 Imports System.Collections.ObjectModel
 
 Public Class SettingsWindows
@@ -105,7 +106,12 @@ Public Class SettingsWindows
         SaveExamOptionsToJson(examOptionCollection)
     End Sub
 
+    Private Sub SavePlanningChangesButton_Click(sender As Object, e As RoutedEventArgs)
+        Dim PlanningList As List(Of Planning) = PlanningDataGrid.ItemsSource.Cast(Of Planning)().ToList()
+        Dim PlanningCollection As New ObservableCollection(Of Planning)(PlanningList)
 
+        'SavePlanningToJson(PlanningCollection)
+    End Sub
 
     Private Sub SaveSpeedMessageChangesButton_Click(sender As Object, e As RoutedEventArgs)
         Dim SpeedMessageList As List(Of SpeedMessage) = SpeedMessageDataGrid.ItemsSource.Cast(Of SpeedMessage)().ToList()
@@ -144,8 +150,9 @@ Public Class SettingsWindows
         SaveSpeedMessageToJson(SpeedMessageCollection)
     End Sub
 
+    Private Sub Button_Click(sender As Object, e As RoutedEventArgs)
 
-
+    End Sub
 End Class
 
 

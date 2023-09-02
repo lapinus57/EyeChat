@@ -24,6 +24,7 @@ Public Class SettingsViewModel
 
     Private _examOptions As New ObservableCollection(Of ExamOption)()
     Private _SpeedMessage As New ObservableCollection(Of SpeedMessage)()
+    Private _Planning As New ObservableCollection(Of Planning)()
 
 
 
@@ -57,6 +58,18 @@ Public Class SettingsViewModel
             Next
         End If
 
+        _Planning = New ObservableCollection(Of Planning)()
+
+        ' Charger le Planning à partir du JSON
+        jsonFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Planning.json")
+        If File.Exists(jsonFilePath) Then
+            Dim json As String = File.ReadAllText(jsonFilePath)
+            Dim ptions As List(Of Planning) = JsonConvert.DeserializeObject(Of List(Of Planning))(json)
+
+            For Each ption As Planning In ptions
+                _Planning.Add(ption)
+            Next
+        End If
 
 
 
@@ -67,7 +80,6 @@ Public Class SettingsViewModel
     Public Property AppNameDisplay As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété  AppNameDisplay : {My.Settings.AppNameDisplay}")
                 Return My.Settings.AppNameDisplay
 
             Catch ex As Exception
@@ -81,7 +93,6 @@ Public Class SettingsViewModel
                 My.Settings.AppNameDisplay = value
                 My.Settings.Save()
                 NotifyPropertyChanged("AppNameDisplay")
-                logger.Info($"La propriété  AppNameDisplay a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                 logger.Error($"Erreur lors de la modification de la propriété AppNameDisplay : {ex.Message}")
@@ -92,12 +103,11 @@ Public Class SettingsViewModel
     Public Property ComputerName As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété  ComputerName : {My.Settings.ComputerName}")
                 Return My.Settings.ComputerName
 
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ComputerName : {ex.Message}")
-                Return "Bender"
+                Return "NoName"
             End Try
 
         End Get
@@ -106,7 +116,6 @@ Public Class SettingsViewModel
                 My.Settings.ComputerName = value
                 My.Settings.Save()
                 NotifyPropertyChanged("ComputerName")
-                logger.Info($"La propriété  ComputerName a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                 logger.Error($"Erreur lors de la modification de la propriété ComputerName : {ex.Message}")
@@ -117,7 +126,6 @@ Public Class SettingsViewModel
     Public Property WindowsName As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété  ComputerName : {My.Settings.WindowsName}")
                 Return My.Settings.WindowsName
 
             Catch ex As Exception
@@ -131,7 +139,6 @@ Public Class SettingsViewModel
                 My.Settings.WindowsName = value
                 My.Settings.Save()
                 NotifyPropertyChanged("WindowsName")
-                logger.Info($"La propriété WindowsName a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                 logger.Error($"Erreur lors de la modification de la propriété WindowsName : {ex.Message}")
@@ -141,7 +148,6 @@ Public Class SettingsViewModel
     Public Property UserName As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété UserName : {My.Settings.UserName}")
                 Return My.Settings.UserName
 
             Catch ex As Exception
@@ -155,7 +161,6 @@ Public Class SettingsViewModel
                 My.Settings.UserName = value
                 My.Settings.Save()
                 NotifyPropertyChanged("UserName")
-                logger.Info($"La propriété UserName a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                 logger.Error($"Erreur lors de la modification de la propriété UserName : {ex.Message}")
@@ -166,7 +171,6 @@ Public Class SettingsViewModel
     Public Property AppTheme As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété AppTheme : {My.Settings.AppTheme}")
                 Return My.Settings.AppTheme
 
             Catch ex As Exception
@@ -180,7 +184,6 @@ Public Class SettingsViewModel
                 My.Settings.AppTheme = value
                 My.Settings.Save()
                 NotifyPropertyChanged("AppTheme")
-                logger.Info($"La propriété AppTheme a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                 logger.Error($"Erreur lors de la modification de la propriété AppTheme : {ex.Message}")
@@ -191,7 +194,6 @@ Public Class SettingsViewModel
     Public Property AppSizeDisplay As Integer
         Get
             Try
-                logger.Debug($"Lecture de la propriété AppSizeDisplay : {My.Settings.AppSizeDisplay}")
                 Return My.Settings.AppSizeDisplay
 
             Catch ex As Exception
@@ -218,7 +220,6 @@ Public Class SettingsViewModel
                 For Each user In loadedUsers
                     Users.Add(user)
                 Next
-                logger.Info($"La propriété AppSizeDisplay a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                 logger.Error($"Erreur lors de la modification de la propriété AppSizeDisplay : {ex.Message}")
@@ -229,7 +230,6 @@ Public Class SettingsViewModel
     Public Property AppColorString As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété AppColorString : {My.Settings.AppColorString}")
                 Return My.Settings.AppColorString
 
             Catch ex As Exception
@@ -247,7 +247,6 @@ Public Class SettingsViewModel
                 My.Settings.Save()
                 NotifyPropertyChanged("AppColorString")
                 SelectUser(SelectedUser)
-                logger.Info($"La propriété AppColorString a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                 logger.Error($"Erreur lors de la modification de la propriété AppColorString : {ex.Message}")
@@ -258,7 +257,6 @@ Public Class SettingsViewModel
     Public Property AppColor As Color
         Get
             Try
-                logger.Debug($"Lecture de la propriété AppColor : {My.Settings.AppColor}")
                 Return My.Settings.AppColor
 
             Catch ex As Exception
@@ -273,8 +271,6 @@ Public Class SettingsViewModel
                 My.Settings.Save()
                 NotifyPropertyChanged("AppColor")
                 SelectUser(SelectedUser)
-
-                logger.Info($"La propriété AppColor a été modifiée : {value}")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
                 logger.Error($"Erreur lors de la modification de la propriété AppColor : {ex.Message}")
@@ -313,7 +309,6 @@ Public Class SettingsViewModel
 
             ' Changer le thème de l'application en utilisant le nouvel objet Theme
             ThemeManager.Current.ChangeTheme(System.Windows.Application.Current, newTheme)
-            logger.Info($"La propriété ChangeTheme a été modifiée : {themeName} {My.Settings.AppColorString}")
         Catch ex As Exception
             ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
             logger.Error($"Erreur lors de la modification de la propriété ChangeTheme : {ex.Message}")
@@ -324,7 +319,6 @@ Public Class SettingsViewModel
     Public Property SelectedDebugLevel As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété SelectedDebugLevel : {My.Settings.DebugLevel}")
                 Return My.Settings.DebugLevel
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété SelectedDebugLevel : {ex.Message}")
@@ -356,7 +350,6 @@ Public Class SettingsViewModel
     Public Property CtrlF9 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété CtrlF9 : {My.Settings.CtrlF9}")
                 Return My.Settings.CtrlF9
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF9 : {ex.Message}")
@@ -368,7 +361,6 @@ Public Class SettingsViewModel
                 My.Settings.CtrlF9 = value
                 My.Settings.Save()
                 NotifyPropertyChanged("CtrlF9")
-                logger.Info($"La propriété CtrlF9 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF9 : {ex.Message}")
             End Try
@@ -377,7 +369,6 @@ Public Class SettingsViewModel
     Public Property CtrlF9Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété CtrlF9Enabled : {My.Settings.CtrlF9Enabled}")
                 Return My.Settings.CtrlF9Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF9Enabled : {ex.Message}")
@@ -389,7 +380,6 @@ Public Class SettingsViewModel
                 My.Settings.CtrlF9Enabled = value
                 My.Settings.Save()
                 NotifyPropertyChanged("CtrlF9Enabled")
-                logger.Info($"La propriété CtrlF9Enabled a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF9Enabled : {ex.Message}")
             End Try
@@ -399,7 +389,6 @@ Public Class SettingsViewModel
     Public Property CtrlF10 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété CtrlF10 : {My.Settings.CtrlF10}")
                 Return My.Settings.CtrlF10
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF10 : {ex.Message}")
@@ -411,7 +400,6 @@ Public Class SettingsViewModel
                 My.Settings.CtrlF10 = value
                 My.Settings.Save()
                 NotifyPropertyChanged("CtrlF10")
-                logger.Info($"La propriété CtrlF10 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF10 : {ex.Message}")
             End Try
@@ -421,7 +409,6 @@ Public Class SettingsViewModel
     Public Property CtrlF10Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété CtrlF10Enabled : {My.Settings.CtrlF10Enabled}")
                 Return My.Settings.CtrlF10Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF10Enabled : {ex.Message}")
@@ -433,7 +420,6 @@ Public Class SettingsViewModel
                 My.Settings.CtrlF10Enabled = value
                 My.Settings.Save()
                 NotifyPropertyChanged("CtrlF10Enabled")
-                logger.Info($"La propriété CtrlF10Enabled a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF10Enabled : {ex.Message}")
             End Try
@@ -442,7 +428,6 @@ Public Class SettingsViewModel
     Public Property CtrlF11 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété CtrlF11 : {My.Settings.CtrlF11}")
                 Return My.Settings.CtrlF11
 
             Catch ex As Exception
@@ -455,7 +440,6 @@ Public Class SettingsViewModel
                 My.Settings.CtrlF11 = value
                 My.Settings.Save()
                 NotifyPropertyChanged("CtrlF11")
-                logger.Info($"La propriété CtrlF11 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF11 : {ex.Message}")
             End Try
@@ -464,7 +448,6 @@ Public Class SettingsViewModel
     Public Property CtrlF11Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété CtrlF11Enabled : {My.Settings.CtrlF11Enabled}")
                 Return My.Settings.CtrlF11Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF11Enabled : {ex.Message}")
@@ -476,7 +459,6 @@ Public Class SettingsViewModel
                 My.Settings.CtrlF11Enabled = value
                 My.Settings.Save()
                 NotifyPropertyChanged("CtrlF11Enabled")
-                logger.Info($"La propriété CtrlF11Enabled a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF11Enabled : {ex.Message}")
             End Try
@@ -486,7 +468,6 @@ Public Class SettingsViewModel
     Public Property CtrlF12 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété CtrlF12 : {My.Settings.CtrlF12}")
                 Return My.Settings.CtrlF12
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF12 : {ex.Message}")
@@ -498,7 +479,6 @@ Public Class SettingsViewModel
                 My.Settings.CtrlF12 = value
                 My.Settings.Save()
                 NotifyPropertyChanged("CtrlF12")
-                logger.Info($"La propriété CtrlF12 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF12 : {ex.Message}")
             End Try
@@ -509,7 +489,6 @@ Public Class SettingsViewModel
 
         Get
             Try
-                logger.Debug($"Lecture de la propriété CtrlF12Enabled : {My.Settings.CtrlF12Enabled}")
                 Return My.Settings.CtrlF12Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF12Enabled : {ex.Message}")
@@ -521,7 +500,6 @@ Public Class SettingsViewModel
                 My.Settings.CtrlF12Enabled = value
                 My.Settings.Save()
                 NotifyPropertyChanged("CtrlF12Enabled")
-                logger.Info($"La propriété CtrlF12Enabled a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF12Enabled : {ex.Message}")
             End Try
@@ -530,7 +508,6 @@ Public Class SettingsViewModel
     Public Property ShiftF9 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété ShiftF9 : {My.Settings.ShiftF9}")
                 Return My.Settings.ShiftF9
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF9 : {ex.Message}")
@@ -542,7 +519,6 @@ Public Class SettingsViewModel
                 My.Settings.ShiftF9 = value
                 My.Settings.Save()
                 NotifyPropertyChanged("ShiftF9")
-                logger.Info($"La propriété ShiftF9 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShifttF9 : {ex.Message}")
             End Try
@@ -552,7 +528,6 @@ Public Class SettingsViewModel
     Public Property ShiftF9Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété ShiftF9Enabled : {My.Settings.ShiftF9Enabled}")
                 Return My.Settings.ShiftF9Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF9Enabled : {ex.Message}")
@@ -564,7 +539,6 @@ Public Class SettingsViewModel
                 My.Settings.ShiftF9Enabled = value
                 My.Settings.Save()
                 NotifyPropertyChanged("ShiftF9Enabled")
-                logger.Info($"La propriété ShiftF9Enabled a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF9Enabled : {ex.Message}")
             End Try
@@ -574,7 +548,6 @@ Public Class SettingsViewModel
     Public Property ShiftF10 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété ShiftF10 : {My.Settings.ShiftF10}")
                 Return My.Settings.ShiftF10
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF10 : {ex.Message}")
@@ -586,7 +559,6 @@ Public Class SettingsViewModel
                 My.Settings.ShiftF10 = value
                 My.Settings.Save()
                 NotifyPropertyChanged("ShiftF10")
-                logger.Info($"La propriété ShiftF10 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF10 : {ex.Message}")
             End Try
@@ -596,7 +568,6 @@ Public Class SettingsViewModel
     Public Property ShiftF10Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété ShiftF10Enabled : {My.Settings.ShiftF10Enabled}")
                 Return My.Settings.ShiftF10Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF10Enabled : {ex.Message}")
@@ -608,7 +579,6 @@ Public Class SettingsViewModel
                 My.Settings.ShiftF10Enabled = value
                 My.Settings.Save()
                 NotifyPropertyChanged("ShiftF10Enabled")
-                logger.Info($"La propriété ShiftF9Enabled a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF10Enabled : {ex.Message}")
             End Try
@@ -618,7 +588,6 @@ Public Class SettingsViewModel
     Public Property ShiftF11 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété ShiftF11 : {My.Settings.ShiftF11}")
                 Return My.Settings.ShiftF11
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF11 : {ex.Message}")
@@ -630,7 +599,6 @@ Public Class SettingsViewModel
                 My.Settings.ShiftF11 = value
                 My.Settings.Save()
                 NotifyPropertyChanged("ShiftF11")
-                logger.Info($"La propriété ShiftF11 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF11 : {ex.Message}")
             End Try
@@ -640,7 +608,6 @@ Public Class SettingsViewModel
     Public Property ShiftF11Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété ShiftF11Enabled : {My.Settings.ShiftF11Enabled}")
                 Return My.Settings.ShiftF11Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF11Enabled : {ex.Message}")
@@ -652,7 +619,6 @@ Public Class SettingsViewModel
                 My.Settings.ShiftF11Enabled = value
                 My.Settings.Save()
                 NotifyPropertyChanged("ShiftF11Enabled")
-                logger.Info($"La propriété ShiftF11Enabled a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF11Enabled : {ex.Message}")
             End Try
@@ -662,7 +628,6 @@ Public Class SettingsViewModel
     Public Property ShiftF12 As String
         Get
             Try
-                logger.Debug($"Lecture de la propriété ShiftF12 : {My.Settings.ShiftF12}")
                 Return My.Settings.ShiftF12
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF12 : {ex.Message}")
@@ -674,7 +639,6 @@ Public Class SettingsViewModel
                 My.Settings.ShiftF12 = value
                 My.Settings.Save()
                 NotifyPropertyChanged("ShiftF12")
-                logger.Info($"La propriété ShiftF12 a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF12 : {ex.Message}")
             End Try
@@ -683,7 +647,6 @@ Public Class SettingsViewModel
     Public Property ShiftF12Enabled As Boolean
         Get
             Try
-                logger.Debug($"Lecture de la propriété ShiftF12Enabled : {My.Settings.ShiftF12Enabled}")
                 Return My.Settings.ShiftF12Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF12Enabled : {ex.Message}")
@@ -695,16 +658,43 @@ Public Class SettingsViewModel
                 My.Settings.ShiftF12Enabled = value
                 My.Settings.Save()
                 NotifyPropertyChanged("ShiftF12Enabled")
-                logger.Info($"La propriété ShiftF12Enabled a été modifiée : {value}")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF12Enabled : {ex.Message}")
             End Try
         End Set
     End Property
 
+    Public Property PlanningMode As Boolean
+        Get
+            Try
+                Return My.Settings.PlanningMode
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété PlanningMode : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.PlanningMode = value
+                My.Settings.Save()
+                NotifyPropertyChanged("PlanningMode")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété PlanningMode : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+
+
+
     Public ReadOnly Property ArrowSize As Double
         Get
-            Return AppSizeDisplay * 0.8 ' Ajustez le coefficient selon vos préférences
+            Try
+                Return AppSizeDisplay * 0.8 ' Ajustez le coefficient selon vos préférences
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la récupération de la propriété ArrowSize : {ex.Message}")
+                Return 0 ' ou une valeur par défaut appropriée en cas d'erreur
+            End Try
         End Get
     End Property
 
@@ -713,26 +703,33 @@ Public Class SettingsViewModel
             Return My.Settings.RoomDisplay
         End Get
         Set(value As Boolean)
-            My.Settings.RoomDisplay = value
-            If value = True Then
-                My.Settings.RoomDisplayStr = "Visible"
-            Else
-                My.Settings.RoomDisplayStr = "Collapsed"
-            End If
-            My.Settings.Save()
-            NotifyPropertyChanged("RoomDisplay")
-            NotifyPropertyChanged("RoomDisplayStr")
+            Try
+                My.Settings.RoomDisplay = value
+                If value = True Then
+                    My.Settings.RoomDisplayStr = "Visible"
+                Else
+                    My.Settings.RoomDisplayStr = "Collapsed"
+                End If
+                My.Settings.Save()
+                NotifyPropertyChanged("RoomDisplay")
+                NotifyPropertyChanged("RoomDisplayStr")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété RoomDisplay : {ex.Message}")
+            End Try
         End Set
     End Property
 
     Public Property RoomDisplayStr As String
         Get
             Return My.Settings.RoomDisplayStr
-
         End Get
         Set(value As String)
-            My.Settings.RoomDisplayStr = value
-            NotifyPropertyChanged("RoomDisplayStr")
+            Try
+                My.Settings.RoomDisplayStr = value
+                NotifyPropertyChanged("RoomDisplayStr")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété RoomDisplayStr : {ex.Message}")
+            End Try
         End Set
     End Property
 
@@ -741,8 +738,12 @@ Public Class SettingsViewModel
             Return _examOptions
         End Get
         Set(value As ObservableCollection(Of ExamOption))
-            _examOptions = value
-            NotifyPropertyChanged("ExamOptions")
+            Try
+                _examOptions = value
+                NotifyPropertyChanged("ExamOptions")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété ExamOptions : {ex.Message}")
+            End Try
         End Set
     End Property
 
@@ -751,8 +752,26 @@ Public Class SettingsViewModel
             Return _SpeedMessage
         End Get
         Set(value As ObservableCollection(Of SpeedMessage))
-            _SpeedMessage = value
-            NotifyPropertyChanged("SpeedMessage")
+            Try
+                _SpeedMessage = value
+                NotifyPropertyChanged("SpeedMessage")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété SpeedMessage : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property Planning As ObservableCollection(Of Planning)
+        Get
+            Return _Planning
+        End Get
+        Set(value As ObservableCollection(Of Planning))
+            Try
+                _Planning = value
+                NotifyPropertyChanged("Planning")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété Planning : {ex.Message}")
+            End Try
         End Set
     End Property
 
@@ -769,6 +788,7 @@ Public Class SettingsViewModel
             File.WriteAllText(jsonFilePath, optionsJson)
         Catch ex As Exception
             ' Gérer les erreurs de sauvegarde (par exemple, journaliser l'erreur)
+            logger.Error($"Erreur lors de la sauvegarde des ExamOptions : {ex.Message}")
         End Try
     End Sub
 
@@ -783,8 +803,11 @@ Public Class SettingsViewModel
             File.WriteAllText(jsonFilePath, optionsJson)
         Catch ex As Exception
             ' Gérer les erreurs de sauvegarde (par exemple, journaliser l'erreur)
+            logger.Error($"Erreur lors de la sauvegarde des SpeedMessage : {ex.Message}")
         End Try
     End Sub
+
+
 
 
     Public ReadOnly Property PredefinedColors As List(Of Color)

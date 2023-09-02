@@ -5,7 +5,7 @@
 
 
 
-    <system:String x:Key="GeneralSettingsLabel">Affichage</system:String>
+    <system:String x:Key="GeneralSettingsLabel">Général</system:String>
     <system:String x:Key="UserNameLabel">Nom :</system:String>
     <system:String x:Key="ComputerNameLabel">Identifiant du PC :</system:String>
     <system:String x:Key="WindowsNameLabel">Nom du PC :</system:String>

@@ -9,7 +9,7 @@
                xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:EyeChat"                         
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="600">
+             d:DesignHeight="450" d:DesignWidth="1000">
 
 
     <UserControl.Resources>
@@ -259,7 +259,7 @@
                             <TextBlock Text="Ctrl + F10"  
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="1" 
-                                       VerticalAlignment="Bottom">
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -472,10 +472,24 @@
                                VerticalAlignment="Center" />
                 </Expander.Header>
                 <Expander.Content>
-                    <StackPanel>
+                    <Grid Margin="10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Avant d'apporter toute modification, il est fortement recommandé de solliciter des conseils ou de consulter la page wiki sur GitHub afin de garantir le bon fonctionnement de la boîte de dialogue. Lorsque vous ajustez les données dans ce tableau, veillez à être attentif, car certaines modifications pourraient perturber son bon fonctionnement. Veuillez noter que toutes les modifications effectuées sur ce tableau seront automatiquement transmises à toutes les autres boîtes de dialogue. En conséquence, soyez particulièrement prudent lors de ces modifications." 
+                                   Grid.Row="0"
+                                   Margin="0,0,0,10"
+                                   MaxWidth="900"
+                                   TextWrapping="Wrap"
+                                   HorizontalAlignment="Left"
+                                   FontSize="{Binding AppSizeDisplay}"/>
                         <DataGrid x:Name="ExamDataGrid" 
                                   ItemsSource="{Binding Path=ExamOptions, UpdateSourceTrigger=PropertyChanged}" 
                                   AutoGenerateColumns="False" 
+                                  Grid.Row="1"
                                   FontSize="{Binding AppSizeDisplay}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Index" Binding="{Binding index}" IsReadOnly="True" />
@@ -485,9 +499,16 @@
                                 <DataGridTextColumn Header="Annotation" Binding="{Binding Annotation}" />
                             </DataGrid.Columns>
                         </DataGrid>
-                        <Button Content="Enregistrer les modifications" Click="SaveExamChangesButton_Click"/>
+                        
+                        <Button Content="Enregistrer les modifications" 
+                                Click="SaveExamChangesButton_Click"
+                                Grid.Row="2"/>
 
-                    </StackPanel>
+                    </Grid>
+                    
+                        
+                        
+                    
                 </Expander.Content>
             </Expander>
 
@@ -496,10 +517,26 @@
                     <TextBlock Text="{StaticResource SpeedMessageHeaderLabel}" FontSize="{Binding AppSizeDisplay}" VerticalAlignment="Center" />
                 </Expander.Header>
                 <Expander.Content>
-                    <StackPanel>
+
+                    <Grid Margin="10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Avant d'effectuer des modifications, nous vous conseillons vivement de demander des avis ou de consulter la page wiki sur GitHub pour assurer le bon fonctionnement de cette boîte de dialogue. Veuillez noter que ces modifications sont spécifiques à cette boîte de dialogue, mais elles pourraient également entraîner des dysfonctionnements dans d'autres boîtes de dialogue. Soyez prudent lors de vos ajustements."
+                                   Margin="0,10,0,10"
+                                   Grid.Row="0"
+                                   MaxWidth="900"
+                                   TextWrapping="Wrap"
+                                   HorizontalAlignment="Left"
+                                   FontSize="{Binding AppSizeDisplay}"/>
+
                         <DataGrid x:Name="SpeedMessageDataGrid" 
                                   ItemsSource="{Binding Path=SpeedMessage, UpdateSourceTrigger=PropertyChanged}"
                                   AutoGenerateColumns="False" 
+                                  Grid.Row="1"
                                   FontSize="{Binding AppSizeDisplay}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Index" Binding="{Binding Index}" IsReadOnly="True" />
@@ -509,13 +546,15 @@
                                 <DataGridTextColumn Header="Options" Binding="{Binding Options}" />
                             </DataGrid.Columns>
                         </DataGrid>
-                        <Button Content="Enregistrer les modifications" 
-                                Click="SaveSpeedMessageChangesButton_Click"/>
 
-                    </StackPanel>
+                        <Button Content="Enregistrer les modifications" 
+                                Click="SaveSpeedMessageChangesButton_Click"
+                                Grid.Row="2"/>
+                    </Grid>
                 </Expander.Content>
             </Expander>
 
+            
             <Expander>
                 <Expander.Header>
                     <TextBlock Text="Planning" 
@@ -524,6 +563,7 @@
                 </Expander.Header>
                 <Grid Margin="10,0">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
@@ -539,12 +579,28 @@
                                           OffContent="Désactivé" 
                                           OnContent="Activé" 
                                           x:Name="PlanningSwitch" 
-                                          Grid.Column="1"/>
+                                          Grid.Column="1"
+                                          IsOn= "{Binding PlanningMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
+
+
+                    <DataGrid x:Name="PlanningDataGrid" 
+                              ItemsSource="{Binding Path=Planning, UpdateSourceTrigger=PropertyChanged}"
+                              AutoGenerateColumns="False" 
+                              Grid.Row="1"
+                              FontSize="{Binding AppSizeDisplay}"
+                              IsEnabled="{Binding IsOn, ElementName=PlanningSwitch}">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Jour" Binding="{Binding Day}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Utilisateur" Binding="{Binding User}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                     
-                        
-                        
-                    
+                    <Button Content="Enregistrer les modifications" 
+            Click="SavePlanningChangesButton_Click"
+            Grid.Row="2"/>
+
 
                 </Grid>
                 
