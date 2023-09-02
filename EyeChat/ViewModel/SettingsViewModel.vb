@@ -506,6 +506,7 @@ Public Class SettingsViewModel
     End Property
 
     Public Property CtrlF12Enabled As Boolean
+
         Get
             Try
                 logger.Debug($"Lecture de la propriété CtrlF12Enabled : {My.Settings.CtrlF12Enabled}")
