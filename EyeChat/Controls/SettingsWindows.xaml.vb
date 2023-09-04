@@ -73,14 +73,15 @@ Public Class SettingsWindows
         My.Settings.Save()
         Try
             Users.Clear()
+            Dim loadedUsers = LoadUsersFromJson()
+            For Each user In loadedUsers
+                Users.Add(user)
+            Next
         Catch ex As Exception
 
         End Try
 
-        Dim loadedUsers = LoadUsersFromJson()
-        For Each user In loadedUsers
-            Users.Add(user)
-        Next
+
     End Sub
 
     Private Sub ExamDataGrid_CellEditEnding(sender As Object, e As DataGridCellEditEndingEventArgs) Handles ExamDataGrid.CellEditEnding

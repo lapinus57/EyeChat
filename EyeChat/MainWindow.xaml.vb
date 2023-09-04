@@ -431,15 +431,7 @@ Class MainWindow
 
         'test si les dossier sont présent
         Filetest()
-        logger.Error("Creation du dossier HistoricPatient")
 
-        Dim dossier As String = "test"
-        ' Vérifier si le dossier existe
-        If Not Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dossier)) Then
-            ' Créer le dossier s'il n'existe pas
-            Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dossier))
-            logger.Info("Creation du dossier HistoricPatient")
-        End If
         ' Initialise la collection de messages
         Try
             Messages = If(LoadMessagesFromJson(), New ObservableCollection(Of Message)())
@@ -447,11 +439,16 @@ Class MainWindow
 
         End Try
 
-        ' Initialise la collection des users
+        ' Initialise la collection des utilisateurs
         Try
             Users = If(LoadUsersFromJson(), New ObservableCollection(Of User)())
+            If Users.Count = 0 Then
+                Addusers("A Tous")
+                Addusers("Secrétariat")
+                SaveUsersToJson(Users)
+            End If
         Catch ex As Exception
-            logger.Error($"Erreur lors de l'initialise la collection des users : {ex.Message}")
+            logger.Error($"Erreur lors de l'initialisation de la collection des utilisateurs : {ex.Message}")
         End Try
 
         ' Initialise la collection des patients
@@ -874,54 +871,49 @@ Class MainWindow
         ' Traitez le message reçu en fonction du code
         Dim messageCode As String = receivedMessage.Substring(0, 5)
 
-
+        logger.Error("message" & receivedMessage)
         Select Case messageCode
             Case "USR01"
-                ' Connexion d'un User
+                ' Connexion d'un utilisateur
                 ' "USR01|UserName|IdentifiantPC"
                 Try
                     Dim messageContent As String = receivedMessage.Substring(5)
                     Dim parts As String() = messageContent.Split("|"c)
+                    logger.Error("Réception d'un message utilisateur")
 
                     If parts.Length >= 2 Then
                         Dim UserName As String = parts(0)
                         Dim IdentifiantPC As String = parts(1)
 
                         Dim userToUpdate As User = Users.FirstOrDefault(Function(user) user.Name = UserName)
+                        logger.Error("Réception d'un message utilisateur " & UserName & " avec comme poste " & IdentifiantPC)
 
-                        If userToUpdate IsNot Nothing Then
-                            ' Vérifier si l'utilisateur n'a pas réagi au même IdentifiantPC précédent
-                            Dim storedUpdateInfo As UserUpdateInfo = Nothing
-                            If userUpdates.TryGetValue(UserName, storedUpdateInfo) AndAlso storedUpdateInfo.LastIdentifiantPC = IdentifiantPC Then
-                                ' Mettre à jour le statut de l'utilisateur
-                                If userToUpdate.Status = "Offline" Then
-                                    userToUpdate.Status = IdentifiantPC
-                                Else
-                                    userToUpdate.Status += " | " & IdentifiantPC
-                                End If
-
-                                SaveUsersToJson(Users)
-                                Exit Sub ' Éviter la boucle infinie
-                            End If
-
-                            ' Mettre à jour le statut de l'utilisateur
-                            If userToUpdate.Status = "Offline" Then
-                                userToUpdate.Status = IdentifiantPC
-                            Else
-                                userToUpdate.Status += " | " & IdentifiantPC
-                            End If
-
-                            SaveUsersToJson(Users)
-
-                            ' Enregistrer le dernier IdentifiantPC mis à jour
-                            userUpdates(UserName) = New UserUpdateInfo With {
-                    .UserName = UserName,
-                    .LastIdentifiantPC = IdentifiantPC
-                }
-
-                            ' Envoyer un message de confirmation à l'utilisateur
-                            SendMessage("USR01" & UserName & "|" & Environment.UserName)
+                        If userToUpdate Is Nothing Then
+                            ' Ajouter l'utilisateur s'il n'existe pas
+                            Addusers(UserName)
+                            userToUpdate = Users.FirstOrDefault(Function(user) user.Name = UserName)
                         End If
+
+                        If userToUpdate.Status = "Offline" Then
+                            ' Mettre à jour le statut de l'utilisateur
+                            userToUpdate.Status = IdentifiantPC
+                            logger.Error("Utilisateur mis à jour avec un seul identifiant")
+                        ElseIf Not userToUpdate.Status.Contains(IdentifiantPC) Then
+                            ' Mettre à jour le statut de l'utilisateur avec un nouveau poste
+                            userToUpdate.Status += " | " & IdentifiantPC
+                            logger.Error("Utilisateur mis à jour avec plusieurs postes")
+                        Else
+                            logger.Error("Rien à faire, utilisateur déjà mis à jour")
+                            Exit Sub ' Éviter la boucle infinie
+                        End If
+
+                        ' Envoyer un message de confirmation à l'utilisateur
+                        SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
+
+                        ' Sauvegarder les modifications et mettre à jour l'interface utilisateur
+                        SaveUsersToJson(Users)
+                        Users = LoadUsersFromJson()
+                        ListUseres.ItemsSource = Users
                     Else
                         ' Gérer le cas où le message n'a pas le bon nombre de parties
                     End If
@@ -929,7 +921,7 @@ Class MainWindow
                     ' Gérer l'exception liée au traitement du message d'ajout d'utilisateur
                 End Try
 
-
+            Case "USR02"
                 ' Déconnexion d'un utilisateur
                 ' "USR02UserName|IdentifiantPC"
                 Try
@@ -943,27 +935,30 @@ Class MainWindow
                         Dim userToUpdate As User = Users.FirstOrDefault(Function(user) user.Name = UserName)
 
                         If userToUpdate IsNot Nothing Then
-                            ' Vérifier si l'utilisateur n'a pas réagi au même IdentifiantPC précédent
-                            Dim storedUpdateInfo As UserUpdateInfo = Nothing
-                            Dim key As String = UserName & "-" & IdentifiantPC
-                            If userUpdates.TryGetValue(key, storedUpdateInfo) AndAlso storedUpdateInfo.LastIdentifiantPC = IdentifiantPC Then
-                                Exit Sub ' Éviter la boucle infinie
-                            End If
-
-                            ' Mettre à jour le statut de l'utilisateur
                             If userToUpdate.Status = IdentifiantPC Then
+                                ' Mettre à zéro le statut d'utilisateur
                                 userToUpdate.Status = "Offline"
-                                ' Supprimer l'utilisateur de la liste des mises à jour
-                                userUpdates.Remove(key)
-                            Else
-                                ' Mettre à jour le statut avec le poste retiré
-                                userToUpdate.Status = userToUpdate.Status.Replace(" | " & IdentifiantPC, "")
+                            ElseIf userToUpdate.Status.Contains("|") Then
+                                ' Diviser le statut en parties distinctes en utilisant le séparateur "|"
+                                Dim statusParts As String() = userToUpdate.Status.Split("|"c)
+
+                                ' Réorganiser les parties du statut en supprimant les occurrences de "IdentifiantPC"
+                                userToUpdate.Status = ""
+                                For Each part As String In statusParts
+                                    If part <> IdentifiantPC Then
+                                        ' Ajouter la partie au statut sauf si c'est "IdentifiantPC"
+                                        If userToUpdate.Status <> "" Then
+                                            userToUpdate.Status &= " | "
+                                        End If
+                                        userToUpdate.Status &= part
+                                    End If
+                                Next
                             End If
 
+                            ' Sauvegarder les modifications et mettre à jour l'interface utilisateur
                             SaveUsersToJson(Users)
-
-                        Else
-                            ' Gérer le cas où l'utilisateur n'est pas trouvé
+                            Users = LoadUsersFromJson()
+                            ListUseres.ItemsSource = Users
                         End If
                     Else
                         ' Gérer le cas où le message n'a pas le bon nombre de parties
@@ -971,7 +966,6 @@ Class MainWindow
                 Catch ex As Exception
                     ' Gérer l'exception liée au traitement du message de déconnexion d'utilisateur
                 End Try
-
 
             Case "USR03"
                 ' Code suppresion d'un user
@@ -1538,7 +1532,7 @@ Class MainWindow
         'My.Settings.Save()
 
         'End If
-
+        SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
     End Function
 
 
@@ -1974,7 +1968,9 @@ Class MainWindow
         Return Nothing
     End Function
 
-
+    Private Sub MainWindow_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
+    End Sub
 End Class
 
 

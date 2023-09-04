@@ -24,6 +24,8 @@ Public Class User
         Avatar = "/Avatar/avataaars.png"
         ' Par défaut, définir une room vide
         Room = String.Empty
+        ' Par défaut, définir un status offline
+        Status = "Offline"
     End Sub
 
     Public Shared Function LoadUsersFromJson(Optional userNameToExclude As String = Nothing) As ObservableCollection(Of User)
