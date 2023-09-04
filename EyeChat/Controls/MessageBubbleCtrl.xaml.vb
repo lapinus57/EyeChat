@@ -68,7 +68,8 @@ Public Class MessageBubbleCtrl
             If messageToRemove IsNot Nothing Then
                 Messages.Remove(messageToRemove)
                 SaveMessagesToJson(Messages)
-                SelectUser(SelectedUser)
+
+                SelectUser(selectedUserName)
             End If
         End If
     End Sub

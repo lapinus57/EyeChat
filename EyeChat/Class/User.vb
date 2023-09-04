@@ -46,6 +46,8 @@ Public Class User
                     Users.Remove(userToRemove) ' Supprimer l'utilisateur de la liste
                 End If
             End If
+        Else
+
         End If
 
         Return Users
@@ -54,6 +56,13 @@ Public Class User
 
     ' Enregistrement des messages dans le fichier JSON
     Public Shared Sub SaveUsersToJson(ByVal Users As ObservableCollection(Of User))
+
+        Dim dossier As String = "Users"
+        ' Vérifier si le dossier existe
+        If Not Directory.Exists(dossier) Then
+            ' Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(dossier)
+        End If
 
         Dim serializedUsers As String = "[" & String.Join("," & Environment.NewLine, Users.Select(Function(m) JsonConvert.SerializeObject(New With {m.Name, m.Room, m.Status, m.Avatar}))) & "]"
         File.WriteAllText(UsersFilePath, serializedUsers)

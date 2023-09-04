@@ -54,6 +54,13 @@ Public Class Patient
     Public Shared Function LoadPatientsFromJson() As ObservableCollection(Of Patient)
         Dim patients As ObservableCollection(Of Patient) = Nothing
 
+        Dim dossier As String = "HistoricPatient"
+        ' Vérifier si le dossier existe
+        If Not Directory.Exists(dossier) Then
+            ' Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(dossier)
+        End If
+
         If File.Exists(PatientFilePath) Then
             Using streamReader As New StreamReader(PatientFilePath)
                 Using jsonReader As New JsonTextReader(streamReader)

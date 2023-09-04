@@ -71,7 +71,12 @@ Public Class SettingsWindows
             My.Settings.NameRoomDisplayUsers = Visibility.Visible
         End If
         My.Settings.Save()
-        Users.Clear()
+        Try
+            Users.Clear()
+        Catch ex As Exception
+
+        End Try
+
         Dim loadedUsers = LoadUsersFromJson()
         For Each user In loadedUsers
             Users.Add(user)
@@ -110,7 +115,7 @@ Public Class SettingsWindows
         Dim PlanningList As List(Of Planning) = PlanningDataGrid.ItemsSource.Cast(Of Planning)().ToList()
         Dim PlanningCollection As New ObservableCollection(Of Planning)(PlanningList)
 
-        'SavePlanningToJson(PlanningCollection)
+        SavePlanningToJson(PlanningCollection)
     End Sub
 
     Private Sub SaveSpeedMessageChangesButton_Click(sender As Object, e As RoutedEventArgs)

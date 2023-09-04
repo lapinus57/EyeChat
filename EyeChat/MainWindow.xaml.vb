@@ -6,8 +6,9 @@ Imports EyeChat.Account
 Imports System.ComponentModel
 Imports log4net.Repository.Hierarchy
 Imports log4net
-Imports Newtonsoft.Json.Linq
+Imports log4net.Config
 Imports log4net.Core
+Imports Newtonsoft.Json.Linq
 Imports EyeChat.SettingsViewModel
 Imports log4net.Layout
 Imports EyeChat.Patient
@@ -405,7 +406,8 @@ Class MainWindow
     Private Sub MainWindow_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
 
         'CheckForUpdates("beta")
-
+        XmlConfigurator.Configure()
+        logger.Logger.Repository.Threshold = log4net.Core.Level.Error
         Me.ShowCloseButton = True
 
 
@@ -425,18 +427,42 @@ Class MainWindow
         My.Settings.RoomNameDisplayUsers = Visibility.Visible
         My.Settings.NameRoomDisplayUsers = Visibility.Collapsed
         My.Settings.NameDisplayUsers = Visibility.Collapsed
-
+        My.Settings.Save()
 
         'test si les dossier sont présent
         Filetest()
+        logger.Error("Creation du dossier HistoricPatient")
 
-
+        Dim dossier As String = "test"
+        ' Vérifier si le dossier existe
+        If Not Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dossier)) Then
+            ' Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dossier))
+            logger.Info("Creation du dossier HistoricPatient")
+        End If
         ' Initialise la collection de messages
-        Messages = If(LoadMessagesFromJson(), New ObservableCollection(Of Message)())
+        Try
+            Messages = If(LoadMessagesFromJson(), New ObservableCollection(Of Message)())
+        Catch ex As Exception
+
+        End Try
+
         ' Initialise la collection des users
-        Users = If(LoadUsersFromJson(), New ObservableCollection(Of User)())
+        Try
+            Users = If(LoadUsersFromJson(), New ObservableCollection(Of User)())
+        Catch ex As Exception
+            logger.Error($"Erreur lors de l'initialise la collection des users : {ex.Message}")
+        End Try
+
         ' Initialise la collection des patients
-        LoadPatientsFromJson()
+        Try
+            LoadPatientsFromJson()
+        Catch ex As Exception
+            logger.Error($"Erreur lors de l'nitialise la collection des patients : {ex.Message}")
+        End Try
+
+
+
         ' Initialise la collection des ordinateurs 
         LoadComputersFromJson()
         ' Initialise la collection du planning
@@ -466,7 +492,6 @@ Class MainWindow
 
         'PatientAdd("Mr", "muller", "benoit", "SK", "od", "RDC", "Blue", "benoit", Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff"))
         'PatientAdd("Mr", "durand", "benoit", "SK", Nothing, "1er", "Green", "benoit", Date.Now)
-
 
         jsonData = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "dataphrases.json"))
         phrasesData = JsonConvert.DeserializeObject(Of MarvinPhrasesData)(jsonData)
@@ -580,6 +605,13 @@ Class MainWindow
             SaveMessagesToJson(Messages)
         End If
     End Sub
+
+    Public Sub Addusers(ByVal UserName As String)
+        Users.Add(New User With {.Name = UserName})
+        SaveUsersToJson(Users)
+    End Sub
+
+
 
     ' Méthode pour sélectionner un utilisateur et afficher uniquement ses messages
     Public Shared Sub SelectUser(ByVal name As String)
@@ -1893,6 +1925,7 @@ Class MainWindow
         If Not Directory.Exists(dossier) Then
             ' Créer le dossier s'il n'existe pas
             Directory.CreateDirectory(dossier)
+            logger.Info("Creation du dossier HistoricPatient")
         End If
 
         dossier = "HistoricMsg"
@@ -1900,6 +1933,7 @@ Class MainWindow
         If Not Directory.Exists(dossier) Then
             ' Créer le dossier s'il n'existe pas
             Directory.CreateDirectory(dossier)
+            logger.Info("Creation du dossier HistoricMsg")
         End If
 
         dossier = "Core"
@@ -1907,6 +1941,15 @@ Class MainWindow
         If Not Directory.Exists(dossier) Then
             ' Créer le dossier s'il n'existe pas
             Directory.CreateDirectory(dossier)
+            logger.Info("Creation du dossier Core")
+        End If
+
+        dossier = "Users"
+        ' Vérifier si le dossier existe
+        If Not Directory.Exists(dossier) Then
+            ' Créer le dossier s'il n'existe pas
+            Directory.CreateDirectory(dossier)
+            logger.Info("Creation du dossier Users")
         End If
 
 
