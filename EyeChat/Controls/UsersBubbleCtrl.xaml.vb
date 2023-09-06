@@ -66,9 +66,6 @@ Public Class UsersBubbleCtrl
         InitializeComponent()
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
-        RoomNameDisplayUsers = My.Settings.RoomNameDisplayUsers
-        NameRoomDisplayUsers = My.Settings.NameRoomDisplayUsers
-        NameDisplayUsers = My.Settings.NameDisplayUsers
         Size = My.Settings.AppSizeDisplay
     End Sub
 

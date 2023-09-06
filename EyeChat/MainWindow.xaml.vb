@@ -411,23 +411,42 @@ Class MainWindow
         Me.ShowCloseButton = True
 
 
-        If String.IsNullOrWhiteSpace(My.Settings.WindowsName) Then
-            My.Settings.WindowsName = Environment.UserName
-            My.Settings.Save()
-        End If
-        If String.IsNullOrWhiteSpace(My.Settings.ComputerName) Then
-            My.Settings.ComputerName = Environment.MachineName
-            My.Settings.Save()
-        End If
-        If String.IsNullOrWhiteSpace(My.Settings.UniqueId) Then
-            My.Settings.UniqueId = GenerateUniqueId()
-            My.Settings.Id = GetUniqueIdHashCode()
-            My.Settings.Save()
-        End If
-        My.Settings.RoomNameDisplayUsers = Visibility.Visible
-        My.Settings.NameRoomDisplayUsers = Visibility.Collapsed
-        My.Settings.NameDisplayUsers = Visibility.Collapsed
-        My.Settings.Save()
+        'test si les paramètres sont présent
+        Try
+            ' test si My.Settings.windowsName est vide
+            If String.IsNullOrWhiteSpace(My.Settings.WindowsName) Then
+                My.Settings.WindowsName = Environment.UserName
+                My.Settings.Save()
+                logger.Info($"Nom de l'utilisateur windows : {My.Settings.WindowsName}")
+            End If
+        Catch ex As Exception
+            logger.Error($"Erreur lors de la récupération du nom de l'utilisateur windows : {ex.Message}")
+        End Try
+
+
+        Try
+            ' test si My.Settings.ComputerName est vide
+            If String.IsNullOrWhiteSpace(My.Settings.ComputerName) Then
+                My.Settings.ComputerName = Environment.MachineName
+                My.Settings.Save()
+                logger.Info($"Nom de l'ordinateur : {My.Settings.ComputerName}")
+            End If
+        Catch ex As Exception
+            logger.Error($"Erreur lors de la récupération du nom de l'ordinateur : {ex.Message}")
+        End Try
+
+        Try
+            ' test si My.Settings.UniqueId est vide
+            If String.IsNullOrWhiteSpace(My.Settings.UniqueId) Then
+                My.Settings.UniqueId = GenerateUniqueId()
+                My.Settings.Id = GetUniqueIdHashCode()
+                My.Settings.Save()
+                logger.Info($"UniqueId : {My.Settings.UniqueId}")
+            End If
+        Catch ex As Exception
+            logger.Error($"Erreur lors de la récupération du UniqueId : {ex.Message}")
+        End Try
+
 
         'test si les dossier sont présent
         Filetest()
@@ -435,8 +454,9 @@ Class MainWindow
         ' Initialise la collection de messages
         Try
             Messages = If(LoadMessagesFromJson(), New ObservableCollection(Of Message)())
+            logger.Info("Messages chargé avec succé")
         Catch ex As Exception
-
+            logger.Error($"Erreur lors de l'initialisation de la collection des messages : {ex.Message}")
         End Try
 
         ' Initialise la collection des utilisateurs
@@ -458,12 +478,20 @@ Class MainWindow
             logger.Error($"Erreur lors de l'nitialise la collection des patients : {ex.Message}")
         End Try
 
-
-
         ' Initialise la collection des ordinateurs 
-        LoadComputersFromJson()
+        Try
+            LoadComputersFromJson()
+        Catch ex As Exception
+            logger.Error($"Erreur lors de l'nitialise la collection des ordinateurs : {ex.Message}")
+        End Try
+
         ' Initialise la collection du planning
-        'LoadPlanningFromJson()
+        Try
+            LoadPlanningFromJson()
+        Catch ex As Exception
+            logger.Error($"Erreur lors de l'nitialise la collection du planning : {ex.Message}")
+        End Try
+
 
         ' Initialisez la collection de messages selectionné
         SelectedUserMessages = New ObservableCollection(Of Message)()
@@ -519,7 +547,8 @@ Class MainWindow
         SendTextBox.ContextMenu = contextMenu
 
         If My.Settings.PlanningMode = True Then
-            Dim dayTranslations As New Dictionary(Of String, String)() From {
+            Try
+                Dim dayTranslations As New Dictionary(Of String, String)() From {
                 {"Monday", "Lundi"},
                 {"Tuesday", "Mardi"},
                 {"Wednesday", "Mercredi"},
@@ -529,15 +558,25 @@ Class MainWindow
                 {"Sunday", "Dimanche"}
     }
 
-            Dim today = DateTime.Now.DayOfWeek.ToString() ' Récupère le jour actuel de la semaine en anglais
-            Dim frenchDay As String = dayTranslations(today) ' Traduction française du jour
+                Dim today = DateTime.Now.DayOfWeek.ToString() ' Récupère le jour actuel de la semaine en anglais
+                Dim frenchDay As String = dayTranslations(today) ' Traduction française du jour
 
-            ' Recherche le planning correspondant au jour en cours dans la liste des plannings
-            Dim planningForToday = Plannings.FirstOrDefault(Function(p) p.Day = frenchDay)
+                ' Recherche le planning correspondant au jour en cours dans la liste des plannings
+                Dim planningForToday = Plannings.FirstOrDefault(Function(p) p.Day = frenchDay)
 
-            ' Mise à jour du nom d'utilisateur dans les paramètres
-            My.Settings.UserName = planningForToday.User
-            My.Settings.Save()
+                ' Mise à jour du nom d'utilisateur dans les paramètres
+                If planningForToday IsNot Nothing AndAlso planningForToday.User IsNot Nothing Then
+                    My.Settings.UserName = planningForToday.User
+                    My.Settings.Save()
+                Else
+                    My.Settings.UserName = "Benoit"
+                    My.Settings.Save()
+                End If
+            Catch ex As Exception
+                My.Settings.UserName = "Benoit"
+                My.Settings.Save()
+            End Try
+
         End If
 
 
@@ -998,7 +1037,7 @@ Class MainWindow
                     End If
 
                 Catch ex As Exception
-
+                    logger.Error("Erreur de réception d'un message SpeedMessage SMF01 " & ex.Message)
                 End Try
 
 
@@ -1024,8 +1063,10 @@ Class MainWindow
 
                     ' Appeler la fonction PatientAdd pour ajouter le patient avec les informations extraites
                     PatientAdd(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time)
+
                 Catch ex As Exception
                     ' Gérer toute exception qui pourrait survenir lors du traitement du message
+                    logger.Error("Erreur de réception d'un message PatientAdd PTN01 " & ex.Message)
                 End Try
 
 
@@ -1047,7 +1088,8 @@ Class MainWindow
 
                     PatientCheckPass(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time, OperatorName)
                 Catch ex As Exception
-
+                    ' Gérer toute exception qui pourrait survenir lors du traitement du message
+                    logger.Error("Erreur de réception d'un message PatientCheckPass PTN02 " & ex.Message)
                 End Try
 
 
@@ -1068,7 +1110,8 @@ Class MainWindow
 
                     PatientRemove(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time)
                 Catch ex As Exception
-
+                    ' Gérer toute exception qui pourrait survenir lors du traitement du message
+                    logger.Error("Erreur de réception d'un message PatientRemove PTN03 " & ex.Message)
                 End Try
 
             Case "PTN04"
@@ -1092,6 +1135,8 @@ Class MainWindow
                     PatientUpdate(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, OldHold_Time, NewHold_Time)
 
                 Catch ex As Exception
+                    ' Gérer toute exception qui pourrait survenir lors du traitement du message
+                    logger.Error("Erreur de réception d'un message PatientUpdate PTN04 " & ex.Message)
 
                 End Try
 
@@ -1112,8 +1157,9 @@ Class MainWindow
                     Dim OperatorName As String = parts(8)
 
                     PatientUndoPass(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time, OperatorName)
+                    logger.Debug("Réception d'un message PatientUndoPass PTN05")
                 Catch ex As Exception
-
+                    logger.Error("Erreur de réception d'un message PatientUndoPass PTN05 " & ex.Message)
                 End Try
 
 
@@ -1191,7 +1237,7 @@ Class MainWindow
 
 
                 Catch ex As Exception
-
+                    logger.Error("Erreur de réception d'un message MSG01 " & ex.Message)
                 End Try
 
                 'SelectUserList("Benoit")
@@ -1213,21 +1259,33 @@ Class MainWindow
 
             Case "DBG01"
                 'Code pour envoyer l'ID du PC au autres application
-                Dim localIPAddress As IPAddress = GetLocalIPAddress()
+                Try
+                    Dim localIPAddress As IPAddress = GetLocalIPAddress()
+                    SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
+                    logger.Debug("Envoi de l'ID du PC aux autres applications")
+                Catch ex As Exception
+                    logger.Error("Erreur lors de l'envoi de l'ID du PC aux autres applications : " & ex.Message)
+                End Try
 
-                SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
+
             Case "DBG02"
                 'Code pour enregistrer l'ID des autre PC dans la collection computer
-                Dim messageContent As String = receivedMessage.Substring(5)
-                Dim parts As String() = messageContent.Split("|"c)
-                Dim ComputerID As String = parts(0)
-                Dim ComputerUser As String = parts(1)
-                Dim ComputerIP As String = parts(2)
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+                    Dim ComputerID As String = parts(0)
+                    Dim ComputerUser As String = parts(1)
+                    Dim ComputerIP As String = parts(2)
 
-                If Not Computers.Any(Function(c) c.ComputerID = ComputerID) Then
-                    Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIP = ComputerIP})
-                    SaveComputersToJson() ' Sauvegarder la liste mise à jour dans le fichier JSON
-                End If
+                    If Not Computers.Any(Function(c) c.ComputerID = ComputerID) Then
+                        Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIp = ComputerIP})
+                        SaveComputersToJson() ' Sauvegarder la liste mise à jour dans le fichier JSON
+                        logger.Debug("Ajout d'un PC à la liste des PC : " & ComputerID)
+                    End If
+                Catch ex As Exception
+                    logger.Error("Erreur lors de la réception de l'ID des autres PC : " & ex.Message)
+                End Try
+
             Case Else
                 ' Code pour les messages non reconnus
                 ' ...
@@ -1236,55 +1294,75 @@ Class MainWindow
 
     ' Fonction permettant d'envoyer un code suivi d'un contenu spécifié
     Private Sub SendMessageWithCode(code As String, content As String)
-        ' Vérifier si le code et le contenu ne sont pas nuls
-        If code IsNot Nothing And content IsNot Nothing Then
-            ' Concaténer le code et le contenu pour former le message complet
-            Dim message As String = code + content
 
-            ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
-            Dim messageBytes As Byte() = Encoding.UTF8.GetBytes(message)
+        Try
+            ' Vérifier si le code et le contenu ne sont pas nuls
+            If code IsNot Nothing And content IsNot Nothing Then
+                ' Concaténer le code et le contenu pour former le message complet
+                Dim message As String = code + content
 
-            ' Envoyer les octets du message à travers le client d'envoi
-            sendingClient.Send(messageBytes, messageBytes.Length)
-        End If
+                ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
+                Dim messageBytes As Byte() = Encoding.UTF8.GetBytes(message)
+
+                ' Envoyer les octets du message à travers le client d'envoi
+                sendingClient.Send(messageBytes, messageBytes.Length)
+
+                ' Afficher le message dans la console
+                logger.Debug("Envoi d'un message avec code : " & code & " et message : " & content)
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de l'envoi d'un message avec code : " & code & " et message : " & content & " l'erreur suivante est apparue : " & ex.Message)
+        End Try
+
     End Sub
 
     ' Fonction permettant d'envoyer un message complet
     Public Shared Sub SendMessage(message As String)
-        ' Vérifier si le message n'est pas vide
-        If message <> "" Then
-            ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
-            Dim DataMessage() As Byte = Encoding.UTF8.GetBytes(message)
+        Try
+            ' Vérifier si le message n'est pas vide
+            If message <> "" Then
+                ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
+                Dim DataMessage() As Byte = Encoding.UTF8.GetBytes(message)
 
-            ' Vérifier si le tableau d'octets du message n'est pas nul
-            If DataMessage IsNot Nothing Then
-                Try
+                ' Vérifier si le tableau d'octets du message n'est pas nul
+                If DataMessage IsNot Nothing Then
+
                     ' Envoyer les octets du message à travers le client d'envoi
                     sendingClient.Send(DataMessage, DataMessage.Length)
-                Catch ex As Exception
-                    ' Gérer toute exception qui pourrait survenir lors de l'envoi
-                End Try
+
+                    ' Afficher le message dans la console
+                    logger.Debug("Envoi d'un message : " & message)
+                End If
             End If
-        End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de l'envoi d'un message : " & message & " l'erreur suivante est apparue : " & ex.Message)
+        End Try
+
     End Sub
 
 
     Private Async Sub SpeedMessageDialog(ByVal Titre As String, ByVal Message As String, ByVal option1 As String, ByVal option2 As String, ByVal option3 As String)
-        Dim dialogSettings As New MetroDialogSettings With {
+        Try
+            Dim dialogSettings As New MetroDialogSettings With {
             .AffirmativeButtonText = option1,
             .NegativeButtonText = option2,
             .FirstAuxiliaryButtonText = option3
         }
 
-        Dim result As MessageDialogResult = Await DialogCoordinator.Instance.ShowMessageAsync(Me, Titre, Message, MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary, dialogSettings)
 
-        If result = MessageDialogResult.Affirmative Then
-            ' Bouton 1 cliqué
-        ElseIf result = MessageDialogResult.Negative Then
-            ' Bouton 2 cliqué
-        ElseIf result = MessageDialogResult.FirstAuxiliary Then
-            ' Bouton 3 cliqué
-        End If
+            Dim result As MessageDialogResult = Await DialogCoordinator.Instance.ShowMessageAsync(Me, Titre, Message, MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary, dialogSettings)
+
+            If result = MessageDialogResult.Affirmative Then
+                ' Bouton 1 cliqué
+            ElseIf result = MessageDialogResult.Negative Then
+                ' Bouton 2 cliqué
+            ElseIf result = MessageDialogResult.FirstAuxiliary Then
+                ' Bouton 3 cliqué
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de l'affichage d'un message dialog : " & ex.Message)
+        End Try
+
     End Sub
 
 
@@ -1301,75 +1379,108 @@ Class MainWindow
     Private _selectionLength As Integer             ' Stocke la longueur de la sélection
 
     Private Sub SuggestionBoxOnTextChanged(sender As Object, e As TextChangedEventArgs) Handles SendTextBox.TextChanged
-        ' Récupérer le texte actuellement saisi dans la zone de saisie
-        Dim input = SendTextBox.Text
+        Try
+            ' Récupérer le texte actuellement saisi dans la zone de saisie
+            Dim input = SendTextBox.Text
 
-        ' Vérifier si la longueur du texte saisi a augmenté et si le texte est différent de la suggestion actuelle
-        If input.Length > _currentInput.Length AndAlso input <> _currentSuggestion Then
-            ' Recherche de la première suggestion qui commence par le texte saisi
-            _currentSuggestion = SuggestionValues.FirstOrDefault(Function(x) x.StartsWith(input))
+            ' Vérifier si la longueur du texte saisi a augmenté et si le texte est différent de la suggestion actuelle
+            If input.Length > _currentInput.Length AndAlso input <> _currentSuggestion Then
+                ' Recherche de la première suggestion qui commence par le texte saisi
+                _currentSuggestion = SuggestionValues.FirstOrDefault(Function(x) x.StartsWith(input))
 
-            ' Vérifier si une suggestion a été trouvée
-            If _currentSuggestion IsNot Nothing Then
-                ' Mettre à jour le texte complet à afficher avec la suggestion trouvée
-                _currentText = _currentSuggestion
+                ' Vérifier si une suggestion a été trouvée
+                If _currentSuggestion IsNot Nothing Then
+                    ' Mettre à jour le texte complet à afficher avec la suggestion trouvée
+                    _currentText = _currentSuggestion
 
-                ' Mémoriser la position de début de la sélection dans le texte
-                _selectionStart = input.Length
+                    ' Mémoriser la position de début de la sélection dans le texte
+                    _selectionStart = input.Length
 
-                ' Calculer la longueur de la sélection en se basant sur la suggestion trouvée
-                _selectionLength = _currentSuggestion.Length - input.Length
+                    ' Calculer la longueur de la sélection en se basant sur la suggestion trouvée
+                    _selectionLength = _currentSuggestion.Length - input.Length
 
-                ' Mettre à jour le texte de la zone de saisie avec le texte complet (suggestion + texte saisi)
-                SendTextBox.Text = _currentText
+                    ' Mettre à jour le texte de la zone de saisie avec le texte complet (suggestion + texte saisi)
+                    SendTextBox.Text = _currentText
 
-                ' Sélectionner la partie du texte correspondant à la suggestion
-                SendTextBox.[Select](_selectionStart, _selectionLength)
+                    ' Sélectionner la partie du texte correspondant à la suggestion
+                    SendTextBox.[Select](_selectionStart, _selectionLength)
+
+                    ' Journaliser l'action normale
+                    logger.Debug("Suggestion mise à jour : " & _currentText)
+                End If
             End If
-        End If
 
-        ' Mettre à jour la valeur de _currentInput avec le texte actuel de la zone de saisie
-        _currentInput = input
+            ' Mettre à jour la valeur de _currentInput avec le texte actuel de la zone de saisie
+            _currentInput = input
+        Catch ex As Exception
+            ' Gérez l'exception ici en ajoutant des messages de journalisation d'erreur
+            logger.Error("Erreur dans SuggestionBoxOnTextChanged : " & ex.Message)
+        End Try
     End Sub
 
     Private Function SendTextBox_KeyDownAsync(sender As Object, e As KeyEventArgs) As Task Handles SendTextBox.KeyDown
         If e.Key = Key.Enter Then
+            logger.Info("Touche entrée appuyée sur la Sendbox")
             SendTextBox.Text = SendTextBox.Text.TrimEnd()
             If Not String.IsNullOrEmpty(SendTextBox.Text) Then
                 Select Case SendTextBox.Text
                     Case "/DEBUG"
+                        ' Active la fonction de débogage
+                        logger.Info("Commande /DEBUG dans la Sendbox")
                         Try
+                            ' Ajouter l'utilisateur Marvin
                             Dim UserToAdd As User = Users.FirstOrDefault(Function(user) user.Name = "Marvin")
                             If UserToAdd Is Nothing Then
                                 Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                                Users.Add(New User With {.Name = "Marvin", .Room = "Sytem", .Avatar = avatarPath, .Status = "Don't Panic"})
+                                Users.Add(New User With {.Name = "Marvin", .Avatar = avatarPath, .Status = "Don't Panic"})
+                                logger.Debug("Utilisateur Marvin ajouté")
                             End If
 
                         Catch ex As Exception
-
+                            logger.Error("Erreur lors de l'ajout de l'utilisateur Marvin avec la commande /DEBUG: " & ex.Message)
                         End Try
 
                     Case "/ENDDEBUG"
+                        ' Désactive la fonction de débogage
+                        logger.Info("Commande /ENDDEBUG dans la Sendbox")
                         Try
+                            ' Supprimer l'utilisateur Marvin
                             Dim UserToRemove As User = Users.FirstOrDefault(Function(user) user.Name = "Marvin")
                             If UserToRemove IsNot Nothing Then
                                 Users.Remove(UserToRemove)
+                                logger.Debug("Utilisateur Marvin supprimé")
                             End If
                         Catch ex As Exception
-
+                            logger.Error("Erreur lors de la suppression de l'utilisateur Marvin avec la commande /ENDDEBUG: " & ex.Message)
                         End Try
 
                     Case "/LSTCOMPUTER"
-                        SendMessage("DBG01")
+                        ' Commande pour lister les ordinateurs connectés
+                        logger.Info("Commande /LSTCOMPUTER dans la Sendbox")
+                        Try
+                            ' Envoyer le message DBG01 pour demander les ordinateurs connectés
+                            SendMessage("DBG01")
+                            logger.Debug("Message DBG01 envoyé")
+                        Catch ex As Exception
+                            logger.Error("Erreur lors de l'envoi du message DBG01 avec la commande /LSTCOMPUTER: " & ex.Message)
+                        End Try
+
 
                     Case "/DISPCOMPUTER"
-                        Dim computerString As New StringBuilder()
-                        computerString.AppendLine("Actuellement il y a :")
-                        For Each computer In Computers
-                            computerString.AppendLine(computer.ComputerUser)
-                        Next
-                        Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                        AddMessage("Marvin", "Marvin", computerString.ToString, False, avatarPath)
+                        ' Commande pour afficher les ordinateurs connectés dans la liste computers
+                        logger.Info("Commande /DISPCOMPUTER dans la Sendbox")
+                        Try
+                            Dim computerString As New StringBuilder()
+                            computerString.AppendLine("Actuellement il y a :")
+                            For Each computer In Computers
+                                computerString.AppendLine(computer.ComputerUser & " " & computer.ComputerIp)
+                            Next
+                            Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
+                            AddMessage("Marvin", "Marvin", computerString.ToString, False, avatarPath)
+                            logger.Debug("Liste des ordinateurs affichée avec la commande /DISPCOMPUTER")
+                        Catch ex As Exception
+                            logger.Error("Erreur lors de l'affichage des ordinateurs avec la commande /DISPCOMPUTER: " & ex.Message)
+                        End Try
 
                     Case "TEST"
                         ' Créer une instance de la classe Random
@@ -1389,48 +1500,67 @@ Class MainWindow
 
 
                     Case Else
-
+                        ' Vérifier si le message commence par un code MSG ou et un simple message
+                        logger.Info("Vérification si le message de la Sendbox commence par un code MSG")
                         Dim startsWithCodeMSG As Boolean = False
                         Dim matchedOption As ExamOption = Nothing
 
-                        For Each Exaoption As ExamOption In ExamOptions
-                            If SendTextBox.Text.StartsWith(Exaoption.CodeMSG) Then
-                                startsWithCodeMSG = True
-                                matchedOption = Exaoption
-                                Exit For
-                            End If
-                        Next
+                        ' Parcourir la liste des ExamOptions pour savoir si le message commence par un code MSG
+                        logger.Debug("Parcours de la liste des ExamOptions")
+                        Try
+                            For Each Exaoption As ExamOption In ExamOptions
+                                If SendTextBox.Text.StartsWith(Exaoption.CodeMSG) Then
+                                    startsWithCodeMSG = True
+                                    matchedOption = Exaoption
+                                    logger.Debug("Code MSG trouvé : " & matchedOption.CodeMSG)
+                                    Exit For
+                                End If
+                            Next
+                        Catch ex As Exception
+                            logger.Error("Erreur lors du parcours de la liste des ExamOptions : " & ex.Message)
+                        End Try
 
+
+                        ' Vérifier si le message commence par un code MSG et si un code MSG a été trouvé
                         If startsWithCodeMSG AndAlso matchedOption IsNot Nothing Then
-                            Dim codeMSG As String = matchedOption.CodeMSG
-                            Dim annotation As String = matchedOption.Annotation
-                            ' Utilisez la variable codeMSG comme vous le souhaitez...
-                            Dim spaceIndex As Integer = SendTextBox.Text.IndexOf(" ", codeMSG.Length)
+                            ' Le message commence par un code MSG et un code MSG a été trouvé
+                            ' Récupérer le code MSG et l'annotation
+                            logger.Info("Le message de la Sendbox commence par un code MSG et un code MSG a été trouvé")
+                            Try
+                                Dim codeMSG As String = matchedOption.CodeMSG
+                                Dim annotation As String = matchedOption.Annotation
+                                ' Utilisez la variable codeMSG comme vous le souhaitez...
+                                Dim spaceIndex As Integer = SendTextBox.Text.IndexOf(" ", codeMSG.Length)
+
+                                ' Création des variables pour le patient
+                                Dim patientTitre As String = ""
+                                Dim patientNom As String = ""
+                                Dim patientPrenom As String = ""
+                                codeMSG = codeMSG.Replace("=", "")
 
 
-                            Dim patientTitre As String = ""
-                            Dim patientNom As String = ""
-                            Dim patientPrenom As String = ""
-                            codeMSG = codeMSG.Replace("=", "")
+                                ' Vérifier s'il y a un espace après le CodeMSG
+                                If spaceIndex > codeMSG.Length Then
+                                    'il y a un espace après le codeMSG
+                                    ExtractInfoFromInput(SendTextBox.Text.Substring(spaceIndex + 1), patientTitre, patientNom, patientPrenom)
+                                Else
+                                    ' Pas d'espace après le CodeMSG
+                                    ExtractInfoFromInput(SendTextBox.Text.Substring(codeMSG.Length), patientTitre, patientNom, patientPrenom)
+                                End If
 
+                                Dim Text As String = "PTN01" & patientTitre & "|" & patientNom & "|" & patientPrenom & "|" & codeMSG & "|" & annotation & "|RDC|" & My.Settings.UserName & "|" & Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+                                SendMessage(Text)
+                                logger.Debug("Message PTN01 envoyé")
+                            Catch ex As Exception
+                                logger.Error("Erreur lors de l'envoi du message PTN01 : " & ex.Message)
+                            End Try
 
-                            ' Vérifier s'il y a un espace après le CodeMSG
-                            If spaceIndex > codeMSG.Length Then
-                                'il y a un espace après le codeMSG
-                                ExtractInfoFromInput(SendTextBox.Text.Substring(spaceIndex + 1), patientTitre, patientNom, patientPrenom)
-                            Else
-                                ' Pas d'espace après le CodeMSG
-                                ExtractInfoFromInput(SendTextBox.Text.Substring(codeMSG.Length), patientTitre, patientNom, patientPrenom)
-                            End If
-
-                            Dim Text As String = "PTN01" & patientTitre & "|" & patientNom & "|" & patientPrenom & "|" & codeMSG & "|" & annotation & "|RDC|" & My.Settings.UserName & "|" & Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
-                            SendMessage(Text)
-                            MessageBox.Show(Text)
 
                         Else
 
-
-                            'Formate le message sous la forme "MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+                            ' C'est un message simple
+                            ' Formate le message sous la forme "MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+                            logger.Info("Le message de la Sendbox est un message simple")
                             Try
                                 Dim text As String
                                 Dim selectedUser As User = TryCast(ListUseres.SelectedItem, User)
@@ -1459,7 +1589,7 @@ Class MainWindow
                                             Else
                                                 ' Marvin n'est pas présent dans la liste, on créer le user et on ajoute le message
                                                 Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                                                Users.Add(New User With {.Name = "Marvin", .Room = "Sytem", .Avatar = avatarPath, .Status = "Don't Panic"})
+                                                Users.Add(New User With {.Name = "Marvin", .Avatar = avatarPath, .Status = "Don't Panic"})
                                                 AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
                                             End If
                                         End If
@@ -1469,11 +1599,12 @@ Class MainWindow
                                     text = "MSG01" & My.Settings.UserName & "|" & selectedUserName & "|" & SendTextBox.Text & "|benoit.png"
                                     SendMessage(text)
                                     MessageList.ScrollToEnd()
+                                    logger.Debug("Message simple envoyé  ")
                                 End If
 
 
                             Catch ex As Exception
-
+                                logger.Error("Erreur lors de l'envoi du message simple : " & ex.Message)
                             End Try
 
                         End If
@@ -1484,34 +1615,57 @@ Class MainWindow
             End If
 
             SendTextBox.Clear()
+
+
         ElseIf e.Key = Key.Tab Then
+            ' La touche Tab a été appuyée
             ' Insérer la suggestion dans la zone de texte
-            If Not String.IsNullOrEmpty(_currentSuggestion) Then
-                SendTextBox.Text = _currentSuggestion
-                SendTextBox.SelectionStart = SendTextBox.Text.Length
-            End If
-            ' Empêcher le focus de se déplacer vers le contrôle suivant
-            e.Handled = True
+            Try
+                If Not String.IsNullOrEmpty(_currentSuggestion) Then
+                    SendTextBox.Text = _currentSuggestion
+                    SendTextBox.SelectionStart = SendTextBox.Text.Length
+                End If
+                ' Empêcher le focus de se déplacer vers le contrôle suivant
+                e.Handled = True
+            Catch ex As Exception
+                logger.Error("Erreur lors de l'insertion de la suggestion dans la zone de texte : " & ex.Message)
+            End Try
+
         End If
     End Function
 
 #End Region
 
     Private Sub ListUseres_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles ListUseres.SelectionChanged
-        Dim selectedUser As User = TryCast(ListUseres.SelectedItem, User)
-        If selectedUser IsNot Nothing Then
-            selectedUserName = selectedUser.Name
-            ' Faites quelque chose avec le nom de l'utilisateur sélectionné
-            ' ...
-            SelectUser(selectedUser.Name)
-        End If
+
+        logger.Info("Selection d'un user dans la liste des users.")
+        Try
+            Dim selectedUser As User = TryCast(ListUseres.SelectedItem, User)
+            If selectedUser IsNot Nothing Then
+                selectedUserName = selectedUser.Name
+                ' Selectionne le user dans la liste des users
+                SelectUser(selectedUser.Name)
+                logger.Debug($"Selection de {selectedUser.Name} dans la liste des users.")
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de la selection d'un user dans la liste des users.")
+        End Try
+
     End Sub
 
 
 
     Function IsNameInList(users As ObservableCollection(Of User), nameToSearch As String) As Boolean
         ' Fonction qui teste la présence d'un user et retourne une boolean
-        Return users.Any(Function(u) u.Name = nameToSearch)
+        logger.Info($"Test de la présence de {nameToSearch} dans la liste des users.")
+        Try
+            Return users.Any(Function(u) u.Name = nameToSearch)
+            logger.Debug($"{nameToSearch} est dans la liste des users ")
+        Catch ex As Exception
+            Return False
+            logger.Error($"Erreur lors du test de la présence de {nameToSearch} dans la liste des users.")
+        End Try
+
     End Function
 
 
@@ -1561,17 +1715,24 @@ Class MainWindow
 
     Private Sub SelectUserByName(userName As String)
         ' Recherche de l'utilisateur par son nom dans la collection Users
-        Dim userToSelect As User = Users.FirstOrDefault(Function(u) u.Name = userName)
+        logger.Info("Recherche de l'utilisateur par son nom dans la collection Users")
+        Try
+            Dim userToSelect As User = Users.FirstOrDefault(Function(u) u.Name = userName)
 
-        ' Vérification si un utilisateur avec le nom spécifié a été trouvé
-        If userToSelect IsNot Nothing Then
-            ' Sélection de l'utilisateur trouvé dans la liste des utilisateurs
-            ListUseres.SelectedItem = userToSelect
+            ' Vérification si un utilisateur avec le nom spécifié a été trouvé
+            If userToSelect IsNot Nothing Then
+                ' Sélection de l'utilisateur trouvé dans la liste des utilisateurs
+                ListUseres.SelectedItem = userToSelect
 
-            ' Appel d'une fonction/méthode pour gérer la sélection de l'utilisateur
-            ' en passant le nom de l'utilisateur trouvé comme argument
-            SelectUser(userToSelect.Name)
-        End If
+                ' Appel d'une fonction/méthode pour gérer la sélection de l'utilisateur
+                ' en passant le nom de l'utilisateur trouvé comme argument
+                SelectUser(userToSelect.Name)
+                logger.Debug("Sélection de l'utilisateur trouvé dans la liste des utilisateurs")
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur dans la recherche de l'utilisateur par son nom dans la collection Users " & ex.Message)
+        End Try
+
     End Sub
 
     Private _selectedListUser As User
@@ -1593,7 +1754,15 @@ Class MainWindow
 
 
     Private Sub ClosePatientBox_OnClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
-        Me.CustomDialogBox.Close()
+        ' Fermer la boîte de dialogue personnalisée
+        logger.Info("Fermeture de la boite de dialogue d'ajout d'un patient")
+        Try
+            Me.CustomDialogBox.Close()
+            logger.Debug("Fermeture de la boite de dialogue d'ajout d'un patient")
+        Catch ex As Exception
+            logger.Error("Erreur dans la fermeture de la boite de dialogue d'ajout d'un patient " & ex.Message)
+        End Try
+
     End Sub
 
     Private Sub ValidPatientBox_OnClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
@@ -1674,75 +1843,97 @@ Class MainWindow
 
 
     Private Function EnumWindowCallBack(ByVal hwnd As IntPtr, ByVal lParam As IntPtr) As Boolean
-        Dim windowText As New StringBuilder(256)
-        GetWindowText(hwnd, windowText, windowText.Capacity)
-        Dim text As String = windowText.ToString().Trim()
-        If text.Length > 0 Then
+        Try
+            Dim windowText As New StringBuilder(256)
+            GetWindowText(hwnd, windowText, windowText.Capacity)
+            Dim text As String = windowText.ToString().Trim()
+            If text.Length > 0 Then
+                If text.StartsWith("REFRACTION") OrElse text.Contains("LENTILLES") OrElse text.Contains("PATHOLOGIES") OrElse text.Contains("ORTHOPTIE") OrElse text.Contains("TRAITEMENT") Then
+                    Dim inputString As String = text
+                    ' Expression régulière pour extraire le nom complet de la chaîne d'entrée
+                    Dim regexPattern As String = "(REFRACTION de|LENTILLES de|PATHOLOGIES de|ORTHOPTIE de|TRAITEMENT de)\s+(Monsieur|Madame|Mademoiselle|Enfant|Maître|Docteur)\s+((?:[A-ZÀ-ÖØ-Ý\-']+\s?)+)(?:(Née)\s+([A-ZÀ-ÖØ-Ý\-']+\s?)+)?\s+(([A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*([ -][A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*)*)).*$"
 
-            If text.StartsWith("REFRACTION") OrElse text.Contains("LENTILLES") OrElse text.Contains("PATHOLOGIES") OrElse text.Contains("ORTHOPTIE") OrElse text.Contains("TRAITEMENT") Then
+                    ' Création d'un objet Regex à partir de l'expression régulière
+                    Dim regex As New Regex(regexPattern, RegexOptions.IgnoreCase)
+                    ' Extraction du nom complet à partir de la chaîne d'entrée
+                    Dim match As Match = regex.Match(inputString)
+                    ' Construction de la chaîne de sortie à partir des groupes capturés par l'expression régulière
 
-                Dim inputString As String = text
-                ' Expression régulière pour extraire le nom complet de la chaîne d'entrée
-                Dim regexPattern As String = "(REFRACTION de|LENTILLES de|PATHOLOGIES de|ORTHOPTIE de|TRAITEMENT de)\s+(Monsieur|Madame|Mademoiselle|Enfant|Maître|Docteur)\s+((?:[A-ZÀ-ÖØ-Ý\-']+\s?)+)(?:(Née)\s+([A-ZÀ-ÖØ-Ý\-']+\s?)+)?\s+(([A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*([ -][A-ZÀ-ÖØ-Ý][a-zà-öø-ý\-']*)*)).*$"
+                    ' Extraction du titre à partir de la chaîne d'entrée
+                    Dim titre As String = match.Groups(2).Value
 
-                ' Création d'un objet Regex à partir de l'expression régulière
-                Dim regex As New Regex(regexPattern, RegexOptions.IgnoreCase)
-                ' Extraction du nom complet à partir de la chaîne d'entrée
-                Dim match As Match = regex.Match(inputString)
-                ' Construction de la chaîne de sortie à partir des groupes capturés par l'expression régulière
+                    ' Remplacement du titre complet par son abréviation correspondante
+                    Select Case titre
+                        Case "Monsieur"
+                            titre = "Mr"
+                        Case "Madame"
+                            titre = "Mme"
+                        Case "Mademoiselle"
+                            titre = "Mlle"
+                        Case "Enfant"
+                            titre = "Enfant"
+                        Case "Maître"
+                            titre = "Me"
+                        Case "Docteur"
+                            titre = "Dr"
+                    End Select
+                    Dim outputString As String = titre & " " & match.Groups(3).Value.Trim() & " " & match.Groups(6).Value.TrimEnd()
+                    PatientNameBox.Text = outputString
+                    PatientNameBox.Select(SendTextBox.Text.Length, 0)
 
-                ' Extraction du titre à partir de la chaîne d'entrée
-                Dim titre As String = match.Groups(2).Value
-
-                ' Remplacement du titre complet par son abréviation correspondante
-                Select Case titre
-                    Case "Monsieur"
-                        titre = "Mr"
-                    Case "Madame"
-                        titre = "Mme"
-                    Case "Mademoiselle"
-                        titre = "Mlle"
-                    Case "Enfant"
-                        titre = "Enfant"
-                    Case "Maître"
-                        titre = "Me"
-                    Case "Docteur"
-                        titre = "Dr"
-                End Select
-                Dim outputString As String = titre & " " & match.Groups(3).Value.Trim() & " " & match.Groups(6).Value.TrimEnd()
-                PatientNameBox.Text = outputString
-                PatientNameBox.Select(SendTextBox.Text.Length, 0)
-
+                    ' Enregistre des informations de débogage
+                    logger.Debug("Extraction des informations du texte de la fenêtre réussie.")
+                    logger.Debug("Texte extrait : " & outputString)
+                End If
             End If
-
-        End If
-
+        Catch ex As Exception
+            ' Gestion des erreurs qui pourraient se produire lors de l'extraction des informations
+            ' Vous pouvez ajouter des logs ici ou effectuer d'autres actions appropriées en cas d'erreur.
+            logger.Error("Erreur lors de l'extraction des informations du texte de la fenêtre : " & ex.Message)
+        End Try
 
         Return True
     End Function
 
     Private Sub ExtractInfoFromInput(inputText As String, ByRef patientTitre As String, ByRef patientNom As String, ByRef patientPrenom As String)
-        ' Modèle pour extraire le titre
-        Dim patternTitle As String = "^(?i)(Mr|Mme|Me|Dr|Enfant)"
+        Try
+            ' Modèle pour extraire le titre
+            Dim patternTitle As String = "^(?i)(Mr|Mme|Me|Dr|Enfant)"
 
-        ' Modèle pour extraire le nom et le prénom
-        Dim patternName As String = "^\s*(?<name>[^\d\s\-]+)\s+(?<firstName>[^\s]+)"
+            ' Modèle pour extraire le nom et le prénom
+            Dim patternName As String = "^\s*(?<name>[^\d\s\-]+)\s+(?<firstName>[^\s]+)"
 
-        Dim matchTitle As Match = Regex.Match(inputText, patternTitle)
-        Dim matchName As Match = Regex.Match(inputText, patternName)
+            Dim matchTitle As Match = Regex.Match(inputText, patternTitle)
+            Dim matchName As Match = Regex.Match(inputText, patternName)
 
-        Dim titre As String = matchTitle.Groups(1).Value
-        patientNom = matchName.Groups("name").Value
-        patientPrenom = matchName.Groups("firstName").Value
+            Dim titre As String = matchTitle.Groups(1).Value
+            patientNom = matchName.Groups("name").Value
+            patientPrenom = matchName.Groups("firstName").Value
 
-        Select Case titre.ToLower()
-            Case "enfant"
-                patientTitre = "Enfant"
-            Case ""
-                patientTitre = "Iel"
-            Case Else
-                patientTitre = titre
-        End Select
+            Select Case titre.ToLower()
+                Case "enfant"
+                    patientTitre = "Enfant"
+                Case ""
+                    patientTitre = "Iel"
+                Case Else
+                    patientTitre = titre
+            End Select
+
+            ' Enregistre des informations de débogage
+            logger.Debug("Extraction des informations du texte d'entrée réussie.")
+            logger.Debug("Titre : " & patientTitre)
+            logger.Debug("Nom : " & patientNom)
+            logger.Debug("Prénom : " & patientPrenom)
+        Catch ex As Exception
+            ' Gestion des erreurs lors de l'extraction des informations
+            ' Vous pouvez ajouter des logs ici ou effectuer d'autres actions appropriées en cas d'erreur.
+            logger.Error("Erreur lors de l'extraction des informations du texte d'entrée : " & ex.Message)
+
+            ' Réinitialise les valeurs en cas d'erreur
+            patientTitre = ""
+            patientNom = ""
+            patientPrenom = ""
+        End Try
     End Sub
 
 #End Region
@@ -1754,6 +1945,7 @@ Class MainWindow
 
     Public Async Sub CheckForUpdates(channel As String)
         ' Obtient la dernière version du serveur dans le canal spécifié
+        logger.Info("Vérification des mises à jour disponibles dans le canal " & channel)
         Dim serverVersion As String = Await GetServerVersion(channel)
 
         If Not String.IsNullOrEmpty(serverVersion) AndAlso CompareVersions(serverVersion, Version) > 0 Then
@@ -1773,6 +1965,9 @@ Class MainWindow
                                 $"Version disponible : {updateAppVersion}{Environment.NewLine}" &
                                 $"Une nouvelle mise à jour est disponible dans le canal {channel}. Voulez-vous mettre à jour maintenant?"
 
+            ' Ajoute un message de débogage pour indiquer que la mise à jour est disponible
+            logger.Debug("Mise à jour disponible. Version actuelle : " & currentAppVersion & ", Version disponible : " & updateAppVersion)
+
             ' Affiche la boîte de dialogue et attend la réponse de l'utilisateur
             Dim result As MessageDialogResult = Await ShowMessageAsync("Mise à jour disponible", message, MessageDialogStyle.AffirmativeAndNegative, dialogSettings)
 
@@ -1783,6 +1978,9 @@ Class MainWindow
         Else
             ' Affiche un message si aucune mise à jour n'est disponible
             Await ShowMessageAsync("Pas de mise à jour", "Vous utilisez la dernière version de l'application.")
+
+            ' Ajoute un message de débogage pour indiquer qu'aucune mise à jour n'est disponible
+            logger.Debug("Aucune mise à jour disponible. Version actuelle : " & Version)
         End If
     End Sub
 
@@ -1792,6 +1990,7 @@ Class MainWindow
     ' Paramètre channel : Le canal (par exemple "beta" ou "final") dans lequel chercher la version.
     ' Renvoie la version la plus récente sous forme de chaîne, ou Nothing en cas d'erreur.
     Private Async Function GetServerVersion(channel As String) As Task(Of String)
+        logger.Info("Récupération de la version du serveur dans le canal " & channel)
         Try
             ' Construit l'URL du fichier JSON de version sur GitHub en fonction du canal
             Dim apiUrl As String = $"https://raw.githubusercontent.com/{RepoOwner}/{RepoName}/master/releases/{channel}/version.json"
@@ -1803,9 +2002,14 @@ Class MainWindow
 
             ' Extrait et renvoie la version à partir de l'objet JSON
             Dim serverVersion As String = versionObject("version").ToString()
+
+            ' Ajoute un message de débogage pour indiquer la version du serveur obtenue
+            logger.Debug($"Version du serveur obtenue avec succès : {serverVersion}")
+
             Return serverVersion
         Catch ex As Exception
-            ' En cas d'erreur, retourne Nothing
+            ' En cas d'erreur, retourne Nothing et ajoute un message de débogage pour l'erreur
+            logger.Error($"Erreur lors de la récupération de la version du serveur : {ex.Message}")
             Return Nothing
         End Try
     End Function
@@ -1814,18 +2018,35 @@ Class MainWindow
     ' Paramètres version1 et version2 : Les numéros de version à comparer sous forme de chaînes (format NuGet).
     ' Renvoie 1 si version1 > version2, -1 si version1 < version2, 0 si version1 = version2.
     Private Function CompareVersions(version1 As String, version2 As String) As Integer
-        ' Parse les numéros de version en objets NuGetVersion
-        Dim nugetVersion1 As NuGetVersion = NuGetVersion.Parse(version1)
-        Dim nugetVersion2 As NuGetVersion = NuGetVersion.Parse(version2)
+        logger.Info("Comparaison des versions " & version1 & " et " & version2)
+        Try
+            ' Parse les numéros de version en objets NuGetVersion
+            Dim nugetVersion1 As NuGetVersion = NuGetVersion.Parse(version1)
+            Dim nugetVersion2 As NuGetVersion = NuGetVersion.Parse(version2)
 
-        ' Compare les versions en utilisant la méthode CompareTo de NuGetVersion
-        Return nugetVersion1.CompareTo(nugetVersion2)
+            ' Compare les versions en utilisant la méthode CompareTo de NuGetVersion
+            Dim result As Integer = nugetVersion1.CompareTo(nugetVersion2)
+
+            ' Messages de débogage pour enregistrer les informations de comparaison
+            If result > 0 Then
+                logger.Debug("La version " & version1 & " est supérieure à la version " & version2)
+            ElseIf result < 0 Then
+                logger.Debug("La version " & version1 & " est inférieure à la version " & version2)
+            Else
+                logger.Debug("La version " & version1 & " est égale à la version " & version2)
+            End If
+
+            Return result
+        Catch ex As Exception
+            ' En cas d'erreur lors de la comparaison des versions
+            logger.Error("Erreur lors de la comparaison des versions : " & ex.Message)
+            ' Vous pouvez choisir de renvoyer une valeur par défaut ou de gérer l'erreur autrement ici
+            Return 0 ' Par exemple, renvoyer 0 en cas d'erreur
+        End Try
     End Function
 
-    ' Cette fonction télécharge et installe la mise à jour en utilisant l'URL de mise à jour obtenu.
-    ' Elle télécharge le fichier de mise à jour (ZIP) à partir de l'URL, puis déclenche l'installation.
-    ' Paramètre channel : Le canal (par exemple "beta" ou "final") dans lequel chercher la mise à jour.
     Private Async Function DownloadAndInstallUpdate(channel As String) As Task
+        logger.Info("Téléchargement et installation de la mise à jour depuis le canal " & channel)
         Dim webClient As New WebClient()
         Dim updateUrl As String = Await GetUpdateUrl(channel) ' Obtient l'URL de mise à jour depuis le fichier JSON
 
@@ -1845,6 +2066,8 @@ Class MainWindow
 
                                                             ' Code pour extraire et installer les fichiers de mise à jour
                                                             Try
+                                                                logger.Debug("Début de l'extraction et de l'installation des fichiers de mise à jour.")
+
                                                                 ' Chemin vers le fichier ZIP de mise à jour téléchargé
                                                                 Dim updateZipPath As String = "update.zip"
 
@@ -1871,19 +2094,22 @@ Class MainWindow
                                                                     ' Supprime le fichier ZIP et le dossier temporaire
                                                                     File.Delete(updateZipPath)
                                                                     'Directory.Delete(updateExtractPath, True)
+
+                                                                    logger.Debug("Mise à jour installée avec succès.")
                                                                 Else
                                                                     ' En cas d'absence du fichier exécutable de mise à jour, affiche un message d'erreur
                                                                     Await ShowMessageAsync("Erreur de mise à jour", "Le fichier de mise à jour est incomplet ou endommagé.")
+                                                                    logger.Error("Le fichier de mise à jour est incomplet ou endommagé.")
                                                                 End If
                                                             Catch ex As Exception
                                                                 ' Gestion des erreurs lors de l'extraction et de l'installation des fichiers de mise à jour
                                                                 ' Vous pouvez afficher un message d'erreur ici ou effectuer d'autres actions appropriées
+                                                                logger.Error("Erreur lors de l'extraction et de l'installation des fichiers de mise à jour : " & ex.Message)
                                                             End Try
-                                                            ' Affiche un message indiquant que la mise à jour a été installée
-                                                            Await ShowMessageAsync("Mise à jour installée", "La mise à jour a été installée avec succès.")
                                                         End Sub
         Catch ex As Exception
             ' Gère les erreurs qui pourraient se produire lors du téléchargement ou de l'installation de la mise à jour
+            logger.Error("Erreur lors du téléchargement et de l'installation de la mise à jour : " & ex.Message)
         End Try
     End Function
 
@@ -1891,6 +2117,7 @@ Class MainWindow
     ' Paramètre channel : Le canal (par exemple "beta" ou "final") dans lequel chercher l'URL de mise à jour.
     ' Renvoie l'URL de téléchargement de la mise à jour, ou Nothing en cas d'erreur.
     Private Async Function GetUpdateUrl(channel As String) As Task(Of String)
+        logger.Info("Obtention de l'URL de mise à jour depuis le canal " & channel)
         Try
             ' Construit l'URL du fichier JSON de version sur GitHub en fonction du canal
             Dim apiUrl As String = $"https://raw.githubusercontent.com/{RepoOwner}/{RepoName}/master/releases/{channel}/version.json"
@@ -1902,9 +2129,14 @@ Class MainWindow
 
             ' Extrait et renvoie l'URL de mise à jour à partir de l'objet JSON
             Dim updateUrl As String = versionObject("updateUrl").ToString()
+
+            ' Ajoute un message de débogage pour indiquer l'URL de mise à jour obtenue
+            logger.Debug($"URL de mise à jour obtenue avec succès : {updateUrl}")
+
             Return updateUrl
         Catch ex As Exception
-            ' En cas d'erreur, retourne Nothing
+            ' En cas d'erreur, retourne Nothing et ajoute un message de débogage pour l'erreur
+            logger.Error($"Erreur lors de la récupération de l'URL de mise à jour : {ex.Message}")
             Return Nothing
         End Try
     End Function
@@ -1913,63 +2145,141 @@ Class MainWindow
 
 
     Private Sub Filetest()
+        logger.Info("Verification des fichiers")
+        Try
+            Dim dossier As String = "HistoricPatient"
+            ' Vérifier si le dossier existe
+            If Not Directory.Exists(dossier) Then
+                ' Créer le dossier s'il n'existe pas
+                Directory.CreateDirectory(dossier)
+                logger.Debug("Creation du dossier HistoricPatient")
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de la creation du dossier HistoricPatient")
+        End Try
 
-        Dim dossier As String = "HistoricPatient"
-        ' Vérifier si le dossier existe
-        If Not Directory.Exists(dossier) Then
-            ' Créer le dossier s'il n'existe pas
-            Directory.CreateDirectory(dossier)
-            logger.Info("Creation du dossier HistoricPatient")
-        End If
+        Try
+            Dim dossier As String = "HistoricMsg"
+            ' Vérifier si le dossier existe
+            If Not Directory.Exists(dossier) Then
+                ' Créer le dossier s'il n'existe pas
+                Directory.CreateDirectory(dossier)
+                logger.Debug("Creation du dossier HistoricMsg")
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de la creation du dossier HistoricMsg")
+        End Try
 
-        dossier = "HistoricMsg"
-        ' Vérifier si le dossier existe
-        If Not Directory.Exists(dossier) Then
-            ' Créer le dossier s'il n'existe pas
-            Directory.CreateDirectory(dossier)
-            logger.Info("Creation du dossier HistoricMsg")
-        End If
+        Try
+            Dim dossier As String = "Core"
+            ' Vérifier si le dossier existe
+            If Not Directory.Exists(dossier) Then
+                ' Créer le dossier s'il n'existe pas
+                Directory.CreateDirectory(dossier)
+                logger.Debug("Creation du dossier Core")
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de la creation du dossier Core")
+        End Try
 
-        dossier = "Core"
-        ' Vérifier si le dossier existe
-        If Not Directory.Exists(dossier) Then
-            ' Créer le dossier s'il n'existe pas
-            Directory.CreateDirectory(dossier)
-            logger.Info("Creation du dossier Core")
-        End If
+        Try
+            Dim dossier As String = "Logs"
+            ' Vérifier si le dossier existe
+            If Not Directory.Exists(dossier) Then
+                ' Créer le dossier s'il n'existe pas
+                Directory.CreateDirectory(dossier)
+                logger.Debug("Creation du dossier Logs")
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de la creation du dossier Logs")
+        End Try
 
-        dossier = "Users"
-        ' Vérifier si le dossier existe
-        If Not Directory.Exists(dossier) Then
-            ' Créer le dossier s'il n'existe pas
-            Directory.CreateDirectory(dossier)
-            logger.Info("Creation du dossier Users")
-        End If
-
+        Try
+            Dim dossier As String = "Users"
+            ' Vérifier si le dossier existe
+            If Not Directory.Exists(dossier) Then
+                ' Créer le dossier s'il n'existe pas
+                Directory.CreateDirectory(dossier)
+                logger.Debug("Creation du dossier Users")
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de la creation du dossier Users")
+        End Try
 
     End Sub
 
     Public Shared Function GetLocalIPAddress() As IPAddress
-        Dim networkInterfaces As NetworkInterface() = NetworkInterface.GetAllNetworkInterfaces()
+        logger.Info("Obtention de l'adresse IP locale")
+        Try
+            ' Récupère toutes les interfaces réseau disponibles sur la machine de l'utilisateur
+            Dim networkInterfaces As NetworkInterface() = NetworkInterface.GetAllNetworkInterfaces()
 
-        For Each networkInterface As NetworkInterface In networkInterfaces
-            If networkInterface.OperationalStatus = OperationalStatus.Up Then
-                Dim ipProperties As IPInterfaceProperties = networkInterface.GetIPProperties()
-                Dim unicastIPAddresses As UnicastIPAddressInformationCollection = ipProperties.UnicastAddresses
+            ' Itère à travers chaque interface réseau
+            For Each networkInterface As NetworkInterface In networkInterfaces
+                ' Vérifie si l'interface réseau est opérationnelle (en état de fonctionnement)
+                If networkInterface.OperationalStatus = OperationalStatus.Up Then
+                    ' Obtient les propriétés IP de l'interface réseau
+                    Dim ipProperties As IPInterfaceProperties = networkInterface.GetIPProperties()
 
-                For Each ipAddressInfo As UnicastIPAddressInformation In unicastIPAddresses
-                    If ipAddressInfo.Address.AddressFamily = AddressFamily.InterNetwork Then
-                        Return ipAddressInfo.Address
-                    End If
-                Next
-            End If
-        Next
+                    ' Récupère la collection des adresses IP unicast associées à cette interface réseau
+                    Dim unicastIPAddresses As UnicastIPAddressInformationCollection = ipProperties.UnicastAddresses
 
-        Return Nothing
+                    ' Itère à travers chaque adresse IP unicast
+                    For Each ipAddressInfo As UnicastIPAddressInformation In unicastIPAddresses
+                        ' Vérifie si l'adresse IP est de type IPv4 (InterNetwork)
+                        If ipAddressInfo.Address.AddressFamily = AddressFamily.InterNetwork Then
+                            ' Enregistre un message de débogage indiquant l'adresse IP trouvée
+                            logger.Debug("L'adresse IP de l'utilisateur est : " & ipAddressInfo.Address.ToString)
+
+                            ' Renvoie l'adresse IP trouvée
+                            Return ipAddressInfo.Address
+                        End If
+                    Next
+                End If
+            Next
+
+            ' Si aucune adresse IPv4 n'est trouvée dans aucune interface réseau, renvoie Nothing
+            Return Nothing
+        Catch ex As Exception
+            ' En cas d'erreur lors de l'exécution du code, capture l'exception
+            logger.Error("Erreur sur GetLocalIPAddress : " & ex.Message)
+
+            ' Renvoie également Nothing en cas d'exception
+            Return Nothing
+        End Try
     End Function
 
     Private Sub MainWindow_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
+        logger.Info("Fermeture de la fenêtre MainWindow")
+        Try
+            ' Envoyer un message lors de la fermeture de la fenêtre
+            SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
+            logger.Debug("L'envoi du message lors de la fermeture de la fenêtre MainWindow s'est déroulé avec succès.")
+        Catch ex As Exception
+            ' En cas d'erreur lors de l'envoi du message de fermeture
+            logger.Error("Erreur sur MainWindow_Closing lors de l'envoi du message de fermeture : " & ex.Message)
+        End Try
+
+        Try
+            ' Parcours de la liste des utilisateurs
+            For Each user As User In Users
+                ' Vérification du nom de l'utilisateur
+                If user.Name = "A Tous" OrElse user.Name = "Secrétariat" Then
+                    ' Si l'utilisateur a le nom "A Tous" ou "Secrétariat", définissez la valeur de status à "0/0"
+                    user.Status = "0/0"
+                Else
+                    ' Sinon, définissez la valeur de status à "Offline"
+                    user.Status = "Offline"
+                End If
+            Next
+            ' Sauvegarder la liste des utilisateurs dans un fichier JSON
+            SaveUsersToJson(Users)
+            ' Enregistrer les paramètres de l'application
+            logger.Debug("Mise a jour et sauvegarde des user lors de la fermeture de l'application")
+        Catch ex As Exception
+            ' En cas d'erreur lors du traitement de la liste des utilisateurs
+            logger.Error("Erreur sur MainWindow_Closing lors du traitement de la liste des utilisateurs : " & ex.Message)
+        End Try
     End Sub
 End Class
 

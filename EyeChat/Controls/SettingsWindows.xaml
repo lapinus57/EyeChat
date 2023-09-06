@@ -11,14 +11,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="1000">
 
-
+  
+    
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Dictionary/DictionarySettingsWindows.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
+            <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
+       
     </UserControl.Resources>
 
 
@@ -171,21 +173,7 @@
                         </ComboBox>
                         
                         
-                        <TextBlock Text="{StaticResource DisplayRoom}" 
-                                   Grid.Column="0" Grid.Row="3"
-                                   FontSize="{Binding AppSizeDisplay}"/>
-                        <ComboBox x:Name="cbodisplay" 
-                                  Grid.Column="2" Grid.Row="3" 
-                                  SelectedValue="{Binding AppNameDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                  SelectedValuePath="Tag"  
-                                  IsEditable="False"  
-                                  FontSize="{Binding AppSizeDisplay}">
-                            <ComboBox.Items>
-                                <ComboBoxItem Content="Nom" Tag="A" />
-                                <ComboBoxItem Content="Salle (Nom)" Tag="B" />
-                                <ComboBoxItem Content="Nom (Salle)" Tag="C" />
-                            </ComboBox.Items>
-                        </ComboBox>
+                     
 
                     </Grid>
 
@@ -492,11 +480,12 @@
                                   Grid.Row="1"
                                   FontSize="{Binding AppSizeDisplay}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Index" Binding="{Binding index}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="N°" Binding="{Binding index}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
                                 <DataGridTextColumn Header="Color" Binding="{Binding Color}" />
                                 <DataGridTextColumn Header="CodeMSG" Binding="{Binding CodeMSG}" />
                                 <DataGridTextColumn Header="Annotation" Binding="{Binding Annotation}" />
+                                <DataGridTextColumn Header="Etage" Binding="{Binding Floor}" />
                             </DataGrid.Columns>
                         </DataGrid>
                         
@@ -539,11 +528,22 @@
                                   Grid.Row="1"
                                   FontSize="{Binding AppSizeDisplay}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Index" Binding="{Binding Index}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="N°" Binding="{Binding Index}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Titre" Binding="{Binding Title}" />
                                 <DataGridTextColumn Header="Destinataire" Binding="{Binding Destinataire}" />
                                 <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
                                 <DataGridTextColumn Header="Options" Binding="{Binding Options}" />
+                                <DataGridTemplateColumn Header="Chargement">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <mah:ToggleSwitch OffContent="Désactivé" OnContent="Activé" 
+                                                                  IsOn="{Binding Load}" 
+                                                                  Visibility="{Binding Title, Converter={StaticResource BoolToVisibilityConverterInverse}, ConverterParameter=NotEmpty}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
 

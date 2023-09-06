@@ -1,9 +1,56 @@
-[{"Name":"A Tous","Room":"","Status":"Offline","Avatar":"/Avatar/benoit.png"},
-{"Name":"Secrétariat","Room":"","Status":"Offline","Avatar":"/Avatar/secrétaria.png"},
-{"Name":"Alix","Room":"salle","Status":"Offline","Avatar":"/Avatar/avataaars.png"},
-{"Name":"MédecinRDC","Room":"MédecinRDC","Status":"Offline","Avatar":"/Avatar/avataaars.png"},
-{"Name":"Benoit","Room":"OrthoptisteRDC","Status":"Offline","Avatar":"/Avatar/avataaars.png"},
-{"Name":"Christelle","Room":"","Status":"Offline","Avatar":"/Avatar/avataaars.png"},
-{"Name":"Alicia","Room":"","Status":"Offline","Avatar":"/Avatar/avataaars.png"},
-{"Name":"Esra","Room":"","Status":"Offline","Avatar":"/Avatar/avataaars.png"},
-{"Name":"Caroline","Room":"","Status":"Offline","Avatar":"/Avatar/avataaars.png"}]
+[
+  {
+    "Name": "A Tous",
+    "AuxiliaireTilte": "",
+    "Status": "Offline",
+    "Avatar": "/Avatar/benoit.png"
+  },
+  {
+    "Name": "Secrétariat",
+    "AuxiliaireTilte": "",
+    "Status": "Offline",
+    "Avatar": "/Avatar/secrétaria.png"
+  },
+  {
+    "Name": "Alix",
+    "AuxiliaireTilte": "",
+    "Status": "Offline",
+    "Avatar": "/Avatar/avataaars.png"
+  },
+  {
+    "Name": "MédecinRDC",
+    "AuxiliaireTilte": "🎂🎂",
+    "Status": "Offline",
+    "Avatar": "/Avatar/avataaars.png"
+  },
+  {
+    "Name": "Benoit",
+    "AuxiliaireTilte": "",
+    "Status": "Offline",
+    "Avatar": "/Avatar/avataaars.png"
+  },
+  {
+    "Name": "Christelle",
+    "AuxiliaireTilte": "",
+    "Status": "Offline",
+    "Avatar": "/Avatar/avataaars.png"
+  },
+  {
+    "Name": "Alicia",
+    "AuxiliaireTilte": "",
+    "Status": "Offline",
+    "Avatar": "/Avatar/avataaars.png"
+  },
+  {
+    "Name": "Esra",
+    "AuxiliaireTilte": "",
+    "Status": "Offline",
+    "Avatar": "/Avatar/avataaars.png"
+  },
+  {
+    "Name": "Caroline",
+    "AuxiliaireTilte": "",
+    "Status": "Offline",
+    "Avatar": "/Avatar/avataaars.png"
+  }
+]

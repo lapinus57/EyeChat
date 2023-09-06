@@ -68,6 +68,19 @@ Public Class SpeedMessage
         End Set
     End Property
 
+    Private _Load As Boolean
+    Public Property Load As Boolean
+        Get
+            Return _Load
+        End Get
+        Set(value As Boolean)
+            If _Load <> value Then
+                _Load = value
+                NotifyPropertyChanged("Load")
+            End If
+        End Set
+    End Property
+
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
 
     Protected Sub NotifyPropertyChanged(propertyName As String)
