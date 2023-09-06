@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"              
+        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf" 
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:EyeChat"
         mc:Ignorable="d"
         Title="EyeChat" 
@@ -16,8 +17,9 @@
         ShowIconOnTitleBar="True"
         ShowCloseButton="False"
         xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro" 
-        xmlns:simpleChildWindow="http://metro.mahapps.com/winfx/xaml/simplechildwindow" xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-                 Dialog:DialogParticipation.Register="{Binding}">
+        xmlns:simpleChildWindow="http://metro.mahapps.com/winfx/xaml/simplechildwindow"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        Dialog:DialogParticipation.Register="{Binding}">
     
 
     <Window.Resources>
@@ -84,6 +86,7 @@
     </mah:MetroWindow.RightWindowCommands>
     
     <Grid x:Name="RootGrid">
+
 
         <simpleChildWindow:ChildWindow x:Name="CustomDialogBox" 
                                        IsModal="True" 
@@ -161,20 +164,30 @@
         </Grid.RenderTransform>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="485*"/>
             <RowDefinition Height="30*"/>
         </Grid.RowDefinitions>
-       
 
+            
 
-        <local:MessageListBubbleCtrl Messages="{Binding SelectedUserMessages}" 
-                                     Grid.Column="1" 
+            <local:MessageListBubbleCtrl Messages="{Binding SelectedUserMessages}" 
+                                     Grid.Column="2" 
                                      x:Name="MessageList"/>
-        <Grid  Grid.Column="2" >
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+              Background="{DynamicResource MahApps.Brushes.Accent}"
+              Foreground="{DynamicResource MahApps.Brushes.Text}" />
+            
+            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          Background="{DynamicResource MahApps.Brushes.Accent}"
+                          Foreground="{DynamicResource MahApps.Brushes.Text}" />
+
+            <Grid  Grid.Column="4" >
             <ListBox ItemsSource="{Binding Users}" 
                      SelectedItem="{Binding SelectedListUser, Mode=TwoWay}"                       
                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"                   
@@ -188,7 +201,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="1">
+        <Grid Grid.Row="1" Grid.Column="2">
             <TextBox x:Name="SendTextBox" 
                  mah:TextBoxHelper.Watermark="Message"               
                  Height="auto" 

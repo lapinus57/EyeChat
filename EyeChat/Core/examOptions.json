@@ -4,55 +4,63 @@
     "Name": "FO",
     "Color": "red",
     "CodeMSG": "FO=",
-    "Annotation": null
+    "Annotation": null,
+    "Floor": "RDC"  
   },
   {
     "index": 2,
     "Name": "SK",
     "Color": "red",
     "CodeMSG": "SK=",
-    "Annotation": null
+    "Annotation": null,
+    "Floor": "RDC"
   },
   {
     "index": 3,
     "Name": "AT",
     "Color": "red",
     "CodeMSG": "AT=",
-    "Annotation": null
+    "Annotation": null,
+    "Floor": "RDC"
   },
   {
     "index": 4,
     "Name": "AT-SK",
     "Color": "red",
     "CodeMSG": "ATSK=",
-    "Annotation": null
+    "Annotation": null,
+    "Floor": "RDC"
   },
   {
     "index": 5,
     "Name": "AT-FO",
     "Color": "red",
     "CodeMSG": "ATFO=",
-    "Annotation": null
+    "Annotation": null,
+    "Floor": "RDC"
   },
   {
     "index": 6,
     "Name": "AT-CV",
     "Color": "red",
     "CodeMSG": "ATCV=",
-    "Annotation": null
+    "Annotation": null,
+    "Floor": "RDC"
   },
   {
     "index": 7,
     "Name": "FO",
     "Color": "red",
     "CodeMSG": "FO*",
-    "Annotation": "Gouttes dés arrivée"
+    "Annotation": "Gouttes dés arrivée",
+    "Floor": "RDC"
   },
   {
     "index": 8,
     "Name": "SK",
     "Color": "red",
     "CodeMSG": "SK*",
-    "Annotation": "Gouttes dés arrivée"
+    "Annotation": "Gouttes dés arrivée",
+    "Floor": "RDC"
   }
 ]

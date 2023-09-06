@@ -205,6 +205,9 @@
     <Compile Include="Class\Planning.vb" />
     <Compile Include="Class\SpeedMessage.vb" />
     <Compile Include="Class\User.vb" />
+    <Compile Include="Controls\InfoPatient.xaml.vb">
+      <DependentUpon>InfoPatient.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MessageBubbleCtrl.xaml.vb">
       <DependentUpon>MessageBubbleCtrl.xaml</DependentUpon>
     </Compile>
@@ -220,6 +223,10 @@
     <Compile Include="ViewModel\ColorItemViewModel.vb" />
     <Compile Include="ViewModel\GitHubViewModel.vb" />
     <Page Include="Controls\GithubWindows.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\InfoPatient.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

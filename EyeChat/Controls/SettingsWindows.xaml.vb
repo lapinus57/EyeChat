@@ -8,6 +8,7 @@ Imports EyeChat.User
 Imports EyeChat.ExamOption
 Imports EyeChat.Planning
 Imports System.Collections.ObjectModel
+Imports System.Globalization
 
 Public Class SettingsWindows
 
@@ -53,34 +54,6 @@ Public Class SettingsWindows
     Private Sub ToggleSwitch_Toggled(sender As Object, e As RoutedEventArgs)
 
         My.Application.MainWindow.UpdateLayout()
-
-    End Sub
-
-    Private Sub cbodisplay_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles cbodisplay.SelectionChanged
-        If cbodisplay.SelectedValue = "A" Then
-            My.Settings.NameDisplayUsers = Visibility.Visible
-            My.Settings.RoomNameDisplayUsers = Visibility.Collapsed
-            My.Settings.NameRoomDisplayUsers = Visibility.Collapsed
-        ElseIf cbodisplay.SelectedValue = "B" Then
-            My.Settings.NameDisplayUsers = Visibility.Collapsed
-            My.Settings.RoomNameDisplayUsers = Visibility.Visible
-            My.Settings.NameRoomDisplayUsers = Visibility.Collapsed
-        ElseIf cbodisplay.SelectedValue = "C" Then
-            My.Settings.NameDisplayUsers = Visibility.Collapsed
-            My.Settings.RoomNameDisplayUsers = Visibility.Collapsed
-            My.Settings.NameRoomDisplayUsers = Visibility.Visible
-        End If
-        My.Settings.Save()
-        Try
-            Users.Clear()
-            Dim loadedUsers = LoadUsersFromJson()
-            For Each user In loadedUsers
-                Users.Add(user)
-            Next
-        Catch ex As Exception
-
-        End Try
-
 
     End Sub
 
@@ -160,6 +133,7 @@ Public Class SettingsWindows
 
     End Sub
 End Class
+
 
 
 

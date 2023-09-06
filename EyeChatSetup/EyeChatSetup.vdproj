@@ -633,6 +633,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_92FC17F46C9645A5922BFB694C39C0A4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_93CC7AF9B4F2CD675442F94E852221D4"
         "OwnerKey" = "8:_517A14831C964C4489DE09C18D3C0E79"
         "MsmSig" = "8:_UNDEFINED"
@@ -647,6 +653,12 @@
         {
         "MsmKey" = "8:_95CF80A9E072DBB8DD6DCAD06EF89736"
         "OwnerKey" = "8:_EB073EC920568D20F50E9A2D244524D0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_974A5CFB8DA94392A3F170011DF6F2BB"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -983,6 +995,12 @@
         {
         "MsmKey" = "8:_E205C677089E185C13D5C17A6FB96AD9"
         "OwnerKey" = "8:_517A14831C964C4489DE09C18D3C0E79"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E35C55475C68436095DFE8108C9BCBF4"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4708,6 +4726,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_92FC17F46C9645A5922BFB694C39C0A4"
+            {
+            "SourcePath" = "8:..\\EyeChat\\Avatar\\secrétaria.png"
+            "TargetName" = "8:secrétaria.png"
+            "Tag" = "8:"
+            "Folder" = "8:_D5A31CF2FEE64951AD9AA58D400DA4CD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_93CC7AF9B4F2CD675442F94E852221D4"
             {
             "AssemblyRegister" = "3:1"
@@ -4768,6 +4806,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_974A5CFB8DA94392A3F170011DF6F2BB"
+            {
+            "SourcePath" = "8:..\\EyeChat\\Avatar\\benoit.png"
+            "TargetName" = "8:benoit.png"
+            "Tag" = "8:"
+            "Folder" = "8:_D5A31CF2FEE64951AD9AA58D400DA4CD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_995D0823D7AD949844D32BF5133DB915"
@@ -6194,6 +6252,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E35C55475C68436095DFE8108C9BCBF4"
+            {
+            "SourcePath" = "8:..\\EyeChat\\Avatar\\system.png"
+            "TargetName" = "8:system.png"
+            "Tag" = "8:"
+            "Folder" = "8:_D5A31CF2FEE64951AD9AA58D400DA4CD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E70F6DC217C384C2D06B4D8BA7DF69ED"
             {
             "AssemblyRegister" = "3:1"
@@ -6766,6 +6844,17 @@
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
                     "Property" = "8:_D11FBC544473466B8B69C184AB2F205C"
+                        "Folders"
+                        {
+                        }
+                    }
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_D5A31CF2FEE64951AD9AA58D400DA4CD"
+                    {
+                    "Name" = "8:Avatar"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_0A64AFA024914C28A65FF8F39E197152"
                         "Folders"
                         {
                         }

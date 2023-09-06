@@ -68,6 +68,19 @@ Public Class ExamOption
         End Set
     End Property
 
+    Private _Floor As String
+    Public Property Floor As String
+        Get
+            Return _Floor
+        End Get
+        Set(value As String)
+            If _Floor <> value Then
+                _Floor = value
+                NotifyPropertyChanged("Floor")
+            End If
+        End Set
+    End Property
+
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
 
     Protected Sub NotifyPropertyChanged(propertyName As String)

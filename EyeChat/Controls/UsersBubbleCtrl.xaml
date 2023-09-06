@@ -14,7 +14,10 @@
             <Setter Property="FontSize" Value="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
-
+        <Style TargetType="emoji:TextBlock">
+            <Setter Property="FontSize" Value="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
         <SolidColorBrush x:Key="MahApps.Brushes.MenuItem.SelectionFill" Color="{Binding Source={StaticResource MahApps.Brushes.Accent}, Path=Color}" />
         
     </UserControl.Resources>
@@ -39,24 +42,8 @@
                        VerticalAlignment="Center" />
                 <StackPanel Width="220">
                     <StackPanel Width="220" Orientation="Horizontal" >
-                        <TextBlock Text="{Binding Room}" 
-                                   Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text=" (" 
-                                   Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text="{Binding Name}" 
-                                   Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text=")" 
-                                   Visibility="{Binding RoomNameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text="{Binding Name}" 
-                                   Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text=" (" 
-                                   Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text="{Binding Room}" 
-                                   Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text=")" 
-                                   Visibility="{Binding NameRoomDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <TextBlock Text="{Binding Name}" 
-                                   Visibility="{Binding NameDisplayUsers, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <TextBlock Text="{Binding Name}" Margin="0,0,5,0" />
+                        <emoji:TextBlock Text="{Binding AuxiliaireTilte}"/>
                     </StackPanel>
 
 

@@ -3,12 +3,26 @@ Imports System.Globalization
 Imports EyeChat.MainWindow
 Imports EyeChat.Patient
 Imports MahApps.Metro.Controls.Dialogs
+Imports MahApps.Metro.Controls
+Imports MahApps.Metro.SimpleChildWindow
+Imports MahApps.Metro
 
 Public Class PatientBubbleCtrl
     Inherits UserControl
     Public Sub New()
         InitializeComponent()
     End Sub
+
+    Private _mainWindowInstance As MainWindow
+
+    Public Property MainWindowInstance As MainWindow
+        Get
+            Return _mainWindowInstance
+        End Get
+        Set(value As MainWindow)
+            _mainWindowInstance = value
+        End Set
+    End Property
 
 
     Private Sub MenuItem_PassageClick(sender As Object, e As RoutedEventArgs)
@@ -31,13 +45,9 @@ Public Class PatientBubbleCtrl
                 ' Envoyez le message
                 SendMessage(Text)
 
-                ' Mettez à jour la liste
-                ' UpdateList()
 
-                ' Mettez à jour la propriété Colors de l'objet Patient
-                'patient.Colors = "gray"
-                ' patient.Pick_up_Time = DateTime.Now
-                'patient.IsTaken = True
+
+                'Await (CType(Application.Current.MainWindow, MahApps.Metro.Controls.MetroWindow)).ShowChildWindowAsync(New InfoPatient())
 
             Else
 
@@ -50,26 +60,12 @@ Public Class PatientBubbleCtrl
                 ' Envoyez le message
                 SendMessage(Text)
 
-                ' Mettez à jour la liste
-                'UpdateList()&
-
-                ' Mettez à jour la propriété Colors de l'objet Patient
-                'patient.Pick_up_Time = Nothing
-                'If patient.Exams = "FO" Then
-                'patient.Colors = "Red"
-                'ElseIf patient.Exams = "SK" Then
-                'patient.Colors = "Yellow"
-                'End If
-                'patient.IsTaken = False
-
             End If
-
-            'UpdateList()
 
         End If
     End Sub
 
-    Private Sub MenuItem_AnnulerClick(sender As Object, e As RoutedEventArgs)
+    Private Async Sub MenuItem_InfoPatient(sender As Object, e As RoutedEventArgs)
         If TypeOf sender Is MenuItem Then
             ' Obtenez une référence au MenuItem
             Dim menuItem As MenuItem = DirectCast(sender, MenuItem)
@@ -77,9 +73,20 @@ Public Class PatientBubbleCtrl
             ' Obtenez l'objet Patient associé au MenuItem
             Dim patientall As Patient = DirectCast(menuItem.DataContext, Patient)
 
+            Dim childWindow As New InfoPatient()
+            childWindow.Title = "Information Patient" ' Remplacez "Nouveau titre de la fenêtre" par le titre souhaité.
+            childWindow.PatientName.Text = patientall.Title & " " & patientall.LastName & " " & patientall.FirstName
+            childWindow.Examinator.Text = patientall.Examinator
+            childWindow.Hold_Time.Text = patientall.Hold_Time.ToString("HH:mm")
+            childWindow.Annotation.Text = patientall.Annotation
+            childWindow.Exams.Text = patientall.Exams
+            childWindow.Time_Order.Text = patientall.Time_Order.ToString("hh\:mm")
+            childWindow.OperatorName.Text = patientall.OperatorName
+            childWindow.Pick_up_Time.Text = patientall.Pick_up_Time.ToString("HH:mm")
+
+            Await (CType(Application.Current.MainWindow, MahApps.Metro.Controls.MetroWindow)).ShowChildWindowAsync(childWindow)
 
 
-            'UpdateList()
         End If
     End Sub
 

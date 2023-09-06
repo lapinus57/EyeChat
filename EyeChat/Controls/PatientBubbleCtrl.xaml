@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:simpleChildWindow="http://metro.mahapps.com/winfx/xaml/simplechildwindow"
              xmlns:local="clr-namespace:EyeChat"
              mc:Ignorable="d" 
              d:DesignWidth="230"
@@ -17,11 +18,15 @@
         
         
     </UserControl.Resources>
+    
 
 
-    <Grid Margin="2">
+    <Grid Margin="2" >
+        
+
+               
         <Border Width="auto" Height="auto" Background="{Binding Colors}">
-            <Grid>
+            <Grid >
                 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -140,6 +145,11 @@
                             <Run Text="{Binding FirstName}" />
                         </TextBlock>
                     </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem Click="MenuItem_InfoPatient">
+                <MenuItem.Header>
+                    <TextBlock Text="Info Patient"/>
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem >

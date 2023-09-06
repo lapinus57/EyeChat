@@ -16,14 +16,14 @@ Public Class User
     <JsonProperty("Avatar")>
     Public Property Avatar As String
 
-    <JsonProperty("Room")>
-    Public Property Room As String
+    <JsonProperty("AuxiliaireTilte")>
+    Public Property AuxiliaireTilte As String
     Public Sub New()
         ' Par défaut, définir un avatar vide
         'Avatar = String.Empty
         Avatar = "/Avatar/avataaars.png"
         ' Par défaut, définir une room vide
-        Room = String.Empty
+        AuxiliaireTilte = String.Empty
         ' Par défaut, définir un status offline
         Status = "Offline"
     End Sub
@@ -66,7 +66,7 @@ Public Class User
             Directory.CreateDirectory(dossier)
         End If
 
-        Dim serializedUsers As String = "[" & String.Join("," & Environment.NewLine, Users.Select(Function(m) JsonConvert.SerializeObject(New With {m.Name, m.Room, m.Status, m.Avatar}))) & "]"
+        Dim serializedUsers As String = "[" & String.Join("," & Environment.NewLine, Users.Select(Function(m) JsonConvert.SerializeObject(New With {m.Name, m.AuxiliaireTilte, m.Status, m.Avatar}))) & "]"
         File.WriteAllText(UsersFilePath, serializedUsers)
 
     End Sub

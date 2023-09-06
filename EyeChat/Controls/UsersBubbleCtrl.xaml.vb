@@ -66,13 +66,12 @@ Public Class UsersBubbleCtrl
         InitializeComponent()
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
-        RoomNameDisplayUsers = My.Settings.RoomNameDisplayUsers
-        NameRoomDisplayUsers = My.Settings.NameRoomDisplayUsers
-        NameDisplayUsers = My.Settings.NameDisplayUsers
         Size = My.Settings.AppSizeDisplay
     End Sub
 
+#Disable Warning BC40005 ' Le membre masque une méthode substituable dans le type de base
     Protected Sub OnPropertyChanged(propertyName As String)
+#Enable Warning BC40005 ' Le membre masque une méthode substituable dans le type de base
         RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
     End Sub
 

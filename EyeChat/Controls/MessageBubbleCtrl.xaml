@@ -32,7 +32,7 @@
     </UserControl.Resources>
 
     <Grid Margin="5">
-        <Border CornerRadius="10" Padding="10" Width="400" Height="auto" >
+        <Border CornerRadius="10" Padding="10"  MinWidth="300" MaxWidth="800"  Height="auto" >
             <Border.ContextMenu>
                 <ContextMenu >
                     
