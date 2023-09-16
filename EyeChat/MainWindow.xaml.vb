@@ -615,6 +615,7 @@ Class MainWindow
         End If
 
 
+
         SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
     End Sub
 
@@ -1322,7 +1323,7 @@ Class MainWindow
                     Dim ComputerIP As String = parts(2)
 
                     If Not Computers.Any(Function(c) c.ComputerID = ComputerID) Then
-                        Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIp = ComputerIP})
+                        Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIP = ComputerIP})
                         SaveComputersToJson() ' Sauvegarder la liste mise à jour dans le fichier JSON
                         logger.Debug("Ajout d'un PC à la liste des PC : " & ComputerID)
                     End If
@@ -1528,14 +1529,14 @@ Class MainWindow
                         End Try
 
                     Case "/LSTCOMPUTER"
-                        ' Commande pour lister les ordinateurs connectés
-                        logger.Info("Commande /LSTCOMPUTER dans la Sendbox")
-                        Try
-                            ' Envoyer le message DBG01 pour demander les ordinateurs connectés
-                            SendMessage("DBG01")
-                            logger.Debug("Message DBG01 envoyé")
+                        SendMessage("DBG01")
+
+
+                    Case "/DISPCOMPUTER"
+                        ' Commande pour afficher les ordinateurs connectés dans la liste computers
+                        logger.Info("Commande /DISPCOMPUTER dans la Sendbox")
                         Catch ex As Exception
-                            logger.Error("Erreur lors de l'envoi du message DBG01 avec la commande /LSTCOMPUTER: " & ex.Message)
+                        logger.Error("Erreur lors de l'envoi du message DBG01 avec la commande /LSTCOMPUTER: " & ex.Message)
                         End Try
 
 
@@ -1543,6 +1544,7 @@ Class MainWindow
                         ' Commande pour afficher les ordinateurs connectés dans la liste computers
                         logger.Info("Commande /DISPCOMPUTER dans la Sendbox")
                         Try
+                            Dim computerString As New StringBuilder()
                             Dim computerString As New StringBuilder()
                             computerString.AppendLine("Actuellement il y a :")
                             For Each computer In Computers
@@ -1578,107 +1580,108 @@ Class MainWindow
                         Dim startsWithCodeMSG As Boolean = False
                         Dim matchedOption As ExamOption = Nothing
 
-                        ' Parcourir la liste des ExamOptions pour savoir si le message commence par un code MSG
-                        logger.Debug("Parcours de la liste des ExamOptions")
-                        Try
-                            For Each Exaoption As ExamOption In ExamOptions
-                                If SendTextBox.Text.StartsWith(Exaoption.CodeMSG) Then
-                                    startsWithCodeMSG = True
-                                    matchedOption = Exaoption
-                                    logger.Debug("Code MSG trouvé : " & matchedOption.CodeMSG)
-                                    Exit For
+                        For Each Exaoption As ExamOption In ExamOptions
+                            If SendTextBox.Text.StartsWith(Exaoption.CodeMSG) Then
+                                startsWithCodeMSG = True
+                                matchedOption = Exaoption
+                                Exit For
+                            End If
+                            matchedOption = Exaoption
+                            logger.Debug("Code MSG trouvé : " & matchedOption.CodeMSG)
+                            Exit For
                                 End If
-                            Next
-                        Catch ex As Exception
-                            logger.Error("Erreur lors du parcours de la liste des ExamOptions : " & ex.Message)
-                        End Try
+            Next
+            Catch ex As Exception
+            logger.Error("Erreur lors du parcours de la liste des ExamOptions : " & ex.Message)
+            End Try
 
 
-                        ' Vérifier si le message commence par un code MSG et si un code MSG a été trouvé
-                        If startsWithCodeMSG AndAlso matchedOption IsNot Nothing Then
-                            ' Le message commence par un code MSG et un code MSG a été trouvé
-                            ' Récupérer le code MSG et l'annotation
-                            logger.Info("Le message de la Sendbox commence par un code MSG et un code MSG a été trouvé")
-                            Try
-                                Dim codeMSG As String = matchedOption.CodeMSG
-                                Dim annotation As String = matchedOption.Annotation
-                                ' Utilisez la variable codeMSG comme vous le souhaitez...
-                                Dim spaceIndex As Integer = SendTextBox.Text.IndexOf(" ", codeMSG.Length)
+            ' Vérifier si le message commence par un code MSG et si un code MSG a été trouvé
+            If startsWithCodeMSG AndAlso matchedOption IsNot Nothing Then
+                ' Le message commence par un code MSG et un code MSG a été trouvé
+                ' Récupérer le code MSG et l'annotation
+                logger.Info("Le message de la Sendbox commence par un code MSG et un code MSG a été trouvé")
+                Dim codeMSG As String = matchedOption.CodeMSG
+                Dim codeMSG As String = matchedOption.CodeMSG
+                Dim annotation As String = matchedOption.Annotation
+                ' Utilisez la variable codeMSG comme vous le souhaitez...
+                Dim spaceIndex As Integer = SendTextBox.Text.IndexOf(" ", codeMSG.Length)
 
-                                ' Création des variables pour le patient
-                                Dim patientTitre As String = ""
-                                Dim patientNom As String = ""
-                                Dim patientPrenom As String = ""
-                                codeMSG = codeMSG.Replace("=", "")
-
-
-                                ' Vérifier s'il y a un espace après le CodeMSG
-                                If spaceIndex > codeMSG.Length Then
-                                    'il y a un espace après le codeMSG
-                                    ExtractInfoFromInput(SendTextBox.Text.Substring(spaceIndex + 1), patientTitre, patientNom, patientPrenom)
-                                Else
-                                    ' Pas d'espace après le CodeMSG
-                                    ExtractInfoFromInput(SendTextBox.Text.Substring(codeMSG.Length), patientTitre, patientNom, patientPrenom)
-                                End If
-
-                                Dim Text As String = "PTN01" & patientTitre & "|" & patientNom & "|" & patientPrenom & "|" & codeMSG & "|" & annotation & "|RDC|" & My.Settings.UserName & "|" & Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
-                                SendMessage(Text)
-                                logger.Debug("Message PTN01 envoyé")
-                            Catch ex As Exception
-                                logger.Error("Erreur lors de l'envoi du message PTN01 : " & ex.Message)
-                            End Try
+                ' Création des variables pour le patient
+                Dim patientTitre As String = ""
+                Dim patientNom As String = ""
+                Dim patientPrenom As String = ""
+                codeMSG = codeMSG.Replace("=", "")
 
 
-                        Else
+                ' Vérifier s'il y a un espace après le CodeMSG
+                If spaceIndex > codeMSG.Length Then
+                    'il y a un espace après le codeMSG
+                    ExtractInfoFromInput(SendTextBox.Text.Substring(spaceIndex + 1), patientTitre, patientNom, patientPrenom)
+                Else
+                    ' Pas d'espace après le CodeMSG
+                    ExtractInfoFromInput(SendTextBox.Text.Substring(codeMSG.Length), patientTitre, patientNom, patientPrenom)
+                End If
 
-                            ' C'est un message simple
-                            ' Formate le message sous la forme "MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
-                            logger.Info("Le message de la Sendbox est un message simple")
-                            Try
-                                Dim text As String
-                                Dim selectedUser As User = TryCast(ListUseres.SelectedItem, User)
-                                If selectedUser IsNot Nothing Then
-                                    Dim selectedUserName As String = selectedUser.Name
-                                    ' Faites quelque chose avec le nom de l'utilisateur sélectionné
-                                    ' ...
+                Dim Text As String = "PTN01" & patientTitre & "|" & patientNom & "|" & patientPrenom & "|" & codeMSG & "|" & annotation & "|RDC|" & My.Settings.UserName & "|" & Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+                SendMessage(Text)
+                MessageBox.Show(Text)
 
-                                    If SendTextBox.Text.Contains("marvin") Then
-                                        ' Créer une instance de la classe Random
-                                        Dim random As New Random()
 
-                                        ' Vérifier si la liste contient des phrases
-                                        If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 Then
-                                            ' Générer un index aléatoire dans la plage des indices de la liste
-                                            Dim randomIndex As Integer = random.Next(0, phrasesData.MarvinPhrases.Count)
+            Else
 
-                                            ' Récupérer la phrase aléatoire en utilisant l'index généré
-                                            Dim randomPhrase As String = phrasesData.MarvinPhrases(randomIndex)
 
-                                            ' Vérifie si Marvin est dans la liste des users
-                                            If IsNameInList(Users, "Marvin") Then
-                                                ' Marvin est présent dans la liste, on ajoute le message
-                                                Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                                                AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
-                                            Else
-                                                ' Marvin n'est pas présent dans la liste, on créer le user et on ajoute le message
-                                                Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                                                Users.Add(New User With {.Name = "Marvin", .Avatar = avatarPath, .Status = "Don't Panic"})
-                                                AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
+                Else
+
+                ' C'est un message simple
+                ' Formate le message sous la forme "MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+                logger.Info("Le message de la Sendbox est un message simple")
+                logger.Info("Le message de la Sendbox est un message simple")
+                Try
+                                    Dim text As String
+                                    Dim selectedUser As User = TryCast(ListUseres.SelectedItem, User)
+                                    If selectedUser IsNot Nothing Then
+                                        Dim selectedUserName As String = selectedUser.Name
+                                        ' Faites quelque chose avec le nom de l'utilisateur sélectionné
+                                        ' ...
+
+                                        If SendTextBox.Text.Contains("marvin") Then
+                                            ' Créer une instance de la classe Random
+                                            Dim random As New Random()
+
+                                            ' Vérifier si la liste contient des phrases
+                                            If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 Then
+                                                ' Générer un index aléatoire dans la plage des indices de la liste
+                                                Dim randomIndex As Integer = random.Next(0, phrasesData.MarvinPhrases.Count)
+
+                                                ' Récupérer la phrase aléatoire en utilisant l'index généré
+                                                Dim randomPhrase As String = phrasesData.MarvinPhrases(randomIndex)
+
+                                                ' Vérifie si Marvin est dans la liste des users
+                                                If IsNameInList(Users, "Marvin") Then
+                                                    ' Marvin est présent dans la liste, on ajoute le message
+                                                    Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
+                                                    AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
+                                                Else
+                                                    ' Marvin n'est pas présent dans la liste, on créer le user et on ajoute le message
+                                                    Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
+                                                    Users.Add(New User With {.Name = "Marvin", .Avatar = avatarPath, .Status = "Don't Panic"})
+                                                    AddMessage("Marvin", "Marvin", randomPhrase, False, avatarPath)
+                                                End If
                                             End If
+
                                         End If
 
+                                        text = "MSG01" & My.Settings.UserName & "|" & selectedUserName & "|" & SendTextBox.Text & "|avataaars.png"
+                                        SendMessage(text)
+                                        MessageList.ScrollToEnd()
+                                        logger.Debug("Message simple envoyé  ")
                                     End If
 
-                                    text = "MSG01" & My.Settings.UserName & "|" & selectedUserName & "|" & SendTextBox.Text & "|avataaars.png"
-                                    SendMessage(text)
-                                    MessageList.ScrollToEnd()
-                                    logger.Debug("Message simple envoyé  ")
-                                End If
 
-
-                            Catch ex As Exception
-                                logger.Error("Erreur lors de l'envoi du message simple : " & ex.Message)
-                            End Try
+                                Catch ex As Exception
+                                    logger.Error("Erreur lors de l'envoi du message simple : " & ex.Message)
+                                End Try
 
                         End If
 
