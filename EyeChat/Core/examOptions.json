@@ -10,7 +10,7 @@
   {
     "index": 2,
     "Name": "SK",
-    "Color": "red",
+    "Color": "yellow",
     "CodeMSG": "SK=",
     "Annotation": null,
     "Floor": "RDC"
@@ -18,7 +18,7 @@
   {
     "index": 3,
     "Name": "AT",
-    "Color": "red",
+    "Color": "green",
     "CodeMSG": "AT=",
     "Annotation": null,
     "Floor": "RDC"
@@ -26,7 +26,7 @@
   {
     "index": 4,
     "Name": "AT-SK",
-    "Color": "red",
+    "Color": "lightyellow",
     "CodeMSG": "ATSK=",
     "Annotation": null,
     "Floor": "RDC"
@@ -34,7 +34,7 @@
   {
     "index": 5,
     "Name": "AT-FO",
-    "Color": "red",
+    "Color": "lightred",
     "CodeMSG": "ATFO=",
     "Annotation": null,
     "Floor": "RDC"
@@ -42,7 +42,7 @@
   {
     "index": 6,
     "Name": "AT-CV",
-    "Color": "red",
+    "Color": "lightblue",
     "CodeMSG": "ATCV=",
     "Annotation": null,
     "Floor": "RDC"
@@ -58,7 +58,7 @@
   {
     "index": 8,
     "Name": "SK",
-    "Color": "red",
+    "Color": "yellow",
     "CodeMSG": "SK*",
     "Annotation": "Gouttes dés arrivée",
     "Floor": "RDC"

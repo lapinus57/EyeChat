@@ -70,9 +70,11 @@
                                VerticalAlignment="Bottom" FontWeight="Bold" 
                                FontSize="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}">
                         <Run Text="{Binding Sender}" />
-                        <Run Text=" : " />
+                        <Run Text=" (" />
+                        <Run Text="{Binding Room}" />
+                        <Run Text=") : " />
                     </TextBlock>
-                    <TextBlock  Margin="5"  
+                    <TextBlock  Margin="5" 
                                 Foreground="{StaticResource MahApps.Brushes.IdealForeground}" 
                                 Text="{Binding Content}"
                                 TextWrapping="Wrap"

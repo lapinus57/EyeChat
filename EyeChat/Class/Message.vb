@@ -16,6 +16,9 @@ Public Class Message
     <JsonProperty("Sender")>
     Public Property Sender As String
 
+    <JsonProperty("Room")>
+    Public Property Room As String
+
     <JsonProperty("Content")>
     Public Property Content As String
 
@@ -24,8 +27,6 @@ Public Class Message
 
     <JsonProperty("Avatar")>
     Public Property Avatar As String
-
-
 
     <JsonProperty("IsAlignedRight")>
     Public Property IsAlignedRight As Boolean
@@ -84,7 +85,7 @@ Public Class Message
             Directory.CreateDirectory(dossier)
         End If
 
-        Dim serializedMessages As String = "[" & String.Join("," & Environment.NewLine, messages.Select(Function(m) JsonConvert.SerializeObject(New With {m.Name, m.Sender, m.Content, m.Avatar, m.IsAlignedRight, m.Timestamp}))) & "]"
+        Dim serializedMessages As String = "[" & String.Join("," & Environment.NewLine, messages.Select(Function(m) JsonConvert.SerializeObject(New With {m.Name, m.Sender, m.Room, m.Content, m.Avatar, m.IsAlignedRight, m.Timestamp}))) & "]"
         File.WriteAllText(messagesFilePath, serializedMessages)
 
     End Sub

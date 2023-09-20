@@ -310,6 +310,20 @@ Public Class PatientBubbleCtrl
         Next
     End Sub
 
+    Public Shared Sub ClearList()
+        ' Triez la liste des patients par Hold_Time avant de la sauvegarder
+        'SortPatientsByHoldTime()
+        ' Enregistrez la liste triée dans le fichier JSON
+        SavePatientsToJson(PatientsALL)
+
+        ' Effacez les listes existantes pour préparer la mise à jour
+        PatientsALL.Clear()
+        PatientsRDC.Clear()
+        Patients1er.Clear()
+
+
+    End Sub
+
     Private Sub SortPatientsByHoldTime()
         PatientsALL = New ObservableCollection(Of Patient)(PatientsALL.OrderBy(Function(p) p.Hold_Time))
     End Sub
