@@ -632,14 +632,16 @@
                             <mah:ToggleSwitch OffContent="Désactivé" 
                                               OnContent="Activé" 
                                               FontSize="{Binding AppSizeDisplay}"
-                                              Grid.Column="1" Grid.Row="0"/>
+                                              Grid.Column="1" Grid.Row="0"
+                                              IsOn= "{Binding SecretaryMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock Text="{StaticResource DoctorMode}" 
                                        FontSize="{Binding AppSizeDisplay}"
                                        Grid.Column="0" Grid.Row="1"/>
                             <mah:ToggleSwitch OffContent="Désactivé" 
                                               OnContent="Activé" 
                                               FontSize="{Binding AppSizeDisplay}" 
-                                              Grid.Column="1" Grid.Row="1"/>
+                                              Grid.Column="1" Grid.Row="1"
+                                              IsOn= "{Binding DoctorMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         
                     </Grid>
                     

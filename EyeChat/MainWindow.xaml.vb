@@ -742,7 +742,7 @@ Class MainWindow
         Dim patientToRemove As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.Title = Title And patient.LastName = LastName And patient.FirstName = FirstName And patient.Exams = Exams And patient.Annotation = Comments And patient.Position = Floor And patient.Examinator = Examinator And patient.Hold_Time = Hold_Time)
         If patientToRemove IsNot Nothing Then
 
-            SendTextBox.Text = patientToRemove.ToString
+            'SendTextBox.Text = patientToRemove.ToString
             ' Supprimer le patient de PatientsALL
             PatientsALL.Remove(patientToRemove)
 
@@ -1163,7 +1163,7 @@ Class MainWindow
             Case "PTN04"
                 ' Code de message pour supprimer un patient               
                 ' "PTN04Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|OldHold_Time|NewHold_Time"
-                SendTextBox.Text = receivedMessage
+
                 Try
                     Dim messageContent As String = receivedMessage.Substring(5)
                     Dim parts As String() = messageContent.Split("|"c)
@@ -1177,7 +1177,7 @@ Class MainWindow
                     Dim OldHold_Time As String = parts(7)
                     Dim NewHold_Time As String = parts(8)
 
-                    SendTextBox.Text = messageContent
+
                     PatientUpdate(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, OldHold_Time, NewHold_Time)
 
                 Catch ex As Exception
@@ -1275,6 +1275,7 @@ Class MainWindow
 
 
                     If author = My.Settings.UserName And destinataire <> "A Tous" Then
+
                         AddMessage(destinataire, author, room, message, True, avatarPath)
                         SelectUserByName(destinataire)
                         SelectUser(destinataire)
@@ -1284,11 +1285,23 @@ Class MainWindow
                         Me.Topmost = False
                         Me.Focus()
 
+
                     ElseIf author = My.Settings.UserName And destinataire = "A Tous" Then
 
                         AddMessage("A Tous", author, room, message, True, avatarPath)
                         SelectUserByName("A Tous")
                         SelectUser("A Tous")
+
+                        Me.WindowState = WindowState.Normal
+                        Me.Topmost = True
+                        Me.Topmost = False
+                        Me.Focus()
+
+                    ElseIf author <> My.Settings.UserName And destinataire = My.Settings.UserName Then
+
+                        AddMessage(destinataire, author, room, message, False, avatarPath)
+                        SelectUserByName(destinataire)
+                        SelectUser(destinataire)
 
                         Me.WindowState = WindowState.Normal
                         Me.Topmost = True
@@ -1908,38 +1921,13 @@ Class MainWindow
 
         ' Récupérer la chaîne d'entrée à partir de la zone de texte
         Dim inputString As String = PatientNameBox.Text
-        ' Diviser la chaîne en parties en utilisant l'espace comme délimiteur
-        Dim inputParts As String() = inputString.Split(" "c)
 
-        If inputParts.Length >= 3 Then
-            ' Extraire le titre du patient et le mettre en majuscules
-            patientTitre = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(inputParts(0))
+        ' Appeler la fonction ExtractInfoFromInput pour extraire les informations du patient
+        ExtractInfoFromInput(inputString, patientTitre, patientNom, patientPrenom)
 
-            ' Trouver la dernière partie de la chaîne (normalement le nom de famille)
-            Dim lastIndex As Integer = inputParts.Length - 1
-            ' Vérifier si la dernière partie contient des caractères spéciaux
-            If inputParts(lastIndex).Contains("-") OrElse inputParts(lastIndex).Contains(" ") OrElse inputParts(lastIndex).Contains("'") Then
-                ' Si oui, diviser la dernière partie en parties composées
-                Dim compoundLastNameParts As String() = inputParts(lastIndex).Split("-"c, " "c, "'"c)
-                ' Mettre en majuscules chaque partie
-                For i As Integer = 0 To compoundLastNameParts.Length - 1
-                    compoundLastNameParts(i) = compoundLastNameParts(i).ToUpper()
-                Next
-                ' Joindre les parties composées avec un trait d'union
-                patientNom = String.Join("-", compoundLastNameParts)
-            Else
-                ' Si la dernière partie ne contient pas de caractères spéciaux, mettre en majuscules
-                patientNom = inputParts(lastIndex).ToUpper()
-            End If
-
-            ' Extraire le prénom du patient et le mettre en majuscules
-            patientPrenom = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(inputParts(1))
-        ElseIf inputParts.Length = 2 Then
-            ' Si seulement un nom et un prénom
-            patientNom = inputParts(0).ToUpper()
-            patientPrenom = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(inputParts(1))
-        Else
-            ' Si le format d'entrée n'est pas correct, afficher un message d'erreur et quitter la fonction
+        ' Vérifier si les informations ont été correctement extraites
+        If String.IsNullOrEmpty(patientNom) OrElse String.IsNullOrEmpty(patientPrenom) Then
+            ' Afficher un message d'erreur et quitter la fonction
             MessageBox.Show("Le format d'entrée doit être 'Titre Nom Prénom' ou 'Nom Prénom'.")
             Return
         End If
@@ -2030,7 +2018,7 @@ Class MainWindow
     Private Sub ExtractInfoFromInput(inputText As String, ByRef patientTitre As String, ByRef patientNom As String, ByRef patientPrenom As String)
         Try
             ' Modèle pour extraire le titre, le nom et le prénom
-            Dim patternTitleName As String = "^(?i)(Mr|Mme|Me|Dr|Enfant)?\s*(?<name>[^\d\s\-]+)\s+(?<firstName>[^\s]+)"
+            Dim patternTitleName As String = "^(?i)(Mr|Mme|Mlle|Enfant)?\s*(?<name>[^\d\s\-]+)\s+(?<firstName>[^\s]+)"
 
             Dim matchTitleName As Match = Regex.Match(inputText, patternTitleName)
 
@@ -2039,15 +2027,23 @@ Class MainWindow
                 Dim nom As String = matchTitleName.Groups("name").Value
                 Dim prenom As String = matchTitleName.Groups("firstName").Value
 
+                ' Mettre en majuscules le nom du patient
+                patientNom = nom.ToUpper()
+
                 ' Si titre est vide, définir "Iel" par défaut
                 If String.IsNullOrWhiteSpace(titre) Then
                     patientTitre = "Iel"
                 Else
+                    ' Utiliser le titre tel quel (en minuscules)
                     patientTitre = titre
                 End If
 
-                patientNom = nom
-                patientPrenom = prenom
+                ' Mettre en majuscules seulement la première lettre du prénom
+                If Not String.IsNullOrEmpty(prenom) Then
+                    patientPrenom = Char.ToUpper(prenom(0)) + prenom.Substring(1)
+                Else
+                    patientPrenom = ""
+                End If
 
                 ' Enregistre des informations de débogage
                 logger.Debug("Extraction des informations du texte d'entrée réussie.")

@@ -684,6 +684,46 @@ Public Class SettingsViewModel
         End Set
     End Property
 
+    Public Property SecretaryMode As Boolean
+        Get
+            Try
+                Return My.Settings.SecretaryMode
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété SecretaryMode: {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.SecretaryMode = value
+                My.Settings.Save()
+                NotifyPropertyChanged("SecretaryMode")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété SecretaryMode : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property DoctorMode As Boolean
+        Get
+            Try
+                Return My.Settings.DoctorMode
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété DoctorMode: {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.DoctorMode = value
+                My.Settings.Save()
+                NotifyPropertyChanged("DoctorMode")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété DoctorMode : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
 
 
 
