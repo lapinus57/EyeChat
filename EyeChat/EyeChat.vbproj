@@ -401,6 +401,16 @@
   <ItemGroup>
     <Resource Include="Chat.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Avatar\earth.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Avatar\joy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\packages\JeremyAnsel.HLSL.Targets.1.0.13\build\JeremyAnsel.HLSL.Targets.targets" Condition="Exists('..\packages\JeremyAnsel.HLSL.Targets.1.0.13\build\JeremyAnsel.HLSL.Targets.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -230,7 +230,9 @@ Public Class SettingsViewModel
     Public Property AppColorString As String
         Get
             Try
-                Return My.Settings.AppColorString
+                Dim storedValue As String = My.Settings.AppColorString
+                ' Supprimer les guillemets simples si présents
+                Return If(Not String.IsNullOrEmpty(storedValue), storedValue.Trim("'"c), "Blue")
 
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AppColorString : {ex.Message}")
@@ -241,9 +243,13 @@ Public Class SettingsViewModel
         Set(ByVal value As String)
 
             Try
+                value = If(Not String.IsNullOrEmpty(value), value.Trim("'"c), value)
+
                 Dim converter As New System.Windows.Media.ColorConverter()
+                Dim color As System.Windows.Media.Color = CType(converter.ConvertFromString(value), System.Windows.Media.Color)
+
                 My.Settings.AppColorString = value
-                My.Settings.AppColor = System.Drawing.Color.FromName(value)
+                My.Settings.AppColor = System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B)
                 My.Settings.Save()
                 NotifyPropertyChanged("AppColorString")
                 SelectUser(SelectedUser)
@@ -405,6 +411,8 @@ Public Class SettingsViewModel
             End Try
         End Set
     End Property
+
+
 
     Public Property CtrlF10Enabled As Boolean
         Get
@@ -683,6 +691,46 @@ Public Class SettingsViewModel
             End Try
         End Set
     End Property
+    Public Property PlanningMode2 As Boolean
+        Get
+            Try
+                Return My.Settings.PlanningMode2
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété PlanningMode2 : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As Boolean)
+            Try
+                My.Settings.PlanningMode2 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("PlanningMode2")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété PlanningMode2 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
+    Public Property PlanningName2 As String
+        Get
+            Try
+                Return My.Settings.PlanningName2
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété PlanningName2 : {ex.Message}")
+                Return False
+            End Try
+        End Get
+        Set(ByVal value As String)
+            Try
+                My.Settings.PlanningName2 = value
+                My.Settings.Save()
+                NotifyPropertyChanged("PlanningName2")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété PlanningName2 : {ex.Message}")
+            End Try
+        End Set
+    End Property
+
 
     Public Property SecretaryMode As Boolean
         Get

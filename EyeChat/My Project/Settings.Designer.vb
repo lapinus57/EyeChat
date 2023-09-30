@@ -497,6 +497,30 @@ Namespace My
                 Me("PlanningMode") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property PlanningMode2() As Boolean
+            Get
+                Return CType(Me("PlanningMode2"),Boolean)
+            End Get
+            Set
+                Me("PlanningMode2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Benoit")>  _
+        Public Property PlanningName2() As String
+            Get
+                Return CType(Me("PlanningName2"),String)
+            End Get
+            Set
+                Me("PlanningName2") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

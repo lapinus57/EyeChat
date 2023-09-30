@@ -26,11 +26,13 @@ Imports EyeChat.PatientBubbleCtrl
 Imports System.Net.NetworkInformation
 Imports EyeChat.Computer
 Imports EyeChat.Planning
+Imports System.Windows.Threading
 
-
-Public Class MarvinPhrasesData
+Public Class EggPhrasesData
     Public Property MarvinPhrases As List(Of String)
+    Public Property JoyPhrases As List(Of String)
 End Class
+
 
 Class MainWindow
     Implements INotifyPropertyChanged
@@ -57,6 +59,7 @@ Class MainWindow
     Private Shared ReadOnly logger As ILog = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
     Public Property DebugLevels As New ObservableCollection(Of String)() From {"DEBUG", "INFO", "WARN", "ERROR"}
 
+    Private timer As DispatcherTimer
 
     Delegate Sub AddReceivedMessage(ByRef message As String)
     Private Const port As Integer = 50545
@@ -68,7 +71,7 @@ Class MainWindow
     Private Shared ReadOnly SuggestionValues As String() = {"/DEBUG", "/ENDDEBUG", "/LSTCOMPUTER", "/DISPCOMPUTER", "TEST"}
 
     Dim jsonData As String
-    Dim phrasesData As MarvinPhrasesData
+    Dim phrasesData As EggPhrasesData
 
     Private Const RepoOwner As String = "lapinus57"
     Private Const RepoName As String = "EyeChat"
@@ -442,7 +445,7 @@ Class MainWindow
         'CheckForUpdates("beta")
         XmlConfigurator.Configure()
         logger.Logger.Repository.Threshold = log4net.Core.Level.Error
-        Me.ShowCloseButton = True
+        Me.ShowCloseButton = False
 
 
 
@@ -537,10 +540,6 @@ Class MainWindow
         Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "avataaars.png")
 
 
-        'AddMessage("Benoit", "John", "Hello! 💖😁🐨🐱‍🐉👩🏿‍👩🏻‍👦🏽 lol", True, avatarPath)
-        'AddMessage("Benoit", "Benoit", "Hello! 💖😁🐨🐱‍🐉👩🏿‍👩🏻‍👦🏽 lol", False, avatarPath)
-
-
         'SaveUsersToJson(Users)
 
         InitializeSender()
@@ -554,7 +553,7 @@ Class MainWindow
         'PatientAdd("Mr", "durand", "benoit", "SK", Nothing, "1er", "Green", "benoit", Date.Now)
 
         jsonData = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "dataphrases.json"))
-        phrasesData = JsonConvert.DeserializeObject(Of MarvinPhrasesData)(jsonData)
+        phrasesData = JsonConvert.DeserializeObject(Of EggPhrasesData)(jsonData)
 
         Dim json As String = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "examOptions.json"))
         ExamOptions = JsonConvert.DeserializeObject(Of List(Of ExamOption))(json)
@@ -580,6 +579,77 @@ Class MainWindow
 
         ' Affecter le ContextMenu à la TextBox
         SendTextBox.ContextMenu = contextMenu
+
+
+
+
+        If My.Settings.PlanningMode2 = True Then
+
+            ' Créez et configurez le DispatcherTimer
+            timer = New DispatcherTimer()
+
+            ' Vérifiez si l'heure actuelle est antérieure à 8h00
+            Dim currentTime As DateTime = DateTime.Now
+            Dim targetTime As New DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 8, 0, 0)
+
+            If currentTime < targetTime Then
+                ' Si l'heure actuelle est antérieure à 8h00, calculez l'intervalle
+                Dim timeUntilTarget As TimeSpan = targetTime - currentTime
+
+                ' Définissez l'intervalle de la minuterie pour correspondre au temps restant
+                timer.Interval = timeUntilTarget
+
+                ' Gérez l'événement Tick
+                AddHandler timer.Tick, AddressOf Timer_Tick
+
+                My.Settings.UserName = My.Settings.PlanningName2
+                My.Settings.Save()
+
+                ' Démarrez la minuterie
+                timer.Start()
+            Else
+                ' L'heure actuelle est postérieure à 8h00, vous pouvez exécuter l'action immédiatement ici
+                If My.Settings.PlanningMode = True Then
+                    Try
+                        Dim dayTranslations As New Dictionary(Of String, String)() From {
+                    {"Monday", "Lundi"},
+                    {"Tuesday", "Mardi"},
+                    {"Wednesday", "Mercredi"},
+                    {"Thursday", "Jeudi"},
+                    {"Friday", "Vendredi"},
+                    {"Saturday", "Samedi"},
+                    {"Sunday", "Dimanche"}
+        }
+
+                        Dim today = DateTime.Now.DayOfWeek.ToString() ' Récupère le jour actuel de la semaine en anglais
+                        Dim frenchDay As String = dayTranslations(today) ' Traduction française du jour
+
+                        ' Recherche le planning correspondant au jour en cours dans la liste des plannings
+                        Dim planningForToday = Plannings.FirstOrDefault(Function(p) p.Day = frenchDay)
+
+                        ' Mise à jour du nom d'utilisateur dans les paramètres
+                        If planningForToday IsNot Nothing AndAlso planningForToday.User IsNot Nothing Then
+                            My.Settings.UserName = planningForToday.User
+                            My.Settings.Save()
+                        Else
+                            My.Settings.UserName = "Benoit"
+                            My.Settings.Save()
+                        End If
+                    Catch ex As Exception
+                        My.Settings.UserName = "Benoit"
+                        My.Settings.Save()
+                    End Try
+
+                End If
+            End If
+        End If
+
+        SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
+    End Sub
+
+    Private Sub Timer_Tick(ByVal sender As Object, ByVal e As EventArgs)
+        ' Code à exécuter à 8h00 précises
+        SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
 
         If My.Settings.PlanningMode = True Then
             Try
@@ -614,17 +684,20 @@ Class MainWindow
 
         End If
 
-
-
         SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
-    End Sub
 
+
+        ' Arrêtez la minuterie si nécessaire pour éviter d'exécuter l'action à plusieurs reprises
+        timer.Stop()
+    End Sub
 
     Private Sub MessageMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim selectedMessage As SpeedMessage = DirectCast(DirectCast(sender, System.Windows.Controls.MenuItem).Tag, SpeedMessage)
         '"SMF01UserName|Destinataitre|message|Option1|Option2|Option3"
         SendMessage("SMF01" & My.Settings.UserName & "|" & selectedMessage.Destinataire & "|" & selectedMessage.Message.Replace("[ROOM]", Environment.UserName) & "|" & selectedMessage.Options)
-        SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & selectedMessage.Message.Replace("[ROOM]", Environment.UserName) & "|benoit.png")
+        SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & selectedMessage.Destinataire & " " & selectedMessage.Message.Replace("[ROOM]", Environment.UserName) & "|benoit.png")
+
+
 
     End Sub
 
@@ -1268,75 +1341,62 @@ Class MainWindow
                     Dim message As String = parts(3)
                     Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", parts(4))
 
-                    'If (author = My.Settings.UserName And destinataire <> "A Tous") Or
-                    'destinataire = "A Tous" Or
-                    '   (destinataire = "Secrétariat" And My.Settings.SecretaryMode = True) Or
-                    'destinataire = My.Settings.UserName Then
 
+                    Dim messageAdded As Boolean = False ' Variable pour suivre si un message a été ajouté
 
-                    If author = My.Settings.UserName And destinataire <> "A Tous" Then
+                    Select Case destinataire
+                        Case "A Tous"
+                            If author = My.Settings.UserName Then
+                                ' Auteur envoie un message "A Tous"
+                                AddMessage("A Tous", author, room, message, True, avatarPath)
+                                SelectUserByName("A Tous")
+                                messageAdded = True
+                            Else
+                                ' Autre utilisateur envoie un message "A Tous"
+                                AddMessage("A Tous", author, room, message, False, avatarPath)
+                                SelectUserByName("A Tous")
+                                messageAdded = True
+                            End If
 
-                        AddMessage(destinataire, author, room, message, True, avatarPath)
-                        SelectUserByName(destinataire)
-                        SelectUser(destinataire)
+                        Case "Secrétariat"
+                            If author = My.Settings.UserName Then
+                                ' Auteur envoie un message à "Secrétaria"
+                                AddMessage("Secrétariat", author, room, message, True, avatarPath)
+                                SelectUserByName("Secrétariat")
+                                messageAdded = True
+                            End If
 
-                        Me.WindowState = WindowState.Normal
-                        Me.Topmost = True
-                        Me.Topmost = False
-                        Me.Focus()
+                            If My.Settings.SecretaryMode = True Then
+                                ' Secrétaria mode est activé
+                                AddMessage("Secrétariat", author, room, message, False, avatarPath)
+                                AddMessage(author, author, room, message, False, avatarPath)
+                                SelectUserByName(author)
+                                messageAdded = True
+                            End If
 
+                        Case Else
+                            If author = My.Settings.UserName Then
+                                ' Auteur envoie un message à "quelqu'un"
+                                AddMessage(destinataire, author, room, message, True, avatarPath)
+                                SelectUserByName(destinataire)
+                                messageAdded = True
+                            End If
 
-                    ElseIf author = My.Settings.UserName And destinataire = "A Tous" Then
+                            If destinataire = My.Settings.UserName Then
+                                ' Destinataire est l'auteur
+                                AddMessage(author, author, room, message, False, avatarPath)
+                                SelectUserByName(author)
+                                messageAdded = True
+                            End If
+                    End Select
 
-                        AddMessage("A Tous", author, room, message, True, avatarPath)
-                        SelectUserByName("A Tous")
-                        SelectUser("A Tous")
-
-                        Me.WindowState = WindowState.Normal
-                        Me.Topmost = True
-                        Me.Topmost = False
-                        Me.Focus()
-
-                    ElseIf author <> My.Settings.UserName And destinataire = My.Settings.UserName Then
-
-                        AddMessage(destinataire, author, room, message, False, avatarPath)
-                        SelectUserByName(destinataire)
-                        SelectUser(destinataire)
-
-                        Me.WindowState = WindowState.Normal
-                        Me.Topmost = True
-                        Me.Topmost = False
-                        Me.Focus()
-
-                    ElseIf author <> My.Settings.UserName And destinataire = "A Tous" Then
-
-                        AddMessage("A Tous", author, room, message, False, avatarPath)
-                        SelectUserByName("A Tous")
-                        SelectUser("A Tous")
-
-                        Me.WindowState = WindowState.Normal
-                        Me.Topmost = True
-                        Me.Topmost = False
-                        Me.Focus()
-
-                        'ElseIf destinataire = "Secrétariat" Then
-                        '   AddMessage("Secrétariat", author, room, message, False, avatarPath)
-                        '  SelectUserByName("Secrétariat")
-                        ' SelectUser("Secrétariat")
-                    Else
-                        AddMessage(author, author, room, message, False, avatarPath)
-                            SelectUserByName(author)
-                        SelectUser(author)
-
+                    ' Mettre à jour la fenêtre si un message a été ajouté
+                    If messageAdded Then
                         Me.WindowState = WindowState.Normal
                         Me.Topmost = True
                         Me.Topmost = False
                         Me.Focus()
                     End If
-
-
-                    'End If
-
 
 
 
@@ -1442,6 +1502,7 @@ Class MainWindow
     End Sub
 
 
+
     Private Async Sub SpeedMessageDialog(ByVal Titre As String, ByVal Message As String, ByVal option1 As String, ByVal option2 As String, ByVal option3 As String)
         Try
             Dim dialogSettings As New MetroDialogSettings With {
@@ -1450,51 +1511,54 @@ Class MainWindow
             .FirstAuxiliaryButtonText = option3
         }
 
+            Dim selectedOption As String = Await ShowMessageDialogAsync(Titre, Message, dialogSettings, option1, option2, option3)
 
-            Dim result As MessageDialogResult = Await DialogCoordinator.Instance.ShowMessageAsync(Me, Titre, Message, MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary, dialogSettings)
-
-            If result = MessageDialogResult.Affirmative Then
-                ' Bouton 1 cliqué
-                If option1 = "0" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Je vient au plus vite" & "|benoit.png")
-                ElseIf option1 = "1" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Je vient dans 2 minutes " & "|benoit.png")
-                ElseIf option1 = "2" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Je vient dans 5 minutes " & "|benoit.png")
-                ElseIf option1 = "A" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Met en attente " & "|benoit.png")
-                End If
-
-
-            ElseIf result = MessageDialogResult.Negative Then
-                ' Bouton 2 cliqué
-                If option2 = "0" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Je vient au plus vite" & "|benoit.png")
-                ElseIf option2 = "1" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Je vient dans 2 minutes " & "|benoit.png")
-                ElseIf option2 = "2" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Je vient dans 5 minutes " & "|benoit.png")
-                ElseIf option2 = "A" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Met en attente " & "|benoit.png")
-                End If
-            ElseIf result = MessageDialogResult.FirstAuxiliary Then
-                ' Bouton 3 cliqué
-                If option3 = "0" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Je vient au plus vite" & "|benoit.png")
-                ElseIf option3 = "1" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Je vient dans 2 minutes " & "|benoit.png")
-                ElseIf option3 = "2" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Je vient dans 5 minutes " & "|benoit.png")
-                ElseIf option3 = "A" Then
-                    SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & Titre & " Met en attente " & "|benoit.png")
-                End If
+            If selectedOption IsNot Nothing Then
+                SpeedSendMessage(selectedOption, Titre)
             End If
         Catch ex As Exception
             logger.Error("Erreur lors de l'affichage d'un message dialog : " & ex.Message)
         End Try
-
     End Sub
 
+    Private Async Function ShowMessageDialogAsync(ByVal Titre As String, ByVal Message As String, ByVal dialogSettings As MetroDialogSettings, ByVal option1 As String, ByVal option2 As String, ByVal option3 As String) As Task(Of String)
+        Dim result As MessageDialogResult = Await DialogCoordinator.Instance.ShowMessageAsync(Me, Titre, Message, MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary, dialogSettings)
+
+        Select Case result
+            Case MessageDialogResult.Affirmative
+                Return option1
+            Case MessageDialogResult.Negative
+                Return option2
+            Case MessageDialogResult.FirstAuxiliary
+                Return option3
+            Case Else
+                Return Nothing ' Aucune option sélectionnée
+        End Select
+    End Function
+
+    Private Sub SpeedSendMessage(ByVal selectedOption As String, ByVal Titre As String)
+        Dim message As String = GetMessage(selectedOption, Titre)
+        If message IsNot Nothing Then
+            SendMessage(message)
+        End If
+    End Sub
+
+    Private Function GetMessage(ByVal selectedOption As String, ByVal Titre As String) As String
+        Select Case selectedOption
+            Case "0"
+                Return "MSG01" & My.Settings.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & Titre & " je vient au plus vite" & "|benoit.png"
+            Case "1"
+                Return "MSG01" & My.Settings.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & Titre & " je vient dans 2 minutes " & "|benoit.png"
+            Case "2"
+                Return "MSG01" & My.Settings.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & Titre & " je vient dans 5 minutes " & "|benoit.png"
+            Case "3"
+                Return "MSG01" & My.Settings.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & Titre & " je vient dans 10 minutes " & "|benoit.png"
+            Case "A"
+                Return "MSG01" & My.Settings.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & Titre & " met en attente " & "|benoit.png"
+            Case Else
+                Return Nothing ' Option non reconnue
+        End Select
+    End Function
 
 
 #End Region
@@ -1612,20 +1676,34 @@ Class MainWindow
                             logger.Error("Erreur lors de l'affichage des ordinateurs avec la commande /DISPCOMPUTER: " & ex.Message)
                         End Try
 
-                    Case "TEST"
+
+                    Case "/TESTPATIENT"
+
+                        SendMessage("PTN01Mr|MULLER|Benoit|FO|ODG |RDC|System|2023-09-29T19:24:03.748")
+                        SendMessage("PTN01Mr|MULLER|Benoit|SK|ODG |RDC|System|2023-09-29T19:24:03.748")
+                        SendMessage("PTN01Mr|MULLER|Benoit|AT|ODG |RDC|System|2023-09-29T19:24:03.748")
+                        SendMessage("PTN01Mr|MULLER|Benoit|AT-SK|ODG |RDC|System|2023-09-29T19:24:03.748")
+                        SendMessage("PTN01Mr|MULLER|Benoit|AT-FO|ODG |RDC|System|2023-09-29T19:24:03.748")
+                        SendMessage("PTN01Mr|MULLER|Benoit|AT-CV|ODG |RDC|System|2023-09-29T19:24:03.748")
+
+
+                    Case "/TESTMARVIN"
                         ' Créer une instance de la classe Random
                         Dim random As New Random()
 
                         ' Vérifier si la liste contient des phrases
-                        If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 Then
+                        If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 AndAlso phrasesData.JoyPhrases.Count > 0 Then
                             ' Générer un index aléatoire dans la plage des indices de la liste
                             Dim randomIndex As Integer = random.Next(0, phrasesData.MarvinPhrases.Count)
+                            Dim randomIndexJoy As Integer = random.Next(0, phrasesData.JoyPhrases.Count)
 
                             ' Récupérer la phrase aléatoire en utilisant l'index généré
                             Dim randomPhrase As String = phrasesData.MarvinPhrases(randomIndex)
+                            Dim randomPhraseJoy As String = phrasesData.JoyPhrases(randomIndexJoy)
 
                             ' Faire quelque chose avec la phrase aléatoire
                             MessageBox.Show(randomPhrase)
+                            MessageBox.Show(randomPhraseJoy)
                         End If
 
 
@@ -1701,23 +1779,29 @@ Class MainWindow
                                         Dim random As New Random()
 
                                         ' Vérifier si la liste contient des phrases
-                                        If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 Then
+                                        If phrasesData IsNot Nothing AndAlso phrasesData.MarvinPhrases.Count > 0 AndAlso phrasesData.JoyPhrases.Count > 0 Then
                                             ' Générer un index aléatoire dans la plage des indices de la liste
-                                            Dim randomIndex As Integer = random.Next(0, phrasesData.MarvinPhrases.Count)
+                                            Dim randomIndexMarvin As Integer = random.Next(0, phrasesData.MarvinPhrases.Count)
+                                            Dim randomIndexJoy As Integer = random.Next(0, phrasesData.JoyPhrases.Count)
 
                                             ' Récupérer la phrase aléatoire en utilisant l'index généré
-                                            Dim randomPhrase As String = phrasesData.MarvinPhrases(randomIndex)
+                                            Dim randomPhraseMarvin As String = phrasesData.MarvinPhrases(randomIndexMarvin)
+                                            Dim randomPhraseJoy As String = phrasesData.JoyPhrases(randomIndexJoy)
 
                                             ' Vérifie si Marvin est dans la liste des users
                                             If IsNameInList(Users, "Marvin") Then
                                                 ' Marvin est présent dans la liste, on ajoute le message
-                                                Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                                                AddMessage("Marvin", "Marvin", "Cœur en Or", randomPhrase, False, avatarPath)
+                                                Dim avatarPathMarvin As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
+                                                Dim avatarPathJoy As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "joy.png")
+                                                AddMessage("Marvin", "Marvin", "Cœur en Or", randomPhraseMarvin, False, avatarPathMarvin)
+                                                AddMessage("Marvin", "Joy", "Riley", randomPhraseJoy, False, avatarPathJoy)
                                             Else
                                                 ' Marvin n'est pas présent dans la liste, on créer le user et on ajoute le message
-                                                Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
-                                                Users.Add(New User With {.Name = "Marvin", .Avatar = avatarPath, .Status = "Don't Panic"})
-                                                AddMessage("Marvin", "Marvin", "Cœur en Or", randomPhrase, False, avatarPath)
+                                                Dim avatarPathMarvin As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "system.png")
+                                                Dim avatarPathJoy As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", "joy.png")
+                                                Users.Add(New User With {.Name = "Marvin", .Avatar = avatarPathMarvin, .Status = "Don't Panic"})
+                                                AddMessage("Marvin", "Marvin", "Cœur en Or", randomPhraseMarvin, False, avatarPathMarvin)
+                                                AddMessage("Marvin", "Joy", "Riley", randomPhraseJoy, False, avatarPathJoy)
                                             End If
                                         End If
 
@@ -1798,7 +1882,7 @@ Class MainWindow
 
 
 
-    Private Async Function ConnectionButon_Click(sender As Object, e As RoutedEventArgs) As Task
+    Private Function ConnectionButon_Click(sender As Object, e As RoutedEventArgs) As Task
 
 
         'If ConnectionButon.Content = "Connection" Then
@@ -1958,7 +2042,7 @@ Class MainWindow
 
         ' Appeler la fonction Sendmessage avec la chaîne de texte du patient
         SendMessage(Text)
-        SendTextBox.Text = Text
+
     End Sub
 
 

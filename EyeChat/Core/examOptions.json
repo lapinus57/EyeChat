@@ -34,7 +34,7 @@
   {
     "index": 5,
     "Name": "AT-FO",
-    "Color": "lightred",
+    "Color": "LightPink",
     "CodeMSG": "ATFO=",
     "Annotation": null,
     "Floor": "RDC"

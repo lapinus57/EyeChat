@@ -10,6 +10,7 @@ Imports EyeChat.Planning
 Imports System.Collections.ObjectModel
 Imports System.Globalization
 
+
 Public Class SettingsWindows
 
     Private _settings As SettingsViewModel
@@ -45,7 +46,6 @@ Public Class SettingsWindows
         InitializeComponent()
         Dim settings As New SettingsViewModel()
         Me.DataContext = settings
-
 
     End Sub
 
@@ -132,6 +132,14 @@ Public Class SettingsWindows
     Private Sub Button_Click(sender As Object, e As RoutedEventArgs)
 
     End Sub
+
+    Private Sub ColorPicker_SelectedColorChanged(ByVal sender As Object, ByVal e As RoutedPropertyChangedEventArgs(Of System.Windows.Media.Color?))
+
+    End Sub
+
+    Private Sub ColorPicker_DropDownClosed(sender As Object, e As EventArgs)
+        SetTheme()
+    End Sub
 End Class
 Public Class BoolToVisibilityConverter
     Implements IValueConverter
@@ -147,6 +155,10 @@ Public Class BoolToVisibilityConverter
     Public Function ConvertBack(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.ConvertBack
         Throw New NotImplementedException()
     End Function
+
+
+
+
 End Class
 
 

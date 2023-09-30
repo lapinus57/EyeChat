@@ -45,9 +45,9 @@ Public Class MessageBubbleCtrl
         InitializeComponent()
         Size = My.Settings.AppSizeDisplay
     End Sub
-    Protected Sub OnPropertyChanged(propertyName As String)
-        RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
-    End Sub
+    'Protected Sub OnPropertyChanged(propertyName As String)
+    'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
+    'End Sub
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
 
     Private Sub CopyMenuItem_Click(sender As Object, e As RoutedEventArgs)

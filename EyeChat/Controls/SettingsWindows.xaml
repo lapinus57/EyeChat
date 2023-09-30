@@ -121,41 +121,10 @@
                         <TextBlock Text="{StaticResource AppColorLabel}" 
                                    Grid.Column="0" Grid.Row="1" 
                                    FontSize="{Binding AppSizeDisplay}" />
-                        <ComboBox x:Name="cboColors" 
-                                  Grid.Column="2" Grid.Row="1" 
-                                  SelectedValue="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                  SelectedValuePath="Tag"  
-                                  IsEditable="False" 
-                                  SelectionChanged="AppColorChanged"
-                                  FontSize="{Binding AppSizeDisplay}">
-                            <ComboBox.Items>
-                                <ComboBoxItem Content="Noir" Tag="Black" />
-                                <ComboBoxItem Content="Blanc" Tag="White" />
-                                <ComboBoxItem Content="Rouge" Tag="Red" />
-                                <ComboBoxItem Content="Vert" Tag="Green" />
-                                <ComboBoxItem Content="Bleu" Tag="Blue" />
-                                <ComboBoxItem Content="Violet" Tag="Purple" />
-                                <ComboBoxItem Content="Orange" Tag="Orange" />
-                                <ComboBoxItem Content="Citron vert" Tag="Lime" />
-                                <ComboBoxItem Content="Émeraude" Tag="Emerald" />
-                                <ComboBoxItem Content="Turquoise" Tag="Teal" />
-                                <ComboBoxItem Content="Cyan" Tag="Cyan" />
-                                <ComboBoxItem Content="Cobalt" Tag="Cobalt" />
-                                <ComboBoxItem Content="Indigo" Tag="Indigo" />
-                                <ComboBoxItem Content="Violet" Tag="Violet" />
-                                <ComboBoxItem Content="Rose" Tag="Pink" />
-                                <ComboBoxItem Content="Magenta" Tag="Magenta" />
-                                <ComboBoxItem Content="Cramoisi" Tag="Crimson" />
-                                <ComboBoxItem Content="Ambre" Tag="Amber" />
-                                <ComboBoxItem Content="Jaune" Tag="Yellow" />
-                                <ComboBoxItem Content="Marron" Tag="Brown" />
-                                <ComboBoxItem Content="Olive" Tag="Olive" />
-                                <ComboBoxItem Content="Acier" Tag="Steel" />
-                                <ComboBoxItem Content="Mauve" Tag="Mauve" />
-                                <ComboBoxItem Content="Sienna" Tag="Sienna" />
-                            </ComboBox.Items>
-                        </ComboBox>
-                        
+                        <mah:ColorPicker  DropDownClosed="ColorPicker_DropDownClosed"
+                                          Grid.Column="2" Grid.Row="1"  
+                                          SelectedColor="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                               
                         
                         <TextBlock Text="{StaticResource AppSizeLabel}" 
                                    Grid.Column="0" Grid.Row="2"
@@ -570,13 +539,68 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                    
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="300"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Mode Planning :"
+                        <TextBlock Text="Mode Planning avant 8h00 :"
+                                   FontSize="{Binding AppSizeDisplay}" 
+                                   Grid.Column="0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOn, ElementName=PlanningSwitch2}" Value="False">
+                                            <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <mah:ToggleSwitch FontSize="{Binding AppSizeDisplay}" 
+                                          OffContent="Désactivé" 
+                                          OnContent="Activé" 
+                                          x:Name="PlanningSwitch2" 
+                                          Grid.Column="1"
+                                          IsOn= "{Binding PlanningMode2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Nom avant 8h00 :"
+                                   FontSize="{Binding AppSizeDisplay}" 
+                                   Grid.Column="0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOn, ElementName=PlanningSwitch2}" Value="False">
+                                            <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBox Text="{Binding PlanningName2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Grid.Column="1"
+                                 IsEnabled="{Binding IsOn, ElementName=PlanningSwitch2}" 
+                                 Width="300"
+                                 FontSize="{Binding AppSizeDisplay}"/>
+
+                    </Grid>
+                    
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Mode Planning après 8h00 :"
                                    FontSize="{Binding AppSizeDisplay}" 
                                    Grid.Column="0"/>
                         <mah:ToggleSwitch FontSize="{Binding AppSizeDisplay}" 
@@ -591,7 +615,7 @@
                     <DataGrid x:Name="PlanningDataGrid" 
                               ItemsSource="{Binding Path=Planning, UpdateSourceTrigger=PropertyChanged}"
                               AutoGenerateColumns="False" 
-                              Grid.Row="1"
+                              Grid.Row="3"
                               FontSize="{Binding AppSizeDisplay}"
                               IsEnabled="{Binding IsOn, ElementName=PlanningSwitch}">
 
@@ -603,7 +627,7 @@
                     
                     <Button Content="Enregistrer les modifications" 
             Click="SavePlanningChangesButton_Click"
-            Grid.Row="2"/>
+            Grid.Row="4"/>
 
 
                 </Grid>
@@ -625,6 +649,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                             <TextBlock Text="{StaticResource SecretaryMode}" 
                                        FontSize="{Binding AppSizeDisplay}"
@@ -642,7 +667,8 @@
                                               FontSize="{Binding AppSizeDisplay}" 
                                               Grid.Column="1" Grid.Row="1"
                                               IsOn= "{Binding DoctorMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        
+                       
+
                     </Grid>
                     
                     
