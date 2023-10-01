@@ -1381,6 +1381,32 @@ Class MainWindow
                 End Try
 
 
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+                    Dim targetPC As String = parts(0)
+                    Dim authorPC As String = parts(1)
+                    Dim Folder As String = parts(2)
+                    Dim FileName As String = parts(3)
+                    If targetPC = My.Settings.UniqueId Then
+                        logger.Debug("Réception d'un message SYS20 pour mise en réception de fichier.")
+                        If targetPC = My.Settings.UniqueId And authorPC <> My.Settings.UniqueId Then
+                            ' Mettre le client en réception de fichier
+                            Dim receiver As New FileReceiver()
+                            Dim savePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Folder, FileName)
+                            ' Remplacez par l'emplacement où vous souhaitez sauvegarder le fichier
+                            Dim port As Integer = 12345 ' Remplacez par le même port que celui utilisé pour l'envoi
+                            'SendMessage("SYS21" & authorPC & "|" & targetPC & "|" & Folder & "|" & FileName & "|" & port)
+
+                            receiver.ReceiveFile(savePath, port)
+                        End If
+                    End If
+
+                Catch ex As Exception
+                    logger.Error("Erreur lors de la mise en réception de fichier :  " & ex.Message)
+                End Try
+
+
 
             Case "MSG01"
 

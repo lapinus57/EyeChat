@@ -73,10 +73,20 @@
                                    Grid.Column="0" Grid.Row="3"
                                    FontSize="{Binding AppSizeDisplay}" Grid.ColumnSpan="2"/>
                         <ComboBox x:Name="cboAvatars"
-                                  Grid.Column="3" Grid.Row="3"
-                                  FontSize="{Binding AppSizeDisplay}">
-
+                                    Grid.Column="3" Grid.Row="3"
+                                    FontSize="{Binding AppSizeDisplay}"
+                                    SelectionChanged="cboAvatars_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding ImagePath}" Width="{Binding Width}" Height="{Binding Height}"/>
+                                        <TextBlock Text="{Binding Tag}" Margin="10,0,0,0" VerticalAlignment="Center" Foreground="White"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
                         </ComboBox>
+
+
                     </Grid>
 
 

@@ -10,13 +10,13 @@ Imports EyeChat.Planning
 Imports System.Collections.ObjectModel
 Imports System.Globalization
 Imports MaterialDesignThemes.Wpf
-
+Imports System.IO
+Imports Microsoft.Win32
+Imports MahApps.Metro.Controls.Dialogs
 
 Public Class SettingsWindows
 
     Private _settings As SettingsViewModel
-
-
 
     Public ReadOnly Property Settings As SettingsViewModel
         Get
@@ -48,9 +48,113 @@ Public Class SettingsWindows
         Dim settings As New SettingsViewModel()
         Me.DataContext = settings
 
+        LoadAvatars()
+
+
     End Sub
 
 
+
+    Public Sub LoadAvatars()
+        ' Obtenez le chemin du dossier contenant les avatars
+        Dim avatarFolder As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar")
+
+        ' Vérifiez si le dossier existe
+        If Directory.Exists(avatarFolder) Then
+            ' Effacez la ComboBox pour éviter d'ajouter des doublons si cette méthode est appelée à plusieurs reprises
+            cboAvatars.Items.Clear()
+
+            ' Obtenez la liste des fichiers d'images dans le dossier
+            Dim imageFiles() As String = Directory.GetFiles(avatarFolder, "*.png") ' Vous pouvez spécifier d'autres extensions d'image si nécessaire
+
+            ' Ajoutez un élément "Importer un avatar" à la ComboBox
+            ' Ajoutez un élément spécial pour importer un avatar
+            cboAvatars.Items.Add(New AvatarItem() With {
+                 .ImagePath = "", ' Laissez l'ImagePath vide pour cet élément
+                  .Width = 25,
+                  .Height = 25,
+                 .Tag = "Importer un avatar" ' Texte pour l'élément
+                })
+            ' Parcourez les fichiers et ajoutez-les à la ComboBox
+            For Each imagePath As String In imageFiles
+                Dim fileName As String = Path.GetFileName(imagePath)
+                cboAvatars.Items.Add(New AvatarItem() With {
+                .ImagePath = imagePath,
+                .Width = 25, ' Largeur souhaitée
+                .Height = 25, ' Hauteur souhaitée
+                .Tag = fileName ' Enregistrez le nom de fichier dans le Tag pour une utilisation ultérieure si nécessaire
+            })
+            Next
+        Else
+            ' Le dossier n'existe pas, affichez un message d'erreur ou gérez-le selon vos besoins
+        End If
+    End Sub
+
+
+    Private Sub cboAvatars_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+        Dim selectedItem As AvatarItem = TryCast(cboAvatars.SelectedItem, AvatarItem)
+
+        ' Vérifiez si l'utilisateur a sélectionné "Importer un avatar"
+        If selectedItem IsNot Nothing AndAlso selectedItem.Tag = "Importer un avatar" Then
+            ' Ici, vous pouvez déclencher une action d'importation d'avatar
+            ' par exemple, en affichant une boîte de dialogue pour sélectionner un fichier image
+            ' et en enregistrant cet avatar dans votre dossier d'avatar.
+            ' Configurez la boîte de dialogue
+            SelectImageFile()
+        End If
+    End Sub
+
+    Private Sub SelectImageFile()
+        ' Configurez la boîte de dialogue
+        Dim openFileDialog As New OpenFileDialog()
+        openFileDialog.Title = "Sélectionnez une image"
+        openFileDialog.Filter = "Fichiers d'image|*.png;*.jpg;*.jpeg;*.bmp;*.gif|Tous les fichiers|*.*"
+
+        ' Affichez la boîte de dialogue et attendez la sélection de l'utilisateur
+        Dim result As Boolean? = openFileDialog.ShowDialog()
+
+        ' Si l'utilisateur a sélectionné un fichier, affichez le chemin du fichier
+        If result = True Then
+            Dim selectedImagePath As String = openFileDialog.FileName
+
+            ' Chargez l'image pour obtenir ses dimensions en pixels
+            Dim image As New BitmapImage(New Uri(selectedImagePath))
+
+            ' Spécifiez les dimensions maximales autorisées (par exemple, largeur maximale de 800 pixels et hauteur maximale de 600 pixels)
+            Dim maxWidthPixels As Integer = 1000
+            Dim maxHeightPixels As Integer = 1000
+
+            If image.PixelWidth <= maxWidthPixels AndAlso image.PixelHeight <= maxHeightPixels Then
+                ' Obtenez le chemin de destination (le dossier "avatar" de votre application)
+                Dim destinationFolder As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar")
+
+                ' Assurez-vous que le dossier de destination existe, sinon, créez-le
+                If Not Directory.Exists(destinationFolder) Then
+                    Directory.CreateDirectory(destinationFolder)
+                End If
+
+                ' Obtenez le nom de fichier sans le chemin complet
+                Dim fileName As String = System.IO.Path.GetFileName(selectedImagePath)
+
+                ' Construisez le chemin complet de destination en combinant le dossier de destination avec le nom de fichier
+                Dim destinationPath As String = System.IO.Path.Combine(destinationFolder, fileName)
+
+                ' Copiez le fichier
+                File.Copy(selectedImagePath, destinationPath, True)
+
+                ' Videz la ComboBox et rechargez les avatars
+                cboAvatars.Items.Clear()
+                LoadAvatars()
+                ' Vous pouvez également utiliser MahApps.Metro DialogCoordinator pour afficher un message de confirmation.
+
+            Else
+                ' L'image est trop grande, affichez un message d'erreur ou gérez-le selon vos besoins
+                ' Vous pouvez également utiliser MahApps.Metro DialogCoordinator pour afficher un message de confirmation.
+
+            End If
+        End If
+
+    End Sub
 
     Private Sub ToggleSwitch_Toggled(sender As Object, e As RoutedEventArgs)
 
@@ -156,6 +260,13 @@ Public Class BoolToVisibilityConverter
 
 
 
+End Class
+
+Public Class AvatarItem
+    Public Property ImagePath As String
+    Public Property Width As Double
+    Public Property Height As Double
+    Public Property Tag As String
 End Class
 
 
