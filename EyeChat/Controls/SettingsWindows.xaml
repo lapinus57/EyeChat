@@ -123,6 +123,7 @@
                                    FontSize="{Binding AppSizeDisplay}" />
                         <mah:ColorPicker  DropDownClosed="ColorPicker_DropDownClosed"
                                           Grid.Column="2" Grid.Row="1"  
+                                          FontSize="{Binding AppSizeDisplay}" 
                                           SelectedColor="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                                
                         

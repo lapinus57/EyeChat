@@ -13,6 +13,7 @@
     <UserControl.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="Black"/>
         </Style>
 
         
