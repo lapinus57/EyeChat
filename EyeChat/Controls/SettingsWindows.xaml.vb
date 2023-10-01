@@ -9,6 +9,7 @@ Imports EyeChat.ExamOption
 Imports EyeChat.Planning
 Imports System.Collections.ObjectModel
 Imports System.Globalization
+Imports MaterialDesignThemes.Wpf
 
 
 Public Class SettingsWindows
@@ -61,28 +62,30 @@ Public Class SettingsWindows
         Dim editedItem As ExamOption = TryCast(e.Row.Item, ExamOption)
 
         If editedItem IsNot Nothing Then
-            ' Mettre à jour les données dans la collection _examOptions
-            ' en fonction des modifications apportées dans le DataGrid
-            Dim editedValue As String = TryCast((TryCast(e.EditingElement, TextBox))?.Text, String)
             If e.Column.Header.ToString() = "Name" Then
+                Dim editedValue As String = TryCast((TryCast(e.EditingElement, TextBox))?.Text, String)
                 editedItem.Name = editedValue
             ElseIf e.Column.Header.ToString() = "Color" Then
-                editedItem.Color = editedValue
-
+                ' Accédez à la propriété "SelectedColor" du ColorPicker
+                Dim colorPicker As MahApps.Metro.Controls.ColorPicker = TryCast(e.EditingElement, MahApps.Metro.Controls.ColorPicker)
+                If colorPicker IsNot Nothing Then
+                    editedItem.Color = colorPicker.SelectedColor.ToString()
+                End If
             End If
 
-            ' Sauvegarder les modifications dans le fichier JSON
+            ' Sauvegardez les modifications dans le fichier JSON
             Dim examOptionList As List(Of ExamOption) = ExamDataGrid.ItemsSource.Cast(Of ExamOption)().ToList()
             Dim examOptionCollection As New ObservableCollection(Of ExamOption)(examOptionList)
 
             SaveExamOptionsToJson(examOptionCollection)
         End If
     End Sub
+
     Private Sub SaveExamChangesButton_Click(sender As Object, e As RoutedEventArgs)
         Dim examOptionList As List(Of ExamOption) = ExamDataGrid.ItemsSource.Cast(Of ExamOption)().ToList()
         Dim examOptionCollection As New ObservableCollection(Of ExamOption)(examOptionList)
-
         SaveExamOptionsToJson(examOptionCollection)
+        loadExamOption()
     End Sub
 
     Private Sub SavePlanningChangesButton_Click(sender As Object, e As RoutedEventArgs)
@@ -127,14 +130,6 @@ Public Class SettingsWindows
         Dim SpeedMessageCollection As New ObservableCollection(Of SpeedMessage)(SpeedMessageList)
 
         SaveSpeedMessageToJson(SpeedMessageCollection)
-    End Sub
-
-    Private Sub Button_Click(sender As Object, e As RoutedEventArgs)
-
-    End Sub
-
-    Private Sub ColorPicker_SelectedColorChanged(ByVal sender As Object, ByVal e As RoutedPropertyChangedEventArgs(Of System.Windows.Media.Color?))
-
     End Sub
 
     Private Sub ColorPicker_DropDownClosed(sender As Object, e As EventArgs)

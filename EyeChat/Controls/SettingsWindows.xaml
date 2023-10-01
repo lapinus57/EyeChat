@@ -61,7 +61,7 @@
                         <TextBox Text="{Binding WindowsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  Grid.Column="2" Grid.Row="1"
                                  FontSize="{Binding AppSizeDisplay}"
-                                 IsReadOnly="True"/>
+                                 IsReadOnly="False"/>
                         <TextBlock Text="{StaticResource UserNameLabel}" 
                                    Grid.Column="0" Grid.Row="2" 
                                    FontSize="{Binding AppSizeDisplay}"/>
@@ -456,13 +456,19 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="N°" Binding="{Binding index}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                                <DataGridTextColumn Header="Color" Binding="{Binding Color}" />
+                                <DataGridTemplateColumn Header="Color">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <mah:ColorPicker x:Name="ColorExam" SelectedColor="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="CodeMSG" Binding="{Binding CodeMSG}" />
                                 <DataGridTextColumn Header="Annotation" Binding="{Binding Annotation}" />
                                 <DataGridTextColumn Header="Etage" Binding="{Binding Floor}" />
                             </DataGrid.Columns>
                         </DataGrid>
-                        
+
                         <Button Content="Enregistrer les modifications" 
                                 Click="SaveExamChangesButton_Click"
                                 Grid.Row="2"/>

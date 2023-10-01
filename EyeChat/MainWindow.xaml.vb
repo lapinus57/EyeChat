@@ -48,7 +48,9 @@ Class MainWindow
     Public Shared Property Patients1er As ObservableCollection(Of Patient)
     'liste de tous les patients
     Public Shared Property PatientsALL As ObservableCollection(Of Patient)
-    Public Property ExamOptions As New List(Of ExamOption)()
+    Public Shared Property ExamOptions As New List(Of ExamOption)()
+
+    Public Shared Property speedMessages As New List(Of SpeedMessage)()
 
     Public Shared Property Plannings As New ObservableCollection(Of Planning)()
     Public Shared Property Messages As ObservableCollection(Of Message)
@@ -555,15 +557,16 @@ Class MainWindow
         jsonData = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "dataphrases.json"))
         phrasesData = JsonConvert.DeserializeObject(Of EggPhrasesData)(jsonData)
 
-        Dim json As String = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "examOptions.json"))
-        ExamOptions = JsonConvert.DeserializeObject(Of List(Of ExamOption))(json)
+
+        'Charge les options d'examen à partir du fichier JSON
+        loadExamOption()
+
 
         MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(My.Settings.AppSizeDisplay))
 
 
         ' Charger les messages à partir du fichier JSON
-        json = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "SpeedMessage.json"))
-        Dim speedMessages As List(Of SpeedMessage) = JsonConvert.DeserializeObject(Of List(Of SpeedMessage))(json)
+        loadSpeedMessage()
 
         ' Créer un ContextMenu pour la TextBox
         Dim contextMenu As New ContextMenu()
@@ -579,7 +582,6 @@ Class MainWindow
 
         ' Affecter le ContextMenu à la TextBox
         SendTextBox.ContextMenu = contextMenu
-
 
 
 
@@ -2424,6 +2426,18 @@ Class MainWindow
         End Try
 
     End Sub
+
+    Public Shared Sub loadExamOption()
+        Dim json As String = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "examOptions.json"))
+        ExamOptions = JsonConvert.DeserializeObject(Of List(Of ExamOption))(json)
+    End Sub
+
+    Public Shared Sub loadSpeedMessage()
+        Dim json As String = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "SpeedMessage.json"))
+        speedMessages = JsonConvert.DeserializeObject(Of List(Of SpeedMessage))(json)
+
+    End Sub
+
 
     Public Shared Function GetLocalIPAddress() As IPAddress
         logger.Info("Obtention de l'adresse IP locale")
