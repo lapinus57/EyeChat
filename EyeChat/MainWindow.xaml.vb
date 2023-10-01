@@ -27,6 +27,8 @@ Imports System.Net.NetworkInformation
 Imports EyeChat.Computer
 Imports EyeChat.Planning
 Imports System.Windows.Threading
+Imports System.Random
+
 
 Public Class EggPhrasesData
     Public Property MarvinPhrases As List(Of String)
@@ -69,8 +71,7 @@ Class MainWindow
     Private receivingClient As UdpClient
     Public Shared sendingClient As UdpClient
     Private receivingThread As Thread
-
-    Private Shared ReadOnly SuggestionValues As String() = {"/DEBUG", "/ENDDEBUG", "/LSTCOMPUTER", "/DISPCOMPUTER", "TEST"}
+    Private Shared ReadOnly SuggestionValues As String() = {"/DEBUG", "/ENDDEBUG", "/LSTCOMPUTER", "/DISPCOMPUTER", "/TESTPATIENT", "/TESTSENDFILE", "/TESTMARVIN"}
 
     Dim jsonData As String
     Dim phrasesData As EggPhrasesData
@@ -1047,16 +1048,37 @@ Class MainWindow
                             ' Ajouter l'utilisateur s'il n'existe pas
                             Addusers(UserName)
                             userToUpdate = Users.FirstOrDefault(Function(user) user.Name = UserName)
+                            Try
+                                Dim localIPAddress As IPAddress = GetLocalIPAddress()
+                                SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
+                                logger.Debug("Envoi de l'ID du PC aux autres applications")
+                            Catch ex As Exception
+                                logger.Error("Erreur lors de l'envoi de l'ID du PC aux autres applications : " & ex.Message)
+                            End Try
                         End If
 
                         If userToUpdate.Status = "Offline" Then
                             ' Mettre à jour le statut de l'utilisateur
                             userToUpdate.Status = IdentifiantPC
                             logger.Error("Utilisateur mis à jour avec un seul identifiant")
+                            Try
+                                Dim localIPAddress As IPAddress = GetLocalIPAddress()
+                                SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
+                                logger.Debug("Envoi de l'ID du PC aux autres applications")
+                            Catch ex As Exception
+                                logger.Error("Erreur lors de l'envoi de l'ID du PC aux autres applications : " & ex.Message)
+                            End Try
                         ElseIf Not userToUpdate.Status.Contains(IdentifiantPC) Then
                             ' Mettre à jour le statut de l'utilisateur avec un nouveau poste
                             userToUpdate.Status += " | " & IdentifiantPC
                             logger.Error("Utilisateur mis à jour avec plusieurs postes")
+                            Try
+                                Dim localIPAddress As IPAddress = GetLocalIPAddress()
+                                SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
+                                logger.Debug("Envoi de l'ID du PC aux autres applications")
+                            Catch ex As Exception
+                                logger.Error("Erreur lors de l'envoi de l'ID du PC aux autres applications : " & ex.Message)
+                            End Try
                         Else
                             logger.Error("Rien à faire, utilisateur déjà mis à jour")
                             Exit Sub ' Éviter la boucle infinie
@@ -1075,6 +1097,8 @@ Class MainWindow
                 Catch ex As Exception
                     ' Gérer l'exception liée au traitement du message d'ajout d'utilisateur
                 End Try
+
+
 
             Case "USR02"
                 ' Déconnexion d'un utilisateur
@@ -1327,6 +1351,35 @@ Class MainWindow
                     logger.Error("Erreur lors de la déconnexion à distance : " & ex.Message)
                 End Try
 
+            Case "SYS20"
+                'code pour mettre le client en reception de fichier
+                'Exemple du message envoyé : "SYS20ComputerID(cible)|ComputerID(auteur)|Folder|FileName"
+
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+                    Dim targetPC As String = parts(0)
+                    Dim authorPC As String = parts(1)
+                    Dim Folder As String = parts(2)
+                    Dim FileName As String = parts(3)
+                    If targetPC = My.Settings.UniqueId Then
+                        logger.Debug("Réception d'un message SYS20 pour mise en réception de fichier.")
+                        If targetPC = My.Settings.UniqueId And authorPC <> My.Settings.UniqueId Then
+                            ' Mettre le client en réception de fichier
+                            Dim receiver As New FileReceiver()
+                            Dim savePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Folder, FileName)
+                            ' Remplacez par l'emplacement où vous souhaitez sauvegarder le fichier
+                            Dim port As Integer = 12345 ' Remplacez par le même port que celui utilisé pour l'envoi
+                            'SendMessage("SYS21" & authorPC & "|" & targetPC & "|" & Folder & "|" & FileName & "|" & port)
+
+                            receiver.ReceiveFile(savePath, port)
+                        End If
+                    End If
+
+                Catch ex As Exception
+                    logger.Error("Erreur lors de la mise en réception de fichier :  " & ex.Message)
+                End Try
+
 
 
             Case "MSG01"
@@ -1439,12 +1492,12 @@ Class MainWindow
                     Dim ComputerID As String = parts(0)
                     Dim ComputerUser As String = parts(1)
                     Dim ComputerIP As String = parts(2)
-
                     If Not Computers.Any(Function(c) c.ComputerID = ComputerID) Then
                         Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIp = ComputerIP})
-                        SaveComputersToJson() ' Sauvegarder la liste mise à jour dans le fichier JSON
+
                         logger.Debug("Ajout d'un PC à la liste des PC : " & ComputerID)
                     End If
+                    SaveComputersToJson() ' Sauvegarder la liste mise à jour dans le fichier JSON
                 Catch ex As Exception
                     logger.Error("Erreur lors de la réception de l'ID des autres PC : " & ex.Message)
                 End Try
@@ -1681,13 +1734,32 @@ Class MainWindow
 
                     Case "/TESTPATIENT"
 
-                        SendMessage("PTN01Mr|MULLER|Benoit|FO|ODG |RDC|System|2023-09-29T19:24:03.748")
-                        SendMessage("PTN01Mr|MULLER|Benoit|SK|ODG |RDC|System|2023-09-29T19:24:03.748")
-                        SendMessage("PTN01Mr|MULLER|Benoit|AT|ODG |RDC|System|2023-09-29T19:24:03.748")
-                        SendMessage("PTN01Mr|MULLER|Benoit|AT-SK|ODG |RDC|System|2023-09-29T19:24:03.748")
-                        SendMessage("PTN01Mr|MULLER|Benoit|AT-FO|ODG |RDC|System|2023-09-29T19:24:03.748")
-                        SendMessage("PTN01Mr|MULLER|Benoit|AT-CV|ODG |RDC|System|2023-09-29T19:24:03.748")
+                        ' Liste de prénoms, noms et titres
+                        Dim testprenoms As String() = {"Jean", "Marie", "Claire", "Pierre", "Sophie"}
+                        Dim testnoms As String() = {"Dubois", "Martin", "Lefebvre", "Dupont", "Moreau"}
 
+                        ' Identificateur et autres informations communes
+                        Dim identifier As String = "PTN01Iel"
+                        Dim other_info As String = $"RDC|System|{DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")}"
+
+                        ' Créer une instance de Random
+                        Dim random As New Random()
+
+                        ' Boucle pour envoyer les messages avec différents codes
+                        For Each optioncode As ExamOption In ExamOptions
+                            Dim code As String = optioncode.Name
+                            Dim testprenom As String = testprenoms(random.Next(testprenoms.Length))
+                            Dim testnom As String = testnoms(random.Next(testnoms.Length))
+                            Dim annotation As String = "ODG " & optioncode.Annotation
+                            Dim message As String = $"{identifier}|{testnom}|{testprenom}|{code}|{annotation}|{other_info}"
+                            SendMessage(message)
+
+                        Next
+
+                    Case "/TESTSENDFILE"
+
+                        CreateTextFile("Core", "test.txt", "fichier test")
+                        SendFileOverNetwork("Core", "test.txt")
 
                     Case "/TESTMARVIN"
                         ' Créer une instance de la classe Random
@@ -1845,6 +1917,7 @@ Class MainWindow
             End Try
 
         End If
+        Return Task.CompletedTask
     End Function
 
 #End Region
@@ -1885,6 +1958,8 @@ Class MainWindow
 
 
     Private Function ConnectionButon_Click(sender As Object, e As RoutedEventArgs) As Task
+
+
 
 
         'If ConnectionButon.Content = "Connection" Then
@@ -1980,6 +2055,48 @@ Class MainWindow
             End If
         End Set
     End Property
+
+#Region "Envoie de fichier"
+
+    Public Shared Sub SendFileOverNetwork(folder As String, fileToSend As String, Optional user As String = "")
+        ' Vérifie si un utilisateur a été spécifié
+        If String.IsNullOrEmpty(user) Then
+            ' Aucun utilisateur spécifié, envoyez le message à tous les ordinateurs répertoriés
+            For Each computer In Computers
+                ' Assurez-vous de ne pas vous envoyer un message à vous-même
+                If computer.ComputerID <> My.Settings.UniqueId Then
+                    Dim message As String = $"SYS20{computer.ComputerID}|{My.Settings.UniqueId}|{folder}|{fileToSend}"
+                    ' Envoyer le message
+                    SendMessage(message)
+                    ' Envoyer le fichier à l'ordinateur actuel
+                    Dim senderFile As New FileSender()
+                    Dim filePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", fileToSend)
+                    Dim ipAddress As String = computer.ComputerIp ' Remplacez par l'adresse IP du destinataire
+                    Dim port As Integer = 12345 ' Remplacez par le port que vous souhaitez utiliser
+                    senderFile.SendFile(filePath, ipAddress, port)
+                End If
+            Next
+        Else
+            ' Un utilisateur a été spécifié, envoyez le message uniquement à cet utilisateur
+            Dim targetComputer As Computer = Computers.FirstOrDefault(Function(comp) comp.ComputerUser = user)
+            If targetComputer IsNot Nothing Then
+                Dim message As String = $"SYS20{targetComputer.ComputerID}|{My.Settings.UniqueId}|{folder}|{fileToSend}"
+                ' Envoyer le message à l'utilisateur spécifié
+                SendMessage(message)
+                ' Envoyer le fichier à l'utilisateur spécifié
+                Dim senderFile As New FileSender()
+                Dim filePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", fileToSend)
+                Dim ipAddress As String = targetComputer.ComputerIp ' Remplacez par l'adresse IP du destinataire
+                Dim port As Integer = 12345 ' Remplacez par le port que vous souhaitez utiliser
+                senderFile.SendFile(filePath, ipAddress, port)
+            Else
+                ' Gérer le cas où l'utilisateur spécifié n'existe pas
+                MessageBox.Show("L'utilisateur spécifié n'existe pas.")
+            End If
+        End If
+    End Sub
+
+#End Region
 
 #Region "Gestion boite de dialogue d'ajout d'un patint"
 
@@ -2424,6 +2541,15 @@ Class MainWindow
         Catch ex As Exception
             logger.Error("Erreur lors de la creation du dossier Users")
         End Try
+
+    End Sub
+
+    Public Sub CreateTextFile(ByVal Folder As String, ByVal FileName As String, ByVal content As String)
+        ' Chemin du fichier que vous souhaitez créer
+        Dim filePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Folder, FileName)
+
+        ' Créez le fichier et écrivez le contenu
+        File.WriteAllText(filePath, content)
 
     End Sub
 

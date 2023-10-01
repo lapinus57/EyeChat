@@ -122,7 +122,7 @@
       <HintPath>..\packages\log4net.2.0.15\lib\net45\log4net.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=2.0.0.0, Culture=neutral, PublicKeyToken=51482d6f650b2b3f, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.2.4.9\lib\net47\MahApps.Metro.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.2.4.10\lib\net47\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro.IconPacks.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0c0d510f9915137a, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.Modern.4.11.0\lib\net47\MahApps.Metro.IconPacks.Core.dll</HintPath>
@@ -148,8 +148,8 @@
     <Reference Include="NuGet.Versioning, Version=6.7.0.127, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\NuGet.Versioning.6.7.0\lib\net472\NuGet.Versioning.dll</HintPath>
     </Reference>
-    <Reference Include="Octokit, Version=6.0.0.0, Culture=neutral, PublicKeyToken=0be8860aee462442, processorArchitecture=MSIL">
-      <HintPath>..\packages\Octokit.6.0.0\lib\netstandard2.0\Octokit.dll</HintPath>
+    <Reference Include="Octokit, Version=8.0.1.0, Culture=neutral, PublicKeyToken=0be8860aee462442, processorArchitecture=MSIL">
+      <HintPath>..\packages\Octokit.8.0.1\lib\netstandard2.0\Octokit.dll</HintPath>
     </Reference>
     <Reference Include="Stfu, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stfu.0.1.1\lib\net40\Stfu.dll</HintPath>

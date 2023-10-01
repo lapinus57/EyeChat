@@ -11,16 +11,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="1000">
 
-  
-    
+
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Dictionary/DictionarySettingsWindows.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-           
+
         </ResourceDictionary>
-       
+
     </UserControl.Resources>
 
 
@@ -38,6 +38,7 @@
 
                     <Grid Margin="10,0">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0"/>
                             <ColumnDefinition Width="300"/>
                             <ColumnDefinition Width="300"/>
                             <ColumnDefinition />
@@ -50,35 +51,35 @@
                         </Grid.RowDefinitions>
                         <TextBlock Text="{StaticResource ComputerNameLabel}" 
                                    FontSize="{Binding AppSizeDisplay}"
-                                   Grid.Column="0" Grid.Row="0"/>
+                                   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"/>
                         <TextBox Text="{Binding ComputerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 Grid.Column="2" Grid.Row="0"
+                                 Grid.Column="3" Grid.Row="0"
                                  FontSize="{Binding AppSizeDisplay}"
                                  IsReadOnly="True"/>
                         <TextBlock Text="{StaticResource WindowsNameLabel}" 
                                    Grid.Column="0" Grid.Row="1" 
-                                   FontSize="{Binding AppSizeDisplay}"/>
+                                   FontSize="{Binding AppSizeDisplay}" Grid.ColumnSpan="2"/>
                         <TextBox Text="{Binding WindowsName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 Grid.Column="2" Grid.Row="1"
+                                 Grid.Column="3" Grid.Row="1"
                                  FontSize="{Binding AppSizeDisplay}"
                                  IsReadOnly="False"/>
                         <TextBlock Text="{StaticResource UserNameLabel}" 
                                    Grid.Column="0" Grid.Row="2" 
-                                   FontSize="{Binding AppSizeDisplay}"/>
+                                   FontSize="{Binding AppSizeDisplay}" Grid.ColumnSpan="2"/>
                         <TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 Grid.Column="2" Grid.Row="2"
+                                 Grid.Column="3" Grid.Row="2"
                                  FontSize="{Binding AppSizeDisplay}"/>
                         <TextBlock Text="{StaticResource AvatarLabel}" 
                                    Grid.Column="0" Grid.Row="3"
-                                   FontSize="{Binding AppSizeDisplay}"/>
+                                   FontSize="{Binding AppSizeDisplay}" Grid.ColumnSpan="2"/>
                         <ComboBox x:Name="cboAvatars"
                                   Grid.Column="3" Grid.Row="3"
                                   FontSize="{Binding AppSizeDisplay}">
-                            
+
                         </ComboBox>
                     </Grid>
-                    
-                    
+
+
 
 
                 </Expander.Content>
@@ -117,16 +118,23 @@
                             <ComboBoxItem Content="Sombre" />
                         </ComboBox>
 
-                        
+
                         <TextBlock Text="{StaticResource AppColorLabel}" 
                                    Grid.Column="0" Grid.Row="1" 
                                    FontSize="{Binding AppSizeDisplay}" />
                         <mah:ColorPicker  DropDownClosed="ColorPicker_DropDownClosed"
                                           Grid.Column="2" Grid.Row="1"  
                                           FontSize="{Binding AppSizeDisplay}" 
+                                          LabelColorPreview="Aperçu"
+                                          LabelColorName="Nom"
+                                          ColorPalettesTabHeader="Simple"
+                                          AdvancedTabHeader="Avancée"
+                                          StandardColorPaletteHeader="Standard"
+                                          AvailableColorPaletteHeader="Couleur disponible"
+                                          RecentColorPaletteHeader="Couleur récente"                     
                                           SelectedColor="{Binding AppColorString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                               
-                        
+
+
                         <TextBlock Text="{StaticResource AppSizeLabel}" 
                                    Grid.Column="0" Grid.Row="2"
                                    FontSize="{Binding AppSizeDisplay}"/>
@@ -146,13 +154,13 @@
 
                             </ComboBox.Items>
                         </ComboBox>
-                        
-                        
-                     
+
+
+
 
                     </Grid>
 
-                        
+
 
 
                 </Expander.Content>
@@ -217,8 +225,8 @@
                                       SelectedValue="{Binding CtrlF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=CtrlF9Switch}"
                                       FontSize="{Binding AppSizeDisplay}" />
-                            
-                            
+
+
                             <TextBlock Text="Ctrl + F10"  
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="1" 
@@ -246,8 +254,8 @@
                                       SelectedValue="{Binding CtrlF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=CtrlF10Switch}"
                                       FontSize="{Binding AppSizeDisplay}"/>
-                            
-                            
+
+
                             <TextBlock Text="Ctrl + F11" 
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="2" 
@@ -275,8 +283,8 @@
                                       SelectedValue="{Binding CtrlF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=CtrlF11Switch}"
                                       FontSize="{Binding AppSizeDisplay}"/>
-                            
-                            
+
+
                             <TextBlock Text="Ctrl + F12"
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="3" 
@@ -304,8 +312,8 @@
                                       SelectedValue="{Binding CtrlF12, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=CtrlF12Switch}"
                                       FontSize="{Binding AppSizeDisplay}"/>
-                            
-                            
+
+
                             <TextBlock Text="Shift + F9"
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="4" 
@@ -333,8 +341,8 @@
                                       SelectedValue="{Binding ShiftF9, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=ShiftF9Switch}"
                                       FontSize="{Binding AppSizeDisplay}"/>
-                            
-                            
+
+
                             <TextBlock Text="Shift + F10" 
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="5" 
@@ -362,8 +370,8 @@
                                       SelectedValue="{Binding ShiftF10, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=ShiftF10Switch}"
                                       FontSize="{Binding AppSizeDisplay}"/>
-                            
-                            
+
+
                             <TextBlock Text="Shift + F11" 
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="6" 
@@ -391,8 +399,8 @@
                                       SelectedValue="{Binding ShiftF11, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsEnabled="{Binding IsOn, ElementName=ShiftF11Switch}"
                                       FontSize="{Binding AppSizeDisplay}"/>
-                            
-                            
+
+
                             <TextBlock Text="Shift + F12" 
                                        FontSize="{Binding AppSizeDisplay}" 
                                        Grid.Column="0" Grid.Row="7" 
@@ -460,7 +468,15 @@
                                 <DataGridTemplateColumn Header="Color">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <mah:ColorPicker x:Name="ColorExam" SelectedColor="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <mah:ColorPicker x:Name="ColorExam" SelectedColor="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             FontSize="{Binding AppSizeDisplay}" 
+                                                             LabelColorPreview="Aperçu"
+                                                             LabelColorName="Nom"
+                                                             ColorPalettesTabHeader="Simple"
+                                                             AdvancedTabHeader="Avancée"
+                                                             StandardColorPaletteHeader="Standard"
+                                                             AvailableColorPaletteHeader="Couleur disponible"
+                                                            RecentColorPaletteHeader="Couleur récente"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -475,10 +491,10 @@
                                 Grid.Row="2"/>
 
                     </Grid>
-                    
-                        
-                        
-                    
+
+
+
+
                 </Expander.Content>
             </Expander>
 
@@ -534,7 +550,7 @@
                 </Expander.Content>
             </Expander>
 
-            
+
             <Expander>
                 <Expander.Header>
                     <TextBlock Text="Planning" 
@@ -549,7 +565,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    
+
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="300"/>
@@ -601,7 +617,7 @@
                                  FontSize="{Binding AppSizeDisplay}"/>
 
                     </Grid>
-                    
+
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="300"/>
@@ -631,14 +647,14 @@
                             <DataGridTextColumn Header="Utilisateur" Binding="{Binding User}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    
+
                     <Button Content="Enregistrer les modifications" 
             Click="SavePlanningChangesButton_Click"
             Grid.Row="4"/>
 
 
                 </Grid>
-                
+
             </Expander>
 
             <Expander>
@@ -658,27 +674,27 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                            <TextBlock Text="{StaticResource SecretaryMode}" 
+                        <TextBlock Text="{StaticResource SecretaryMode}" 
                                        FontSize="{Binding AppSizeDisplay}"
                                        Grid.Column="0" Grid.Row="0"/>
-                            <mah:ToggleSwitch OffContent="Désactivé" 
+                        <mah:ToggleSwitch OffContent="Désactivé" 
                                               OnContent="Activé" 
                                               FontSize="{Binding AppSizeDisplay}"
                                               Grid.Column="1" Grid.Row="0"
                                               IsOn= "{Binding SecretaryMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Text="{StaticResource DoctorMode}" 
+                        <TextBlock Text="{StaticResource DoctorMode}" 
                                        FontSize="{Binding AppSizeDisplay}"
                                        Grid.Column="0" Grid.Row="1"/>
-                            <mah:ToggleSwitch OffContent="Désactivé" 
+                        <mah:ToggleSwitch OffContent="Désactivé" 
                                               OnContent="Activé" 
                                               FontSize="{Binding AppSizeDisplay}" 
                                               Grid.Column="1" Grid.Row="1"
                                               IsOn= "{Binding DoctorMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                       
+
 
                     </Grid>
-                    
-                    
+
+
 
 
                 </Expander.Content>
