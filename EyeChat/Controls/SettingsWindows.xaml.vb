@@ -78,6 +78,7 @@ Public Class SettingsWindows
             Dim examOptionCollection As New ObservableCollection(Of ExamOption)(examOptionList)
 
             SaveExamOptionsToJson(examOptionCollection)
+
         End If
     End Sub
 
@@ -85,6 +86,7 @@ Public Class SettingsWindows
         Dim examOptionList As List(Of ExamOption) = ExamDataGrid.ItemsSource.Cast(Of ExamOption)().ToList()
         Dim examOptionCollection As New ObservableCollection(Of ExamOption)(examOptionList)
         SaveExamOptionsToJson(examOptionCollection)
+        SendFileOverNetwork("Core", "examOptions.json")
         loadExamOption()
     End Sub
 
