@@ -750,7 +750,7 @@ Class MainWindow
     ' Méthode pour ajouter un nouveau message
     Public Sub AddMessage(ByVal name As String, ByVal sender As String, ByVal room As String, ByVal content As String, ByVal isAlignedRight As Boolean, ByVal avatar As String)
         If Messages IsNot Nothing Then
-            Messages.Add(New Message With {.Name = name, .Sender = sender, .Room = room, .Content = content, .IsAlignedRight = isAlignedRight, .Timestamp = DateTime.Now, .Avatar = avatar})
+            Messages.Add(New Message With {.name = name, .sender = sender, .room = room, .content = content, .isAlignedRight = isAlignedRight, .Timestamp = DateTime.Now, .avatar = avatar})
             SaveMessagesToJson(Messages)
         End If
     End Sub
@@ -1381,6 +1381,32 @@ Class MainWindow
                 End Try
 
 
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+                    Dim targetPC As String = parts(0)
+                    Dim authorPC As String = parts(1)
+                    Dim Folder As String = parts(2)
+                    Dim FileName As String = parts(3)
+                    If targetPC = My.Settings.UniqueId Then
+                        logger.Debug("Réception d'un message SYS20 pour mise en réception de fichier.")
+                        If targetPC = My.Settings.UniqueId And authorPC <> My.Settings.UniqueId Then
+                            ' Mettre le client en réception de fichier
+                            Dim receiver As New FileReceiver()
+                            Dim savePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Folder, FileName)
+                            ' Remplacez par l'emplacement où vous souhaitez sauvegarder le fichier
+                            Dim port As Integer = 12345 ' Remplacez par le même port que celui utilisé pour l'envoi
+                            'SendMessage("SYS21" & authorPC & "|" & targetPC & "|" & Folder & "|" & FileName & "|" & port)
+
+                            receiver.ReceiveFile(savePath, port)
+                        End If
+                    End If
+
+                Catch ex As Exception
+                    logger.Error("Erreur lors de la mise en réception de fichier :  " & ex.Message)
+                End Try
+
+
 
             Case "MSG01"
 
@@ -1493,7 +1519,7 @@ Class MainWindow
                     Dim ComputerUser As String = parts(1)
                     Dim ComputerIP As String = parts(2)
                     If Not Computers.Any(Function(c) c.ComputerID = ComputerID) Then
-                        Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIp = ComputerIP})
+                        Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIP = ComputerIP})
 
                         logger.Debug("Ajout d'un PC à la liste des PC : " & ComputerID)
                     End If
