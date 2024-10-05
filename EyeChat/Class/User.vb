@@ -18,6 +18,15 @@ Public Class User
 
     <JsonProperty("AuxiliaireTilte")>
     Public Property AuxiliaireTilte As String
+
+    <JsonProperty("initials")>
+    Public Property Initials As String
+
+    <JsonProperty("UUID")>
+    Public Property UUID As String
+
+
+
     Public Sub New()
         ' Par défaut, définir un avatar vide
         'Avatar = String.Empty
@@ -26,6 +35,8 @@ Public Class User
         AuxiliaireTilte = String.Empty
         ' Par défaut, définir un status offline
         Status = "Offline"
+        Initials = String.Empty
+        UUID = String.Empty
     End Sub
 
     Public Shared Function LoadUsersFromJson(Optional userNameToExclude As String = Nothing) As ObservableCollection(Of User)
@@ -66,7 +77,7 @@ Public Class User
             Directory.CreateDirectory(dossier)
         End If
 
-        Dim serializedUsers As String = "[" & String.Join("," & Environment.NewLine, Users.Select(Function(m) JsonConvert.SerializeObject(New With {m.Name, m.AuxiliaireTilte, m.Status, m.Avatar}))) & "]"
+        Dim serializedUsers As String = "[" & String.Join("," & Environment.NewLine, Users.Select(Function(m) JsonConvert.SerializeObject(New With {m.Name, m.AuxiliaireTilte, m.Status, m.Avatar, m.Initials, m.UUID}))) & "]"
         File.WriteAllText(UsersFilePath, serializedUsers)
 
     End Sub

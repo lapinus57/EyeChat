@@ -1,6 +1,5 @@
 ﻿Imports System.ComponentModel
 Imports EyeChat.MainWindow
-Imports Newtonsoft.Json
 Imports EyeChat.User
 
 Public Class UsersBubbleCtrl

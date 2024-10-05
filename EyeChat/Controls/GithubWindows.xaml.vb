@@ -1,17 +1,8 @@
 ﻿
 Imports System.Net.Http
-Imports System.Reflection
 Imports System.Text
-Imports Newtonsoft.Json.Linq
-Imports MahApps.Metro.Controls
 Imports MahApps.Metro.Controls.Dialogs
-Imports Octokit
-Imports System.Threading.Tasks
-Imports System.Xml
-Imports System.Windows.Forms
-Imports EyeChat.GitHubViewModel
-Imports MahApps.Metro
-Imports MahApps.Metro.IconPacks
+Imports Newtonsoft.Json.Linq
 
 Public Class GithubWindows
 
@@ -103,21 +94,21 @@ Public Class GithubWindows
         If Not String.IsNullOrWhiteSpace(descriptionText) Then
 
 
-                ' Utiliser la catégorie sélectionnée pour prendre des mesures appropriées
-                Select Case selectedCategory
-                    Case "problem"
-                        ' Traiter le problème signalé
-                        Await CreateGitHubIssueAsync(My.Settings.UserName & " a rencontré un problème", descriptionText)
+            ' Utiliser la catégorie sélectionnée pour prendre des mesures appropriées
+            Select Case selectedCategory
+                Case "problem"
+                    ' Traiter le problème signalé
+                    Await CreateGitHubIssueAsync(My.Settings.UserName & " a rencontré un problème", descriptionText)
 
                 Case "idea"
-                        ' Traiter l'idée proposée
-                        Await CreateGitHubIssueAsync(My.Settings.UserName & " a une idée", descriptionText)
+                    ' Traiter l'idée proposée
+                    Await CreateGitHubIssueAsync(My.Settings.UserName & " a une idée", descriptionText)
 
                 Case Else
-                        ' Catégorie non reconnue
-                        ' Gérer le cas où la catégorie n'est pas reconnue
-                End Select
-            Else
+                    ' Catégorie non reconnue
+                    ' Gérer le cas où la catégorie n'est pas reconnue
+            End Select
+        Else
             ' Le DescriptionTextBox est vide ou ne contient que des espaces
             ' Afficher un message d'erreur ou prendre une autre action appropriée
 

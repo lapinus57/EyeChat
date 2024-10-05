@@ -1,7 +1,7 @@
-﻿Imports Newtonsoft.Json
+﻿Imports System.Collections.ObjectModel
 Imports System.IO
-Imports System.Collections.ObjectModel
 Imports EyeChat.MainWindow
+Imports Newtonsoft.Json
 Public Class Computer
 
     Public Property ComputerID As String

@@ -1,9 +1,6 @@
-﻿Imports System
-Imports System.Globalization
-Imports System.Reflection
+﻿Imports System.Reflection
 Imports System.Resources
 Imports System.Runtime.InteropServices
-Imports System.Windows
 
 ' Les informations générales relatives à un assembly dépendent de
 ' l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations

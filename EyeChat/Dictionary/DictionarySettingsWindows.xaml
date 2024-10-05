@@ -22,13 +22,27 @@
     
     <system:String x:Key="SecretaryMode">Mode Secrétaire :</system:String>
     <system:String x:Key="DoctorMode">Mode Médecin :</system:String>
+    <system:String x:Key="OrthoMode">Mode Orthoptiste :</system:String>
+    <system:String x:Key="AdvanvedMode">Mode Avancé :</system:String>
+    <system:String x:Key="NFCMode">Mode NFC :</system:String>
+    <system:String x:Key="AdminMode">Mode Administrateur :</system:String>
+
+    <system:String x:Key="OffContent">Désactivé</system:String>
+    <system:String x:Key="OnContent">Activé</system:String>
+
 
     <system:String x:Key="ExamHeaderLabel">Liste d'examens</system:String>
 
 
 
     <system:String x:Key="SpeedMessageHeaderLabel">Messages rapide</system:String>
-    
+
+
+    <system:String x:Key="PageREFRACTION">REFRACTION</system:String>
+    <system:String x:Key="PageLENTILLES">LENTILLES</system:String>
+    <system:String x:Key="PagePATHOLOGIES">PATHOLOGIES</system:String>
+    <system:String x:Key="PageORTHOPTIE">ORTHOPTIE</system:String>
+    <system:String x:Key="PageTRAITEMENT">TRAITEMENT</system:String>
 
 
 </ResourceDictionary>

@@ -1,5 +1,4 @@
 ﻿Imports log4net.Config
-Imports log4net
 Class Application
 
     ' Les événements de niveau application, par exemple Startup, Exit et DispatcherUnhandledException

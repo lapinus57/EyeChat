@@ -32,6 +32,7 @@
             <mah:Flyout Header="Paramètres" 
                         IsOpen="{Binding ElementName=ToggleButtonOpenSettings, Path=IsChecked, Mode=TwoWay}" 
                         Position="Right" 
+                        Theme="Adapt"
                         Width="1000">
 
                 <local:SettingsWindows />
@@ -84,17 +85,38 @@
                     />
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
-    
+
     <Grid x:Name="RootGrid">
 
 
+        <simpleChildWindow:ChildWindow x:Name="UsersDialogBox"
+                                       IsModal="True" 
+                                       Title="Gestion des utilisateur"
+                                       AllowMove="False" 
+                                       CloseOnOverlay="False" 
+                                       EnableDropShadow="False"
+                                       Padding="15"
+                                       OverlayBrush="Transparent"
+                                       BorderThickness="2"
+                                       BorderBrush="{DynamicResource MahApps.Brushes.Accent}"
+                                       HorizontalContentAlignment="Stretch"
+                                       VerticalAlignment="Center">
+            
+            
+        </simpleChildWindow:ChildWindow>
+        
+        
+        
         <simpleChildWindow:ChildWindow x:Name="CustomDialogBox" 
                                        IsModal="True" 
                                        Title="Ajout d'un patient"
                                        AllowMove="False" 
-                                       CloseOnOverlay="True" 
-                                       OverlayBrush="AliceBlue"
+                                       CloseOnOverlay="False" 
+                                       EnableDropShadow="False"
                                        Padding="15"
+                                       OverlayBrush="Transparent"
+                                       BorderThickness="2"
+                                       BorderBrush="{DynamicResource MahApps.Brushes.Accent}"
                                        HorizontalContentAlignment="Stretch"
                                        VerticalAlignment="Center">
 
@@ -205,7 +227,8 @@
             <TextBox x:Name="SendTextBox" 
                  mah:TextBoxHelper.Watermark="Message"               
                  Height="auto" 
-                 Margin="3">
+                 Margin="3"
+                     >
                     <TextBox.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Messages"
@@ -248,7 +271,9 @@
                         </ListBox.ItemsSource>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <local:PatientBubbleCtrl />
+                                <local:PatientBubbleCtrl>
+                                    
+                                </local:PatientBubbleCtrl>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>

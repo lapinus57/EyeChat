@@ -1,18 +1,12 @@
-﻿Imports ControlzEx.Theming
-Imports MahApps.Metro.Controls
-Imports System.Drawing
-Imports EyeChat
-Imports EyeChat.SettingsViewModel
-Imports EyeChat.MainWindow
-Imports EyeChat.User
-Imports EyeChat.ExamOption
-Imports EyeChat.Planning
-Imports System.Collections.ObjectModel
+﻿Imports System.Collections.ObjectModel
 Imports System.Globalization
-Imports MaterialDesignThemes.Wpf
 Imports System.IO
+Imports EyeChat.MainWindow
+Imports EyeChat.Planning
+Imports EyeChat.SettingsViewModel
+Imports MahApps.Metro.Controls
+Imports MaterialDesignThemes.Wpf
 Imports Microsoft.Win32
-Imports MahApps.Metro.Controls.Dialogs
 
 Public Class SettingsWindows
 
@@ -30,14 +24,15 @@ Public Class SettingsWindows
 
 
     Private Sub AppColorChanged(sender As Object, e As SelectionChangedEventArgs)
-        SetTheme()
+        'SetTheme()
+
     End Sub
 
 
 
     Private Sub AppThemeChanged(sender As Object, e As SelectionChangedEventArgs)
 
-        SetTheme()
+        'SetTheme()
 
     End Sub
 
@@ -49,7 +44,7 @@ Public Class SettingsWindows
         Me.DataContext = settings
 
         LoadAvatars()
-
+        SelectAvatarByIndex(My.Settings.UserAvatar)
 
     End Sub
 
@@ -91,17 +86,37 @@ Public Class SettingsWindows
     End Sub
 
 
-    Private Sub cboAvatars_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+    Private Sub CboAvatars_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
         Dim selectedItem As AvatarItem = TryCast(cboAvatars.SelectedItem, AvatarItem)
 
-        ' Vérifiez si l'utilisateur a sélectionné "Importer un avatar"
-        If selectedItem IsNot Nothing AndAlso selectedItem.Tag = "Importer un avatar" Then
-            ' Ici, vous pouvez déclencher une action d'importation d'avatar
-            ' par exemple, en affichant une boîte de dialogue pour sélectionner un fichier image
-            ' et en enregistrant cet avatar dans votre dossier d'avatar.
-            ' Configurez la boîte de dialogue
-            SelectImageFile()
+        ' Vérifiez d'abord si selectedItem est non null
+        If selectedItem Is Nothing Then
+            Return  ' Rien n'est sélectionné, sortez de la méthode
         End If
+
+        ' Ensuite, vérifiez si l'utilisateur a sélectionné "Importer un avatar"
+        If selectedItem.Tag IsNot Nothing AndAlso selectedItem.Tag.ToString() = "Importer un avatar" Then
+            ' Code pour importer un avatar
+            SelectImageFile()
+        Else
+            ' S'assurer que selectedItem.Tag n'est pas null avant d'accéder à sa propriété
+            If selectedItem.Tag IsNot Nothing Then
+                SendMessage("USR11" & My.Settings.UserName & "|/Avatar/" & selectedItem.Tag.ToString())
+                My.Settings.UserAvatar = selectedItem.Tag.ToString()
+                My.Settings.Save()
+            End If
+        End If
+    End Sub
+
+    Private Sub SelectAvatarByIndex(avatarId As String)
+        For i As Integer = 0 To cboAvatars.Items.Count - 1
+            Dim avatarItem As AvatarItem = TryCast(cboAvatars.Items(i), AvatarItem)
+            If avatarItem IsNot Nothing AndAlso avatarItem.Tag.ToString() = avatarId Then
+                cboAvatars.SelectedIndex = i
+                Exit Sub
+            End If
+        Next
+        ' Si l'avatar n'est pas trouvé, vous pouvez gérer cette situation ici
     End Sub
 
     Private Sub SelectImageFile()
@@ -239,7 +254,13 @@ Public Class SettingsWindows
     End Sub
 
     Private Sub ColorPicker_DropDownClosed(sender As Object, e As EventArgs)
-        SetTheme()
+        Dim colorPicker As MahApps.Metro.Controls.ColorPicker = CType(sender, MahApps.Metro.Controls.ColorPicker)
+
+        MsgBox(colorPicker.SelectedColor.ToString())
+        ' Forcer la mise à jour de la source de liaison
+        'BindingOperations.GetBindingExpression(ColorPicker, MahApps.Metro.Controls.ColorPicker.SelectedColorProperty)?.UpdateSource()
+
+        'SetTheme()
     End Sub
 End Class
 Public Class BoolToVisibilityConverter
@@ -256,10 +277,6 @@ Public Class BoolToVisibilityConverter
     Public Function ConvertBack(value As Object, targetType As Type, parameter As Object, culture As CultureInfo) As Object Implements IValueConverter.ConvertBack
         Throw New NotImplementedException()
     End Function
-
-
-
-
 End Class
 
 Public Class AvatarItem

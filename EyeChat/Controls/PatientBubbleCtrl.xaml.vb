@@ -1,19 +1,22 @@
 ﻿Imports System.Collections.ObjectModel
-Imports System.Globalization
+Imports System.ComponentModel
 Imports EyeChat.MainWindow
 Imports EyeChat.Patient
-Imports MahApps.Metro.Controls.Dialogs
-Imports MahApps.Metro.Controls
 Imports MahApps.Metro.SimpleChildWindow
-Imports MahApps.Metro
 
 Public Class PatientBubbleCtrl
     Inherits UserControl
+    Implements INotifyPropertyChanged
+
     Public Sub New()
         InitializeComponent()
+
     End Sub
 
     Private _mainWindowInstance As MainWindow
+
+    Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
+
 
     Public Property MainWindowInstance As MainWindow
         Get
@@ -45,6 +48,53 @@ Public Class PatientBubbleCtrl
                 ' Envoyez le message
                 SendMessage(Text)
 
+
+
+                'Await (CType(Application.Current.MainWindow, MahApps.Metro.Controls.MetroWindow)).ShowChildWindowAsync(New InfoPatient())
+
+            Else
+
+                ' Formatez Hold_Time avec les fractions de secondes
+                Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+
+                ' Construisez la chaîne de texte à envoyer
+                Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+
+                ' Envoyez le message
+                SendMessage(Text)
+
+            End If
+
+        End If
+    End Sub
+
+    Private Sub MenuItem_AttenteClick(sender As Object, e As RoutedEventArgs)
+        ' Vérifiez si le sender est bien un MenuItem
+        If TypeOf sender Is MenuItem Then
+            ' Obtenez une référence au MenuItem
+            Dim menuItem As MenuItem = DirectCast(sender, MenuItem)
+
+            ' Obtenez l'objet Patient associé au MenuItem
+            Dim patient As Patient = DirectCast(menuItem.DataContext, Patient)
+
+            If patient.IsTaken = False Then
+
+                ' Formatez Hold_Time avec les fractions de secondes
+                Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+
+                ' Construisez la chaîne de texte à envoyer
+                Dim Text As String = "PTN02" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+
+                ' Envoyez le message
+                SendMessage(Text)
+
+                Dim newexams As String
+
+                ' Construisez la chaîne de texte à envoyer
+                Text = "PTN01" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|RDC|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+
+                ' Envoyez le message
+                SendMessage(Text)
 
 
                 'Await (CType(Application.Current.MainWindow, MahApps.Metro.Controls.MetroWindow)).ShowChildWindowAsync(New InfoPatient())
@@ -328,5 +378,17 @@ Public Class PatientBubbleCtrl
         PatientsALL = New ObservableCollection(Of Patient)(PatientsALL.OrderBy(Function(p) p.Hold_Time))
     End Sub
 
+    Private Sub UserControl_ContextMenuOpening(sender As Object, e As ContextMenuEventArgs)
+        Dim contextMenu As ContextMenu = Me.ContextMenu
+        If contextMenu IsNot Nothing Then
+
+            ' Ajustez la visibilité des MenuItem en fonction de OrthoMode
+            ' Exemple pour le premier MenuItem; répétez pour les autres selon le besoin
+            DirectCast(contextMenu.Items(1), MenuItem).Visibility = If(My.Settings.OrthoMode, Visibility.Visible, Visibility.Collapsed)
+            DirectCast(contextMenu.Items(3), MenuItem).Visibility = If(My.Settings.AdvanvedMode, Visibility.Visible, Visibility.Collapsed)
+
+            ' Répétez pour d'autres MenuItem si nécessaire
+        End If
+    End Sub
 
 End Class

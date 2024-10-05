@@ -1,6 +1,5 @@
 ﻿Imports System.Collections.ObjectModel
 Imports System.IO
-Imports System.Runtime.Remoting.Messaging
 Imports Newtonsoft.Json
 
 Public Class Message
@@ -89,7 +88,4 @@ Public Class Message
         File.WriteAllText(messagesFilePath, serializedMessages)
 
     End Sub
-
-
-
 End Class

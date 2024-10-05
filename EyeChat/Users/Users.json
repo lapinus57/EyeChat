@@ -3,54 +3,66 @@
     "Name": "A Tous",
     "AuxiliaireTilte": "",
     "Status": "Offline",
-    "Avatar": "/Avatar/earth.png"
+    "Avatar": "/Avatar/earth.png",
+    "initials": ""
   },
   {
     "Name": "Secrétariat",
     "AuxiliaireTilte": "",
     "Status": "Offline",
-    "Avatar": "/Avatar/secrétaria.png"
+    "Avatar": "/Avatar/secrétaria.png",
+      "initials": ""
   },
   {
     "Name": "Alix",
     "AuxiliaireTilte": "",
     "Status": "Offline",
-    "Avatar": "/Avatar/avataaars.png"
+    "Avatar": "/Avatar/avataaars.png",
+    "initials": "AL"
   },
   {
     "Name": "MédecinRDC",
     "AuxiliaireTilte": "",
     "Status": "Offline",
-    "Avatar": "/Avatar/avataaars.png"
+    "Avatar": "/Avatar/avataaars.png",
+    "initials": "MR"
+
   },
   {
     "Name": "Benoit",
     "AuxiliaireTilte": "",
     "Status": "Offline",
-    "Avatar": "/Avatar/benoit.png"
+    "Avatar": "/Avatar/benoit.png",
+    "initials": "BM",
+    "UUID": "C9E4D77C900000"
   },
   {
     "Name": "Christelle",
     "AuxiliaireTilte": "",
     "Status": "Offline",
-    "Avatar": "/Avatar/avataaars.png"
+    "Avatar": "/Avatar/avataaars.png",
+    "initials": "CB"
+
   },
   {
     "Name": "Alicia",
     "AuxiliaireTilte": "",
     "Status": "Offline",
-    "Avatar": "/Avatar/avataaars.png"
+    "Avatar": "/Avatar/avataaars.png",
+    "initials": "AO"
   },
   {
     "Name": "Esra",
     "AuxiliaireTilte": "",
     "Status": "Offline",
-    "Avatar": "/Avatar/avataaars.png"
+    "Avatar": "/Avatar/avataaars.png",
+    "initials": "EA"
   },
   {
     "Name": "Caroline",
     "AuxiliaireTilte": "",
     "Status": "Offline",
-    "Avatar": "/Avatar/avataaars.png"
+    "Avatar": "/Avatar/avataaars.png",
+    "initials": "CM"
   }
 ]

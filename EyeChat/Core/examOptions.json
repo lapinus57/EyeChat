@@ -5,7 +5,7 @@
     "Color": "red",
     "CodeMSG": "FO=",
     "Annotation": null,
-    "Floor": "RDC"  
+    "Floor": "RDC"
   },
   {
     "index": 2,
@@ -62,5 +62,30 @@
     "CodeMSG": "SK*",
     "Annotation": "Gouttes dés arrivée",
     "Floor": "RDC"
+  },
+  {
+    "index": 9,
+    "Name": "Photo",
+    "Color": "yellow",
+    "CodeMSG": "PO=",
+    "Annotation": "Photo",
+    "Floor": "RDC"
+  },
+  {
+    "index": 10,
+    "Name": "Pachy",
+    "Color": "yellow",
+    "CodeMSG": "PY=",
+    "Annotation": "Pachy",
+    "Floor": "RDC"
+  },
+  {
+    "index": 11,
+    "Name": "Topo",
+    "Color": "yellow",
+    "CodeMSG": "TO=",
+    "Annotation": "Topo",
+    "Floor": "RDC"
   }
+
 ]

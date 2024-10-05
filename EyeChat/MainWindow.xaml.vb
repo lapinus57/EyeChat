@@ -1,33 +1,33 @@
 ﻿Imports System.Collections.ObjectModel
-Imports MahApps.Metro.Controls.Dialogs
-Imports EyeChat.Message
-Imports EyeChat.User
 Imports System.ComponentModel
+Imports System.Globalization
+Imports System.IO
+Imports System.IO.Compression
+Imports System.Net
+Imports System.Net.NetworkInformation
+Imports System.Net.Sockets
+Imports System.Reflection
+Imports System.Runtime.InteropServices
+Imports System.Text
+Imports System.Text.RegularExpressions
+Imports System.Threading
+Imports System.Web.UI.WebControls
+Imports System.Windows.Interop
+Imports System.Windows.Threading
+Imports EyeChat.Computer
+Imports EyeChat.Message
+Imports EyeChat.Patient
+Imports EyeChat.PatientBubbleCtrl
+Imports EyeChat.Planning
+Imports EyeChat.User
 Imports log4net
 Imports log4net.Config
-Imports Newtonsoft.Json.Linq
-Imports EyeChat.Patient
-Imports System.Net.Sockets
-Imports System.Threading
-Imports System.Net
-Imports System.Text
-Imports System.Web.UI.WebControls
-Imports Newtonsoft.Json
-Imports System.IO
-Imports System.Runtime.InteropServices
-Imports System.Windows.Interop
+Imports MahApps.Metro.Controls.Dialogs
 Imports MahApps.Metro.SimpleChildWindow
-Imports System.Text.RegularExpressions
-Imports System.Globalization
+Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
 Imports NuGet.Versioning
-Imports System.Reflection
-Imports System.IO.Compression
-Imports EyeChat.PatientBubbleCtrl
-Imports System.Net.NetworkInformation
-Imports EyeChat.Computer
-Imports EyeChat.Planning
-Imports System.Windows.Threading
-Imports System.Random
+'Imports Sydesoft.NfcDevice
 
 
 Public Class EggPhrasesData
@@ -40,6 +40,8 @@ Class MainWindow
     Implements INotifyPropertyChanged
 
     Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
+
+    Private _orthoMode As Boolean
 
     Public Shared selectedUserName As String
     Public Shared Property Computers As ObservableCollection(Of Computer)
@@ -63,6 +65,10 @@ Class MainWindow
     Private Shared ReadOnly logger As ILog = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
     Public Property DebugLevels As New ObservableCollection(Of String)() From {"DEBUG", "INFO", "WARN", "ERROR"}
 
+
+    Public settingsMap As New Dictionary(Of String, Dictionary(Of String, String))
+
+
     Private timer As DispatcherTimer
 
     Delegate Sub AddReceivedMessage(ByRef message As String)
@@ -80,7 +86,9 @@ Class MainWindow
     Private Const RepoName As String = "EyeChat"
     Private Const Version As String = "0.0.1" ' Remplacez par votre version actuelle
 
-
+    'Nfc déclaration 
+    'Public MyACR122U As ACR122U
+    'Dim Uidcard As String
 
     Structure UserUpdateInfo
         Dim UserName As String
@@ -91,8 +99,27 @@ Class MainWindow
     Dim userUpdates As New Dictionary(Of String, UserUpdateInfo)()
 
 
+    Public Property OrthoMode As Boolean
+        Get
+            Return _orthoMode
+        End Get
+        Set(value As Boolean)
+            If _orthoMode <> value Then
+                _orthoMode = value
+                OnPropertyChanged(NameOf(OrthoMode))
+            End If
+        End Set
+    End Property
+
+    Protected Sub OnPropertyChanged(ByVal propertyName As String)
+        RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
+    End Sub
 
 
+    Private Sub UpdateOrthoMode()
+        OrthoMode = My.Settings.OrthoMode
+        ' Assurez-vous d'appeler cette méthode lorsque vous savez que My.Settings.OrthoMode a changé
+    End Sub
 
 #Region "Gestion Capture nom des fêntre"
     <DllImport("user32.dll")>
@@ -117,6 +144,10 @@ Class MainWindow
     Private Shared Function UnregisterHotKey(<[In]> hWnd As IntPtr, <[In]> id As Integer) As Boolean
     End Function
 
+    <DllImport("user32.dll", SetLastError:=True)>
+    Private Shared Sub keybd_event(bVk As Byte, bScan As Byte, dwFlags As UInteger, dwExtraInfo As UInteger)
+    End Sub
+
 
     Private _source As HwndSource
     Private Const HOTKEY_ID As Integer = 9000
@@ -129,6 +160,26 @@ Class MainWindow
     Private Const HOTKEY_ID7 As Integer = 9007
     Private Const HOTKEY_ID8 As Integer = 9008
     Private Const HOTKEY_ID9 As Integer = 9009
+    Private Const HOTKEY_ID10 As Integer = 9010
+
+    Const VK_E As UInteger = &H45
+    Const MOD_CTRL As UInteger = &H2
+    Const MOD_SHIFT As UInteger = &H4
+    Const VK_F1 As UInteger = &H70
+    Const VK_F2 As UInteger = &H71
+    Const VK_F5 As UInteger = &H74
+    Const VK_F6 As UInteger = &H75
+    Const VK_F7 As UInteger = &H76
+    Const VK_F8 As UInteger = &H77
+    Const VK_F9 As UInteger = &H78
+    Const VK_F10 As UInteger = &H79
+    Const VK_F11 As UInteger = &H7A
+    Const VK_F12 As UInteger = &H7B
+
+    'test
+    Const KEYEVENTF_KEYUP As UInteger = &H2
+    Const VK_CONTROL As Integer = &H11
+    Const VK_V As Integer = &H56
 
 
     Protected Overrides Sub OnSourceInitialized(e As EventArgs)
@@ -151,16 +202,9 @@ Class MainWindow
         UnregisterHotKey() ' Désenregistrement de tous les raccourcis existants
 
         Dim helper = New WindowInteropHelper(Me)
-        Const VK_E As UInteger = &H45
-        Const MOD_CTRL As UInteger = &H2
-        Const MOD_SHIFT As UInteger = &H4
-        Const VK_F9 As UInteger = &H78
-        Const VK_F10 As UInteger = &H79
-        Const VK_F11 As UInteger = &H7A
-        Const VK_F12 As UInteger = &H7B
 
-
-        'RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_CTRL, VK_E)
+        RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_CTRL, VK_E)
+        RegisterHotKey(helper.Handle, HOTKEY_ID10, 0, VK_F5)
 
         If My.Settings.CtrlF9Enabled Then
             RegisterHotKey(helper.Handle, HOTKEY_ID1, MOD_CTRL, VK_F9)
@@ -202,6 +246,8 @@ Class MainWindow
         UnregisterHotKey(helper.Handle, HOTKEY_ID6)
         UnregisterHotKey(helper.Handle, HOTKEY_ID7)
         UnregisterHotKey(helper.Handle, HOTKEY_ID8)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID9)
+        UnregisterHotKey(helper.Handle, HOTKEY_ID10)
     End Sub
 
     Private Function HwndHook(hwnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As IntPtr, ByRef handled As Boolean) As IntPtr
@@ -227,9 +273,10 @@ Class MainWindow
                         OnHotKeyPressed7()
                     Case HOTKEY_ID8
                         OnHotKeyPressed8()
-                        Exit Select
+                    Case HOTKEY_ID10
+                        OnHotKeyPressed10()
+
                 End Select
-                Exit Select
         End Select
         Return IntPtr.Zero
     End Function
@@ -389,6 +436,34 @@ Class MainWindow
 
     End Sub
 
+    Private Sub OnHotKeyPressed10()
+
+        EnumWindows(AddressOf ReturnStartString, IntPtr.Zero)
+
+    End Sub
+
+    Private Sub PasteTextToActiveWindow(text As String)
+        ' Stocker le texte dans le presse-papiers
+        Clipboard.SetText(text)
+        PasteText()
+    End Sub
+
+
+    Public Shared Sub PasteText()
+        ' Simuler la pression de la touche CTRL
+        keybd_event(VK_CONTROL, 0, 0, 0)
+        ' Simuler la pression de la touche V
+        keybd_event(VK_V, 0, 0, 0)
+        ' Relâcher la touche V
+        keybd_event(VK_V, 0, KEYEVENTF_KEYUP, 0)
+        ' Relâcher la touche CTRL
+        keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0)
+        ' simuler la pression de la touche F12
+        keybd_event(VK_F12, 0, 0, 0)
+        ' Relâcher la touche F12
+        keybd_event(VK_F12, 0, KEYEVENTF_KEYUP, 0)
+    End Sub
+
 
 
 
@@ -450,6 +525,8 @@ Class MainWindow
         logger.Logger.Repository.Threshold = log4net.Core.Level.Error
         Me.ShowCloseButton = False
 
+        InitializeComponent()
+        UpdateOrthoMode()
 
 
         'test si les paramètres sont présent
@@ -647,12 +724,93 @@ Class MainWindow
             End If
         End If
 
-        SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
+        AddHandler My.Settings.PropertyChanged, AddressOf SettingsChanged
+
+        If My.Settings.NFCMode = True Then
+            Try
+                hidePatientList()
+                'MyACR122U = New ACR122U()
+                'AddHandler MyACR122U.CardInserted, AddressOf Acr122u_CardInserted
+                'AddHandler MyACR122U.CardRemoved, AddressOf Acr122u_CardRemoved
+                'MyACR122U.Init(True, 50, 4, 4, 200)
+
+            Catch ex As Exception
+                logger.Error($"Erreur lors de l'initialise du nfc : {ex.Message}")
+            End Try
+        Else
+            showPatientList()
+            SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
+        End If
+
+
     End Sub
+
+
+
+    Private Sub SettingsChanged(sender As Object, e As PropertyChangedEventArgs)
+        ' Mettez à jour le dictionnaire ici
+        InitializeSettingsMaps(settingsMap)
+    End Sub
+
+
+    Private Sub Acr122u_CardRemoved()
+        ' Console.WriteLine("Card Removed")
+        'Dispatcher.Invoke(Sub()
+        'logger.Info($"Carte NFC retirée : {Uidcard}")
+        'Dim userconnected As User = Users.FirstOrDefault(Function(user) user.UUID = Uidcard)
+        'SendMessage("USR02" & userconnected.Name & "|OCT")
+        'SendMessage("USR02" & My.Settings.UserName & "|OCT")
+        'SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
+
+        'hidePatientList()
+        'End Sub)
+    End Sub
+
+    Private Sub Acr122u_CardInserted(ByVal reader As PCSC.ICardReader)
+        'Console.WriteLine("Card Inserted")
+
+        'Dim Card As String = BitConverter.ToString(MyACR122U.GetUID(reader)).Replace("-", "")
+        'Uidcard = Card
+
+
+
+        'Dispatcher.Invoke(Sub()
+        'logger.Info($"Carte NFC insérée : {Uidcard}")
+        'showPatientList()
+
+        'Dim userconnected As User = Users.FirstOrDefault(Function(user) user.UUID = Uidcard)
+        'SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
+
+        'SendMessage("USR01" & userconnected.Name & "|OCT")
+        'AddMessage("Benoit", "Benoit", "Room", Uidcard, False, Nothing)
+
+
+        'End Sub)
+
+    End Sub
+
+
+
+    Public Sub hidePatientList()
+        PatientListRDC.Visibility = Visibility.Hidden
+        PatientList1er.Visibility = Visibility.Hidden
+        PatientListAll.Visibility = Visibility.Hidden
+        MessageList.Visibility = Visibility.Hidden
+    End Sub
+
+    Public Sub showPatientList()
+        PatientListRDC.Visibility = Visibility.Visible
+        PatientList1er.Visibility = Visibility.Visible
+        PatientListAll.Visibility = Visibility.Visible
+        MessageList.Visibility = Visibility.Visible
+    End Sub
+
+
+
 
     Private Sub Timer_Tick(ByVal sender As Object, ByVal e As EventArgs)
         ' Code à exécuter à 8h00 précises
-        SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
+        SendMessage("USR02" & My.Settings.UserName & "|" & My.Settings.WindowsName)
 
         If My.Settings.PlanningMode = True Then
             Try
@@ -687,7 +845,7 @@ Class MainWindow
 
         End If
 
-        SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
+        SendMessage("USR01" & My.Settings.UserName & "|" & My.Settings.WindowsName)
 
 
         ' Arrêtez la minuterie si nécessaire pour éviter d'exécuter l'action à plusieurs reprises
@@ -697,8 +855,8 @@ Class MainWindow
     Private Sub MessageMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim selectedMessage As SpeedMessage = DirectCast(DirectCast(sender, System.Windows.Controls.MenuItem).Tag, SpeedMessage)
         '"SMF01UserName|Destinataitre|message|Option1|Option2|Option3"
-        SendMessage("SMF01" & My.Settings.UserName & "|" & selectedMessage.Destinataire & "|" & selectedMessage.Message.Replace("[ROOM]", Environment.UserName) & "|" & selectedMessage.Options)
-        SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & selectedMessage.Destinataire & " " & selectedMessage.Message.Replace("[ROOM]", Environment.UserName) & "|benoit.png")
+        SendMessage("SMF01" & My.Settings.UserName & "|" & selectedMessage.Destinataire & "|" & selectedMessage.Message.Replace("[ROOM]", My.Settings.WindowsName) & "|" & selectedMessage.Options)
+        SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & selectedMessage.Destinataire & " " & selectedMessage.Message.Replace("[ROOM]", My.Settings.WindowsName) & "|benoit.png")
 
 
 
@@ -1029,9 +1187,12 @@ Class MainWindow
 
 
         Select Case messageCode
+
+            ' Section pour les messages type "USR"
+            ' Les messages de type "USR" sont utilisés pour gérer les utilisateurs
             Case "USR01"
                 ' Connexion d'un utilisateur
-                ' "USR01|UserName|IdentifiantPC"
+                ' "USR01UserName|IdentifiantPC"
                 Try
                     Dim messageContent As String = receivedMessage.Substring(5)
                     Dim parts As String() = messageContent.Split("|"c)
@@ -1084,8 +1245,10 @@ Class MainWindow
                             Exit Sub ' Éviter la boucle infinie
                         End If
 
-                        ' Envoyer un message de confirmation à l'utilisateur
-                        SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
+                        ' Envoyer un message de confirmation à l'utilisateur si c'est une autre personne
+
+                        SendMessage("USR01" & My.Settings.UserName & "|" & My.Settings.WindowsName)
+
 
                         ' Sauvegarder les modifications et mettre à jour l'interface utilisateur
                         SaveUsersToJson(Users)
@@ -1154,8 +1317,65 @@ Class MainWindow
                 '"USR01|UserName|NewColor"
 
             Case "USR11"
-                ' Code message
+                ' Mise à jour des préférences d'avatar d'un utilisateur
+                ' "USR11UserName|TagAvatar"
+                Try
+                    Dim messageContent As String = receivedMessage.Substring(5)
+                    Dim parts As String() = messageContent.Split("|"c)
+                    logger.Info("Réception d'une mise à jour d'avatar")
 
+                    If parts.Length >= 2 Then
+                        Dim UserName As String = parts(0)
+                        Dim AvatarTag As String = parts(1)
+
+                        Dim userToUpdate As User = Users.FirstOrDefault(Function(user) user.Name = UserName)
+                        If userToUpdate IsNot Nothing Then
+                            ' Mettre à jour l'avatar de l'utilisateur
+                            userToUpdate.Avatar = AvatarTag
+                            logger.Info("Avatar mis à jour pour l'utilisateur " & UserName & " avec le tag " & AvatarTag)
+
+                            Try
+                                ' Sauvegarder les modifications et mettre à jour l'interface utilisateur
+                                SaveUsersToJson(Users)
+                                Users = LoadUsersFromJson()
+                                ListUseres.ItemsSource = Users
+                                SendMessage("ACK11" & UserName & "|AvatarUpdated")
+                                logger.Debug("Confirmation de mise à jour envoyée à l'utilisateur " & UserName)
+                            Catch ex As Exception
+                                logger.Error("Erreur lors de la sauvegarde ou de l'envoi de la confirmation : " & ex.Message)
+                            End Try
+                        Else
+                            logger.Warn("Utilisateur non trouvé : " & UserName)
+                        End If
+                    Else
+                        logger.Error("Le message n'a pas le bon format ou manque d'informations")
+                    End If
+                Catch ex As Exception
+                    logger.Error("Erreur lors du traitement du message USR11 : " & ex.Message)
+                End Try
+
+
+            ' Section pour les messages de type "NFC"
+            ' Les messages NFC sont utilisés pour gérer les cartes NFC et les utilisateurs associés
+            Case "NFC01"
+                ' Code insertion d'une carte NFC
+                ' "NFC01|UserName|UID"
+
+            Case "NFC02"
+                ' Code ejection d'une carte NFC
+                ' "NFC02|UserName|UID""
+
+            Case "NFC11"
+                ' Code pour ajouter un utilisateur à une carte NFC
+                ' "NFC11|UserName|UID"
+
+            Case "NFC12"
+                ' Code pour supprimer un utilisateur d'une carte NFC
+                ' "NFC12|UserName|UID"
+
+
+            ' Section pour les messages de type "SMF"
+            ' Les messages SMF sont utilisés pour gérer les messages SpeedMessage
             Case "SMF01"
                 'Reception d'un SpeedMessage envoyer 
                 ' exemple d'une message reçu "SMF01UserName|Destinataitre|message|Option1|Option2|Option3"
@@ -1186,6 +1406,8 @@ Class MainWindow
                 End Try
 
 
+            ' Section pour les messages de type "PTN"
+            ' Les messages PTN sont utilisés pour gérer les patients
             Case "PTN01"
                 ' Code de message pour ajouter un patient 
                 ' exemple de message "PTN01Mr|BENOIT|Muller|FO|ODG |RDC|Benoit|2023-08-25T16:33:30.496"
@@ -1308,6 +1530,8 @@ Class MainWindow
                 End Try
 
 
+            ' Section pour les messages de type "SYS"
+            ' Les messages SYS sont utilisés pour gérer les actions système
             Case "SYS01"
                 ' Code pour fermer la boite à distance
                 ' Exemple du message envoyé : "SYS01|IdentifiantPC(cible)|IdentifiantPC(auteur)"
@@ -1407,7 +1631,8 @@ Class MainWindow
                 End Try
 
 
-
+            ' Section pour les messages de type "MSG"
+            ' Les messages MSG sont utilisés pour gérer les messages
             Case "MSG01"
 
                 'Ajouter un message
@@ -1490,7 +1715,8 @@ Class MainWindow
                 'Pour supprimer un message
 
 
-
+            ' Section pour les messages de type "SLN"
+            ' Les messages SLN sont utilisés pour gérer les salons
             Case "SLN01"
                 'création d'un salon
             Case "SLN02"
@@ -1499,6 +1725,8 @@ Class MainWindow
                 'suppresion d'un salon 
 
 
+            ' Section pour les messages de type "DBG"
+            ' Les messages DBG sont utilisés pour le débogage
             Case "DBG01"
                 'Code pour envoyer l'ID du PC au autres application
                 Try
@@ -1519,7 +1747,7 @@ Class MainWindow
                     Dim ComputerUser As String = parts(1)
                     Dim ComputerIP As String = parts(2)
                     If Not Computers.Any(Function(c) c.ComputerID = ComputerID) Then
-                        Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIP = ComputerIP})
+                        Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIp = ComputerIP})
 
                         logger.Debug("Ajout d'un PC à la liste des PC : " & ComputerID)
                     End If
@@ -1558,30 +1786,33 @@ Class MainWindow
 
     End Sub
 
-    ' Fonction permettant d'envoyer un message complet
+    ' Fonction permettant d'envoyer un message complet 
     Public Shared Sub SendMessage(message As String)
         Try
             ' Vérifier si le message n'est pas vide
-            If message <> "" Then
-                ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
-                Dim DataMessage() As Byte = Encoding.UTF8.GetBytes(message)
+            If Not String.IsNullOrWhiteSpace(message) Then
 
-                ' Vérifier si le tableau d'octets du message n'est pas nul
-                If DataMessage IsNot Nothing Then
+                ' Vérifie si le client d'envoi est initialiser
+                If sendingClient IsNot Nothing Then
+
+                    ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
+                    Dim DataMessage As Byte() = Encoding.UTF8.GetBytes(message)
 
                     ' Envoyer les octets du message à travers le client d'envoi
-                    sendingClient.Send(DataMessage, DataMessage.Length)
+                    If DataMessage IsNot Nothing AndAlso sendingClient IsNot Nothing Then
 
-                    ' Afficher le message dans la console
-                    logger.Debug("Envoi d'un message : " & message)
+                        ' Envoyer les octets du message à travers le client d'envoi
+                        sendingClient.Send(DataMessage, DataMessage.Length)
+
+                        ' Afficher le message dans la console
+                        logger.Debug("Envoi d'un message : " & message)
+                    End If
                 End If
             End If
         Catch ex As Exception
-            logger.Error("Erreur lors de l'envoi d'un message : " & message & " l'erreur suivante est apparue : " & ex.Message)
+            logger.Error($"Erreur lors de l'envoi d'un message : {message}. L'erreur suivante est apparue : {ex.Message}")
         End Try
-
     End Sub
-
 
 
     Private Async Sub SpeedMessageDialog(ByVal Titre As String, ByVal Message As String, ByVal option1 As String, ByVal option2 As String, ByVal option3 As String)
@@ -1710,6 +1941,8 @@ Class MainWindow
                                 Users.Add(New User With {.Name = "Marvin", .Avatar = avatarPath, .Status = "Don't Panic"})
                                 logger.Debug("Utilisateur Marvin ajouté")
                             End If
+
+                            Me.UsersDialogBox.SetCurrentValue(ChildWindow.IsOpenProperty, True)
 
                         Catch ex As Exception
                             logger.Error("Erreur lors de l'ajout de l'utilisateur Marvin avec la commande /DEBUG: " & ex.Message)
@@ -2010,7 +2243,7 @@ Class MainWindow
         'My.Settings.Save()
 
         'End If
-        'SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
+        'SendMessage("USR02" & My.Settings.UserName & "|" & My.Settings.WindowsName)
 
     End Function
 
@@ -2195,7 +2428,6 @@ Class MainWindow
 
     End Sub
 
-
     Private Function EnumWindowCallBack(ByVal hwnd As IntPtr, ByVal lParam As IntPtr) As Boolean
         Try
             Dim windowText As New StringBuilder(256)
@@ -2305,6 +2537,89 @@ Class MainWindow
 
 #End Region
 
+
+#Region "Gestion des entêtes"
+    Private Sub InitializeSettingsMaps(ByRef settingsMap As Dictionary(Of String, Dictionary(Of String, String)))
+        ' Initialisation des mappings pour F5, F6, et F7
+        settingsMap.Add("F5", New Dictionary(Of String, String) From {
+        {"REFRACTION", My.Settings.F5Text1},
+        {"LENTILLES", My.Settings.F5Text2},
+        {"PATHOLOGIES", My.Settings.F5Text3},
+        {"ORTHOPTIE", My.Settings.F5Text4},
+        {"TRAITEMENT", My.Settings.F5Text5}
+    })
+        settingsMap.Add("F6", New Dictionary(Of String, String) From {
+        {"REFRACTION", My.Settings.F6Text1},
+        {"LENTILLES", My.Settings.F6Text2},
+        {"PATHOLOGIES", My.Settings.F6Text3},
+        {"ORTHOPTIE", My.Settings.F6Text4},
+        {"TRAITEMENT", My.Settings.F6Text5}
+    })
+        settingsMap.Add("F7", New Dictionary(Of String, String) From {
+        {"REFRACTION", My.Settings.F7Text1},
+        {"LENTILLES", My.Settings.F7Text2},
+        {"PATHOLOGIES", My.Settings.F7Text3},
+        {"ORTHOPTIE", My.Settings.F7Text4},
+        {"TRAITEMENT", My.Settings.F7Text5}
+    })
+        settingsMap.Add("F8", New Dictionary(Of String, String) From {
+       {"REFRACTION", My.Settings.F8Text1},
+       {"LENTILLES", My.Settings.F8Text2},
+       {"PATHOLOGIES", My.Settings.F8Text3},
+       {"ORTHOPTIE", My.Settings.F8Text4},
+       {"TRAITEMENT", My.Settings.F8Text5}
+   })
+    End Sub
+
+    Private Function ReturnStartString(ByVal hwnd As IntPtr, ByVal lParam As IntPtr) As Boolean
+        Try
+            Dim windowText As New StringBuilder(256)
+            GetWindowText(hwnd, windowText, windowText.Capacity)
+            Dim text As String = windowText.ToString().Trim()
+            If text.Length > 0 Then
+                If text.StartsWith("REFRACTION") Then
+
+                    PasteTextToActiveWindow(TextConnsultation(My.Settings.F5Text1))
+
+                ElseIf text.Contains("LENTILLES") Then
+
+                    PasteTextToActiveWindow(TextConnsultation(My.Settings.F5Text2))
+
+                ElseIf text.Contains("ORTHOPTIE") Then
+
+                    PasteTextToActiveWindow(TextConnsultation(My.Settings.F5Text4))
+
+
+                ElseIf text.Contains("PATHOLOGIES") Then
+
+                    PasteTextToActiveWindow(TextConnsultation(My.Settings.F5Text3))
+                ElseIf text.Contains("TRAITEMENT") Then
+
+                    PasteTextToActiveWindow(TextConnsultation(My.Settings.F5Text5))
+
+                End If
+            End If
+        Catch ex As Exception
+            ' Gestion des erreurs qui pourraient se produire lors de l'extraction des informations
+            ' Vous pouvez ajouter des logs ici ou effectuer d'autres actions appropriées en cas d'erreur.
+            logger.Error("Erreur lors de l'extraction des informations du texte de la fenêtre : " & ex.Message)
+        End Try
+        Return True
+    End Function
+
+
+    Public Function TextConnsultation(ByVal test As String) As String
+        ' Trouver l'utilisateur actuel basé sur un critère, ici je prends le premier pour l'exemple
+        Dim currentUser As User = Users.FirstOrDefault(Function(u) u.Name = My.Settings.UserName)
+        Dim text As String = test
+        text = text.Replace("[IN]", currentUser.Initials)
+        text = text.Replace("[ROOM]", Environment.UserName)
+        text = text.Replace("[NEWLINE]", vbNewLine)
+        text = text.Replace("[TIME]", DateTime.Now.ToString("HH:mm"))
+        Return text
+    End Function
+
+#End Region
 
 #Region "Gestion de la mise a jour"
 

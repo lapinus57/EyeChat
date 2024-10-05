@@ -119,5 +119,152 @@
     <Setting Name="PlanningName2" Type="System.String" Scope="User">
       <Value Profile="(Default)">Benoit</Value>
     </Setting>
+    <Setting Name="OrthoMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AdvanvedMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AdminMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UserAvatar" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="NFCMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="F5Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="F5Page1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">REFRACTION</Value>
+    </Setting>
+    <Setting Name="F5Text1" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F5Page2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LENTILLES</Value>
+    </Setting>
+    <Setting Name="F5Text2" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F5Page3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PATHOLOGIES</Value>
+    </Setting>
+    <Setting Name="F5Text3" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F5Page4" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ORTHOPTIE</Value>
+    </Setting>
+    <Setting Name="F5Text4" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F5Page5" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F5Text5" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F6Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="F6Page1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">REFRACTION</Value>
+    </Setting>
+    <Setting Name="F6Text1" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F6Page2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LENTILLES</Value>
+    </Setting>
+    <Setting Name="F6Text2" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F6Page3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PATHOLOGIES</Value>
+    </Setting>
+    <Setting Name="F6Text3" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F6Page4" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ORTHOPTIE</Value>
+    </Setting>
+    <Setting Name="F6Text4" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F6Page5" Type="System.String" Scope="User">
+      <Value Profile="(Default)">TRAITEMENT</Value>
+    </Setting>
+    <Setting Name="F6Text5" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F7Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="F7Page1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">REFRACTION</Value>
+    </Setting>
+    <Setting Name="F7Text1" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F7Page2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LENTILLES</Value>
+    </Setting>
+    <Setting Name="F7Text2" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F7Page3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PATHOLOGIES</Value>
+    </Setting>
+    <Setting Name="F7Text3" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F7Page4" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ORTHOPTIE</Value>
+    </Setting>
+    <Setting Name="F7Text4" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F7Page5" Type="System.String" Scope="User">
+      <Value Profile="(Default)">TRAITEMENT</Value>
+    </Setting>
+    <Setting Name="F7Text5" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F8Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="F8Page1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">REFRACTION</Value>
+    </Setting>
+    <Setting Name="F8Text1" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F8Page2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LENTILLES</Value>
+    </Setting>
+    <Setting Name="F8Text2" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F8Page3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PATHOLOGIES</Value>
+    </Setting>
+    <Setting Name="F8Text3" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F8Page4" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ORTHOPTIE</Value>
+    </Setting>
+    <Setting Name="F8Text4" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="F8Page5" Type="System.String" Scope="User">
+      <Value Profile="(Default)">TRAITEMENT</Value>
+    </Setting>
+    <Setting Name="F8Text5" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

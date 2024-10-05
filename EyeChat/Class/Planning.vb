@@ -1,14 +1,9 @@
-﻿Imports Newtonsoft.Json
+﻿Imports System.Collections.ObjectModel
 Imports System.ComponentModel
-Imports System.Collections.Generic
-Imports Microsoft.VisualBasic.Devices
-Imports System.Collections.ObjectModel
 Imports System.IO
 Imports EyeChat.MainWindow
-Imports log4net.Repository.Hierarchy
 Imports log4net
-Imports Newtonsoft.Json.Linq
-Imports log4net.Core
+Imports Newtonsoft.Json
 
 Public Class Planning
     Implements INotifyPropertyChanged

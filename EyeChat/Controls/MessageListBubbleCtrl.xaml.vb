@@ -1,6 +1,4 @@
 ﻿Imports System.Collections.ObjectModel
-Imports System.Windows
-Imports System.Windows.Controls
 
 Public Class MessageListBubbleCtrl
     Inherits UserControl

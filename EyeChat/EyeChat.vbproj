@@ -25,15 +25,18 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <UpdateUrl>http://eyechat.go.yj.fr/EyeChat/</UpdateUrl>
     <SupportUrl>https://github.com/lapinus57/EyeChat</SupportUrl>
     <ErrorReportUrl>https://github.com/lapinus57/EyeChat/issues</ErrorReportUrl>
     <TargetCulture>fr-FR</TargetCulture>
     <ProductName>EyeChat</ProductName>
     <PublisherName>MULLER</PublisherName>
     <SuiteName>EyeChat</SuiteName>
-    <ApplicationRevision>3</ApplicationRevision>
-    <ApplicationVersion>0.0.2.%2a</ApplicationVersion>
+    <TrustUrlParameters>true</TrustUrlParameters>
+    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationVersion>0.1.2.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -76,7 +79,7 @@
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -95,6 +98,27 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>EyeChat.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DocumentationFile>EyeChat.xml</DocumentationFile>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DocumentationFile>EyeChat.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
@@ -150,6 +174,10 @@
     </Reference>
     <Reference Include="Octokit, Version=8.0.1.0, Culture=neutral, PublicKeyToken=0be8860aee462442, processorArchitecture=MSIL">
       <HintPath>..\packages\Octokit.8.0.1\lib\netstandard2.0\Octokit.dll</HintPath>
+    </Reference>
+    <Reference Include="PCSC, Version=5.0.0.0, Culture=neutral, PublicKeyToken=13b76e54a2ee80a7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\FICHIERBM\PCSC.dll</HintPath>
     </Reference>
     <Reference Include="Stfu, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stfu.0.1.1\lib\net40\Stfu.dll</HintPath>
@@ -207,7 +235,9 @@
     <Compile Include="Class\Patient.vb" />
     <Compile Include="Class\Planning.vb" />
     <Compile Include="Class\SpeedMessage.vb" />
+    <Compile Include="Class\StringToImageSourceConverter.vb" />
     <Compile Include="Class\User.vb" />
+    <Compile Include="Class\UserSettings.vb" />
     <Compile Include="Controls\InfoPatient.xaml.vb">
       <DependentUpon>InfoPatient.xaml</DependentUpon>
     </Compile>
@@ -336,7 +366,9 @@
     <EmbeddedResource Include="Core\SpeedMessage.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Include="Core\usersettings.json" />
     <None Include="EyeChat.snk" />
+    <None Include="eyechat2.pfx" />
     <None Include="EyeChatKey.pfx" />
     <None Include="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

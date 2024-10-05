@@ -8,25 +8,26 @@
              mc:Ignorable="d" 
              d:DesignWidth="230"
              d:MinWidth="230"
-             d:MaxWidth="600">
+             d:MaxWidth="600"
+             ContextMenuOpening="UserControl_ContextMenuOpening">
 
     <UserControl.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Foreground" Value="Black"/>
         </Style>
-
+        <local:BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
         
         
     </UserControl.Resources>
-    
 
 
-    <Grid Margin="2" >
-        
 
-               
-        <Border Width="auto" Height="auto" Background="{Binding Colors}">
+    <Grid Margin="2">
+
+
+
+        <Border Width="auto" Height="auto" Background="{Binding Colors}" >
             <Grid >
                 
                 <Grid.RowDefinitions>
@@ -120,7 +121,7 @@
         </Border>
 
         </Grid>
-    <UserControl.ContextMenu>
+    <UserControl.ContextMenu >
         <ContextMenu>
             <MenuItem Click="MenuItem_PassageClick">
                 <MenuItem.Header>
@@ -140,7 +141,7 @@
                         </TextBlock.Style>
                            
                     </TextBlock>
-                        <TextBlock >                       
+                        <TextBlock Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}">                       
                             <Run Text="{Binding Title}" />                          
                             <Run Text="{Binding LastName}" />                           
                             <Run Text="{Binding FirstName}" />
@@ -148,34 +149,57 @@
                     </StackPanel>
                 </MenuItem.Header>
             </MenuItem>
+            <MenuItem Click="MenuItem_AttenteClick">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="Mettre en attente : " />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsTaken}" Value="True">
+                                            <Setter Property="Text" Value="Annuler : " />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock>
+                <Run Text="{Binding Title}" />
+                <Run Text="{Binding LastName}" />
+                <Run Text="{Binding FirstName}" />
+                        </TextBlock>
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
             <MenuItem Click="MenuItem_InfoPatient">
                 <MenuItem.Header>
-                    <TextBlock Text="Info Patient"/>
+                    <TextBlock Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Text="Info Patient"/>
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem >
                 <MenuItem.Header >
-                    <TextBlock Text="Autre "/>
+                    <TextBlock Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Text="Autre "/>
                     
                 </MenuItem.Header>
                 <MenuItem  Click="MenuItem_DelteClick">
                     <MenuItem.Header>
-                        <TextBlock Text="Effacer "/>
+                        <TextBlock Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Text="Effacer "/>
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem  Click="MenuItem_TopClick">
                     <MenuItem.Header>
-                        <TextBlock Text="Mettre en haut"/>
+                        <TextBlock Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Text="Mettre en haut"/>
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem  Click="MenuItem_UpClick">
                     <MenuItem.Header>
-                        <TextBlock Text="Monter d'une case"/>
+                        <TextBlock Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Text="Monter d'une case"/>
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem Click="MenuItem_downClick" >
                     <MenuItem.Header>
-                        <TextBlock Text="Descendre d'une case"/>
+                        <TextBlock Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Text="Descendre d'une case"/>
                     </MenuItem.Header>
                 </MenuItem>
             </MenuItem>

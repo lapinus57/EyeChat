@@ -1,6 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Windows
-Imports System.Windows.Controls
 Imports EyeChat.MainWindow
 Imports EyeChat.Message
 

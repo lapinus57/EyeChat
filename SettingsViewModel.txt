@@ -1,4 +1,4 @@
-﻿Imports System.Collections.ObjectModel
+Imports System.Collections.ObjectModel
 Imports System.ComponentModel
 Imports System.Drawing
 Imports System.IO
@@ -196,40 +196,39 @@ Public Class SettingsViewModel
     End Property
 
 
-    Private Shared settingsLock As New Object()
-
     Public Property AppSizeDisplay As Integer
         Get
-            SyncLock settingsLock
-                Try
-                    Return My.Settings.AppSizeDisplay
-                Catch ex As Exception
-                    logger.Error($"Erreur lors de la lecture de la propriété AppSizeDisplay : {ex.Message}")
-                    Return 14
-                End Try
-            End SyncLock
+            Try
+                Return My.Settings.AppSizeDisplay
+
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AppSizeDisplay : {ex.Message}")
+                Return "14"
+            End Try
+
         End Get
         Set(ByVal value As Integer)
-            SyncLock settingsLock
-                Try
-                    My.Settings.AppSizeDisplay = value
-                    My.Settings.Save()
-                    'TabCtrl.FontSize = value
-                    NotifyPropertyChanged("AppSizeDisplay")
-                    NotifyPropertyChanged("ArrowSize")
-                    SelectUser(SelectedUser)
-                    Users.Clear()
+            Try
+                My.Settings.AppSizeDisplay = value
+                My.Settings.Save()
+
+
+                'TabCtrl.FontSize = value
+                NotifyPropertyChanged("AppSizeDisplay")
+                NotifyPropertyChanged("ArrowSize")
+                SelectUser(SelectedUser)
+                Users.Clear()
 
 
 
-                    Dim loadedUsers = LoadUsersFromJson()
-                    For Each user In loadedUsers
-                        Users.Add(user)
-                    Next
-                Catch ex As Exception
-                    logger.Error($"Erreur lors de la modification de la propriété AppSizeDisplay : {ex.Message}")
-                End Try
-            End SyncLock
+                Dim loadedUsers = LoadUsersFromJson()
+                For Each user In loadedUsers
+                    Users.Add(user)
+                Next
+            Catch ex As Exception
+                ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
+                logger.Error($"Erreur lors de la modification de la propriété AppSizeDisplay : {ex.Message}")
+            End Try
         End Set
     End Property
 

@@ -15,7 +15,7 @@ Option Explicit On
 Namespace My
     
     <Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute(),  _
-     Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.7.0.0"),  _
+     Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0"),  _
      Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
     Partial Friend NotInheritable Class MySettings
         Inherits Global.System.Configuration.ApplicationSettingsBase
@@ -519,6 +519,594 @@ Namespace My
             End Get
             Set
                 Me("PlanningName2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property OrthoMode() As Boolean
+            Get
+                Return CType(Me("OrthoMode"),Boolean)
+            End Get
+            Set
+                Me("OrthoMode") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property AdvanvedMode() As Boolean
+            Get
+                Return CType(Me("AdvanvedMode"),Boolean)
+            End Get
+            Set
+                Me("AdvanvedMode") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property AdminMode() As Boolean
+            Get
+                Return CType(Me("AdminMode"),Boolean)
+            End Get
+            Set
+                Me("AdminMode") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property UserAvatar() As String
+            Get
+                Return CType(Me("UserAvatar"),String)
+            End Get
+            Set
+                Me("UserAvatar") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property NFCMode() As Boolean
+            Get
+                Return CType(Me("NFCMode"),Boolean)
+            End Get
+            Set
+                Me("NFCMode") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property F5Enabled() As Boolean
+            Get
+                Return CType(Me("F5Enabled"),Boolean)
+            End Get
+            Set
+                Me("F5Enabled") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("REFRACTION")>  _
+        Public Property F5Page1() As String
+            Get
+                Return CType(Me("F5Page1"),String)
+            End Get
+            Set
+                Me("F5Page1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F5Text1() As String
+            Get
+                Return CType(Me("F5Text1"),String)
+            End Get
+            Set
+                Me("F5Text1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("LENTILLES")>  _
+        Public Property F5Page2() As String
+            Get
+                Return CType(Me("F5Page2"),String)
+            End Get
+            Set
+                Me("F5Page2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F5Text2() As String
+            Get
+                Return CType(Me("F5Text2"),String)
+            End Get
+            Set
+                Me("F5Text2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("PATHOLOGIES")>  _
+        Public Property F5Page3() As String
+            Get
+                Return CType(Me("F5Page3"),String)
+            End Get
+            Set
+                Me("F5Page3") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F5Text3() As String
+            Get
+                Return CType(Me("F5Text3"),String)
+            End Get
+            Set
+                Me("F5Text3") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ORTHOPTIE")>  _
+        Public Property F5Page4() As String
+            Get
+                Return CType(Me("F5Page4"),String)
+            End Get
+            Set
+                Me("F5Page4") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F5Text4() As String
+            Get
+                Return CType(Me("F5Text4"),String)
+            End Get
+            Set
+                Me("F5Text4") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F5Page5() As String
+            Get
+                Return CType(Me("F5Page5"),String)
+            End Get
+            Set
+                Me("F5Page5") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F5Text5() As String
+            Get
+                Return CType(Me("F5Text5"),String)
+            End Get
+            Set
+                Me("F5Text5") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property F6Enabled() As Boolean
+            Get
+                Return CType(Me("F6Enabled"),Boolean)
+            End Get
+            Set
+                Me("F6Enabled") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("REFRACTION")>  _
+        Public Property F6Page1() As String
+            Get
+                Return CType(Me("F6Page1"),String)
+            End Get
+            Set
+                Me("F6Page1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F6Text1() As String
+            Get
+                Return CType(Me("F6Text1"),String)
+            End Get
+            Set
+                Me("F6Text1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("LENTILLES")>  _
+        Public Property F6Page2() As String
+            Get
+                Return CType(Me("F6Page2"),String)
+            End Get
+            Set
+                Me("F6Page2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F6Text2() As String
+            Get
+                Return CType(Me("F6Text2"),String)
+            End Get
+            Set
+                Me("F6Text2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("PATHOLOGIES")>  _
+        Public Property F6Page3() As String
+            Get
+                Return CType(Me("F6Page3"),String)
+            End Get
+            Set
+                Me("F6Page3") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F6Text3() As String
+            Get
+                Return CType(Me("F6Text3"),String)
+            End Get
+            Set
+                Me("F6Text3") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ORTHOPTIE")>  _
+        Public Property F6Page4() As String
+            Get
+                Return CType(Me("F6Page4"),String)
+            End Get
+            Set
+                Me("F6Page4") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F6Text4() As String
+            Get
+                Return CType(Me("F6Text4"),String)
+            End Get
+            Set
+                Me("F6Text4") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("TRAITEMENT")>  _
+        Public Property F6Page5() As String
+            Get
+                Return CType(Me("F6Page5"),String)
+            End Get
+            Set
+                Me("F6Page5") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F6Text5() As String
+            Get
+                Return CType(Me("F6Text5"),String)
+            End Get
+            Set
+                Me("F6Text5") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property F7Enabled() As Boolean
+            Get
+                Return CType(Me("F7Enabled"),Boolean)
+            End Get
+            Set
+                Me("F7Enabled") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("REFRACTION")>  _
+        Public Property F7Page1() As String
+            Get
+                Return CType(Me("F7Page1"),String)
+            End Get
+            Set
+                Me("F7Page1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F7Text1() As String
+            Get
+                Return CType(Me("F7Text1"),String)
+            End Get
+            Set
+                Me("F7Text1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("LENTILLES")>  _
+        Public Property F7Page2() As String
+            Get
+                Return CType(Me("F7Page2"),String)
+            End Get
+            Set
+                Me("F7Page2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F7Text2() As String
+            Get
+                Return CType(Me("F7Text2"),String)
+            End Get
+            Set
+                Me("F7Text2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("PATHOLOGIES")>  _
+        Public Property F7Page3() As String
+            Get
+                Return CType(Me("F7Page3"),String)
+            End Get
+            Set
+                Me("F7Page3") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F7Text3() As String
+            Get
+                Return CType(Me("F7Text3"),String)
+            End Get
+            Set
+                Me("F7Text3") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ORTHOPTIE")>  _
+        Public Property F7Page4() As String
+            Get
+                Return CType(Me("F7Page4"),String)
+            End Get
+            Set
+                Me("F7Page4") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F7Text4() As String
+            Get
+                Return CType(Me("F7Text4"),String)
+            End Get
+            Set
+                Me("F7Text4") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("TRAITEMENT")>  _
+        Public Property F7Page5() As String
+            Get
+                Return CType(Me("F7Page5"),String)
+            End Get
+            Set
+                Me("F7Page5") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F7Text5() As String
+            Get
+                Return CType(Me("F7Text5"),String)
+            End Get
+            Set
+                Me("F7Text5") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property F8Enabled() As Boolean
+            Get
+                Return CType(Me("F8Enabled"),Boolean)
+            End Get
+            Set
+                Me("F8Enabled") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("REFRACTION")>  _
+        Public Property F8Page1() As String
+            Get
+                Return CType(Me("F8Page1"),String)
+            End Get
+            Set
+                Me("F8Page1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F8Text1() As String
+            Get
+                Return CType(Me("F8Text1"),String)
+            End Get
+            Set
+                Me("F8Text1") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("LENTILLES")>  _
+        Public Property F8Page2() As String
+            Get
+                Return CType(Me("F8Page2"),String)
+            End Get
+            Set
+                Me("F8Page2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F8Text2() As String
+            Get
+                Return CType(Me("F8Text2"),String)
+            End Get
+            Set
+                Me("F8Text2") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("PATHOLOGIES")>  _
+        Public Property F8Page3() As String
+            Get
+                Return CType(Me("F8Page3"),String)
+            End Get
+            Set
+                Me("F8Page3") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F8Text3() As String
+            Get
+                Return CType(Me("F8Text3"),String)
+            End Get
+            Set
+                Me("F8Text3") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ORTHOPTIE")>  _
+        Public Property F8Page4() As String
+            Get
+                Return CType(Me("F8Page4"),String)
+            End Get
+            Set
+                Me("F8Page4") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F8Text4() As String
+            Get
+                Return CType(Me("F8Text4"),String)
+            End Get
+            Set
+                Me("F8Text4") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("TRAITEMENT")>  _
+        Public Property F8Page5() As String
+            Get
+                Return CType(Me("F8Page5"),String)
+            End Get
+            Set
+                Me("F8Page5") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property F8Text5() As String
+            Get
+                Return CType(Me("F8Text5"),String)
+            End Get
+            Set
+                Me("F8Text5") = value
             End Set
         End Property
     End Class
