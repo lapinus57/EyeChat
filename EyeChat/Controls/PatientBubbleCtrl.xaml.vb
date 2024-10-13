@@ -46,7 +46,7 @@ Public Class PatientBubbleCtrl
                 Dim Text As String = "PTN02" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
 
 
@@ -61,7 +61,7 @@ Public Class PatientBubbleCtrl
                 Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
             End If
 
@@ -86,7 +86,7 @@ Public Class PatientBubbleCtrl
                 Dim Text As String = "PTN02" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
                 Dim newexams As String
 
@@ -94,7 +94,7 @@ Public Class PatientBubbleCtrl
                 Text = "PTN01" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|RDC|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
 
                 'Await (CType(Application.Current.MainWindow, MahApps.Metro.Controls.MetroWindow)).ShowChildWindowAsync(New InfoPatient())
@@ -108,7 +108,7 @@ Public Class PatientBubbleCtrl
                 Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
             End If
 
@@ -155,7 +155,7 @@ Public Class PatientBubbleCtrl
             Dim Text As String = "PTN03" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime
 
             ' Envoyez le message
-            SendMessage(Text)
+            SendManager.SendMessage(Text)
 
             ' Mettez à jour la liste
             'UpdateList()
@@ -331,7 +331,7 @@ Public Class PatientBubbleCtrl
         Dim formattedNewHoldTime As String = newHoldTime.ToString("yyyy-MM-ddTHH:mm:ss.fff")
         Dim formattedOldHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
         Dim Text As String = "PTN04" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedOldHoldTime & "|" & formattedNewHoldTime
-        SendMessage(Text)
+        SendManager.SendMessage(Text)
     End Sub
 
 

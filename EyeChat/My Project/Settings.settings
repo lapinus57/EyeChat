@@ -14,7 +14,7 @@
     <Setting Name="AppColorString" Type="System.String" Scope="User">
       <Value Profile="(Default)">Red</Value>
     </Setting>
-    <Setting Name="AppSizeDisplay" Type="System.Int32" Scope="User">
+    <Setting Name="AppSizeDisplay" Type="System.String" Scope="User">
       <Value Profile="(Default)">12</Value>
     </Setting>
     <Setting Name="DebugLevel" Type="System.String" Scope="User">

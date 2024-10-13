@@ -1,7 +1,10 @@
-﻿Imports System.Collections.ObjectModel
+﻿Imports System.ComponentModel
 Imports System.IO
 Imports Newtonsoft.Json
+
 Public Class UserSettings
+    Implements INotifyPropertyChanged
+    Private Const SettingsFilePath As String = "userSettings.json"
 
     <JsonProperty("UserName")>
     Public Property UserName As String
@@ -13,7 +16,7 @@ Public Class UserSettings
     Public Property AppTheme As String
 
     <JsonProperty("AppColor")>
-    Public Property AppColor As String
+    Public Property AppColor As System.Drawing.Color
 
     <JsonProperty("AppColorHex")>
     Public Property AppColorHex As String
@@ -74,7 +77,6 @@ Public Class UserSettings
 
     <JsonProperty("ShiftF12Enabled")>
     Public Property ShiftF12Enabled As Boolean
-
 
     <JsonProperty("F5Enabled")>
     Public Property F5Enabled As Boolean
@@ -209,12 +211,63 @@ Public Class UserSettings
     Public Property F8Text5 As String
 
 
-    Public Property RoomDisplay As String
 
 
+    <JsonProperty("RoomDisplay")>
+    Public Property RoomDisplay As Boolean
 
+    <JsonProperty("RoomDisplayStr")>
+    Public Property RoomDisplayStr As String
+
+    <JsonProperty("PlanningName1")>
+    Public Property PlanningName1 As String
+
+    <JsonProperty("PlanningMode")>
+    Public Property PlanningMode As Boolean
+
+    <JsonProperty("PlanningName2")>
+    Public Property PlanningName2 As String
+
+    <JsonProperty("PlanningMode2")>
+    Public Property PlanningMode2 As Boolean
+
+    <JsonProperty("SecretaryMode")>
+    Public Property SecretaryMode As Boolean
+
+    <JsonProperty("DoctorMode")>
+    Public Property DoctorMode As Boolean
+
+    <JsonProperty("OrthoMode")>
     Public Property OrthoMode As Boolean
 
+    <JsonProperty("AdvanvedMode")>
+    Public Property AdvanvedMode As Boolean
 
+    <JsonProperty("AdminMode")>
+    Public Property AdminMode As Boolean
 
+    <JsonProperty("NFCMode")>
+    Public Property NFCMode As Boolean
+
+    ' Lire les paramètres depuis le fichier JSON
+    Public Shared Function Load() As UserSettings
+        If Not File.Exists(SettingsFilePath) Then
+            Return New UserSettings()
+        End If
+
+        Dim json = File.ReadAllText(SettingsFilePath)
+        Return JsonConvert.DeserializeObject(Of UserSettings)(json)
+    End Function
+
+    ' Sauvegarder les paramètres dans le fichier JSON
+    Public Sub Save()
+        Dim json = JsonConvert.SerializeObject(Me, Formatting.Indented)
+        File.WriteAllText(SettingsFilePath, json)
+    End Sub
+
+    Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
+
+    Protected Sub NotifyPropertyChanged(ByVal propertyName As String)
+        RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
+    End Sub
 End Class
