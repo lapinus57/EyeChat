@@ -1,7 +1,14 @@
-﻿Imports System.ComponentModel
+﻿Imports System.Collections.ObjectModel
+Imports System.ComponentModel
+Imports System.IO
+Imports EyeChat.MainWindow
+Imports log4net
+Imports Newtonsoft.Json
 
 Public Class ExamOption
     Implements INotifyPropertyChanged
+    Private Shared ReadOnly logger As ILog = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+
 
     Private _index As Integer
     Public Property index As Integer
@@ -86,4 +93,20 @@ Public Class ExamOption
     Protected Sub NotifyPropertyChanged(propertyName As String)
         RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
     End Sub
+
+    Public Shared Sub LoadExamOptionFromJson()
+        Try
+            If File.Exists(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "ExamOption.json")) Then
+                Dim json As String = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "ExamOption.json"))
+                ExamOptions = JsonConvert.DeserializeObject(Of ObservableCollection(Of ExamOption))(json)
+            Else
+                ExamOptions = New ObservableCollection(Of ExamOption)()
+                'SaveExamOptionToJson(ExamOptions)
+            End If
+        Catch ex As Exception
+            ' Gérer les erreurs de chargement (par exemple, journaliser l'erreur)
+            logger.Error($"Erreur lors du chargement des options d'examen : {ex.Message}")
+        End Try
+    End Sub
+
 End Class

@@ -4,6 +4,7 @@ Imports System.IO
 Imports EyeChat.MainWindow
 Imports EyeChat.Planning
 Imports EyeChat.SettingsViewModel
+Imports log4net.Repository.Hierarchy
 Imports MahApps.Metro.Controls
 Imports MaterialDesignThemes.Wpf
 Imports Microsoft.Win32
@@ -24,7 +25,7 @@ Public Class SettingsWindows
 
 
     Private Sub AppColorChanged(sender As Object, e As SelectionChangedEventArgs)
-        'SetTheme()
+        SetTheme()
 
     End Sub
 
@@ -32,7 +33,7 @@ Public Class SettingsWindows
 
     Private Sub AppThemeChanged(sender As Object, e As SelectionChangedEventArgs)
 
-        'SetTheme()
+        SetTheme()
 
     End Sub
 
@@ -44,9 +45,13 @@ Public Class SettingsWindows
         Me.DataContext = settings
 
         LoadAvatars()
-        SelectAvatarByIndex(My.Settings.UserAvatar)
+        ' Vérifiez si MainWindow._userSettingsMain est initialisé
+
+
+
 
     End Sub
+
 
 
 
@@ -101,9 +106,9 @@ Public Class SettingsWindows
         Else
             ' S'assurer que selectedItem.Tag n'est pas null avant d'accéder à sa propriété
             If selectedItem.Tag IsNot Nothing Then
-                SendMessage("USR11" & My.Settings.UserName & "|/Avatar/" & selectedItem.Tag.ToString())
-                My.Settings.UserAvatar = selectedItem.Tag.ToString()
-                My.Settings.Save()
+                SendManager.SendMessage("USR11" & MainWindow._userSettingsMain.UserName & "|/Avatar/" & selectedItem.Tag.ToString())
+                MainWindow._userSettingsMain.UserAvatar = selectedItem.Tag.ToString()
+                MainWindow._userSettingsMain.Save()
             End If
         End If
     End Sub
@@ -205,8 +210,8 @@ Public Class SettingsWindows
         Dim examOptionList As List(Of ExamOption) = ExamDataGrid.ItemsSource.Cast(Of ExamOption)().ToList()
         Dim examOptionCollection As New ObservableCollection(Of ExamOption)(examOptionList)
         SaveExamOptionsToJson(examOptionCollection)
-        SendFileOverNetwork("Core", "examOptions.json")
-        loadExamOption()
+        FilesTransferManager.SendFileOverNetwork("Core", "examOptions.json")
+        JsonManager.loadExamOption()
     End Sub
 
     Private Sub SavePlanningChangesButton_Click(sender As Object, e As RoutedEventArgs)
@@ -256,11 +261,14 @@ Public Class SettingsWindows
     Private Sub ColorPicker_DropDownClosed(sender As Object, e As EventArgs)
         Dim colorPicker As MahApps.Metro.Controls.ColorPicker = CType(sender, MahApps.Metro.Controls.ColorPicker)
 
-        MsgBox(colorPicker.SelectedColor.ToString())
         ' Forcer la mise à jour de la source de liaison
         'BindingOperations.GetBindingExpression(ColorPicker, MahApps.Metro.Controls.ColorPicker.SelectedColorProperty)?.UpdateSource()
 
-        'SetTheme()
+        SetTheme()
+    End Sub
+
+    Private Sub SettingsWindows_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+        SelectAvatarByIndex(MainWindow._userSettingsMain.UserAvatar)
     End Sub
 End Class
 Public Class BoolToVisibilityConverter

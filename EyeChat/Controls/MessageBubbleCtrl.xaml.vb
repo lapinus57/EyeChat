@@ -41,7 +41,7 @@ Public Class MessageBubbleCtrl
 
     Public Sub New()
         InitializeComponent()
-        Size = My.Settings.AppSizeDisplay
+        Size = MainWindow._userSettingsMain.AppSizeDisplay
     End Sub
     'Protected Sub OnPropertyChanged(propertyName As String)
     'RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))

@@ -24,14 +24,24 @@ Public Class SettingsViewModel
     Private _examOptions As New ObservableCollection(Of ExamOption)()
     Private _SpeedMessage As New ObservableCollection(Of SpeedMessage)()
     Private _Planning As New ObservableCollection(Of Planning)()
+    Private _settings As Dictionary(Of String, Boolean)
+    Private Shared _userSettings As UserSettings
 
 
+    Private _mainWindow As MainWindow
+    Private _appSizeDisplay As Double
 
     Public Event PropertyChanged As PropertyChangedEventHandler _
     Implements INotifyPropertyChanged.PropertyChanged
 
+
     Public Sub New()
+
+
+
         _examOptions = New ObservableCollection(Of ExamOption)()
+
+        _userSettings = UserSettings.Load()
 
         ' Charger les options d'examen à partir du JSON
         Dim jsonFilePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "examOptions.json")
@@ -71,10 +81,13 @@ Public Class SettingsViewModel
         End If
 
 
-
     End Sub
 
-
+    Public ReadOnly Property UserSettings As UserSettings
+        Get
+            Return _userSettings
+        End Get
+    End Property
 
     Public Property AppNameDisplay As String
         Get
@@ -147,7 +160,7 @@ Public Class SettingsViewModel
     Public Property UserName As String
         Get
             Try
-                Return My.Settings.UserName
+                Return _userSettings.UserName
 
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété UserName : {ex.Message}")
@@ -157,8 +170,8 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.UserName = value
-                My.Settings.Save()
+                _userSettings.UserName = value
+                _userSettings.Save()
                 NotifyPropertyChanged("UserName")
             Catch ex As Exception
                 ' Gérer l'exception ici (par exemple, enregistrer l'erreur dans les journaux)
@@ -170,7 +183,7 @@ Public Class SettingsViewModel
     Public Property AppTheme As String
         Get
             Try
-                Return My.Settings.AppTheme
+                Return _userSettings.AppTheme
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AppTheme : {ex.Message}")
                 Return "White"
@@ -179,15 +192,16 @@ Public Class SettingsViewModel
         Set(ByVal value As String)
             Try
                 ' Éviter les doublons avant de modifier AppTheme
-                If My.Settings.AppTheme = value Then
+                If _userSettings.AppTheme = value Then
                     logger.Info("AppTheme n'a pas changé, aucun besoin de mise à jour.")
                     Return
                 End If
 
                 ' Mise à jour des paramètres
-                My.Settings.AppTheme = value
-                My.Settings.Save()
+                _userSettings.AppTheme = value
+                _userSettings.Save()
                 NotifyPropertyChanged("AppTheme")
+                logger.Error($"Le thème a été modifié : {value}")
             Catch ex As Exception
                 ' Gérer l'exception
                 logger.Error($"Erreur lors de la modification de la propriété AppTheme : {ex.Message}")
@@ -196,47 +210,49 @@ Public Class SettingsViewModel
     End Property
 
 
-    Private Shared settingsLock As New Object()
 
-    Public Property AppSizeDisplay As Integer
+
+
+    Public Property AppSizeDisplay As Double
         Get
-            SyncLock settingsLock
-                Try
-                    Return My.Settings.AppSizeDisplay
-                Catch ex As Exception
-                    logger.Error($"Erreur lors de la lecture de la propriété AppSizeDisplay : {ex.Message}")
-                    Return 14
-                End Try
-            End SyncLock
+            Try
+                logger.Info("Accès à la propriété AppSizeDisplay")
+                Return _userSettings.AppSizeDisplay
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la lecture de la propriété AppSizeDisplay : {ex.Message}")
+                Return 1.0 ' Valeur par défaut en cas d'erreur
+            End Try
         End Get
-        Set(ByVal value As Integer)
-            SyncLock settingsLock
-                Try
-                    My.Settings.AppSizeDisplay = value
-                    My.Settings.Save()
-                    'TabCtrl.FontSize = value
+        Set(ByVal value As Double)
+            Try
+                If _userSettings.AppSizeDisplay <> value Then
+                    _userSettings.AppSizeDisplay = value
+                    _userSettings.Save() ' Sauvegarder les paramètres
                     NotifyPropertyChanged("AppSizeDisplay")
+                    Dim mainWindow = CType(Application.Current.MainWindow, MainWindow)
+                    mainWindow.SetHeaderFontSize(CInt(value))
+                    mainWindow.UpdateLayout()
+                    'My.Application.MainWindow.SetHeaderFontSize(CInt(value))
+                    'PatientTabCtrl.FontSize = value
                     NotifyPropertyChanged("ArrowSize")
-                    SelectUser(SelectedUser)
+                    SelectUser("A Tous")
                     Users.Clear()
-
-
-
                     Dim loadedUsers = LoadUsersFromJson()
                     For Each user In loadedUsers
                         Users.Add(user)
                     Next
-                Catch ex As Exception
-                    logger.Error($"Erreur lors de la modification de la propriété AppSizeDisplay : {ex.Message}")
-                End Try
-            End SyncLock
+                End If
+            Catch ex As Exception
+                logger.Error($"Erreur lors de la modification de la propriété AppSizeDisplay : {ex.Message}")
+            End Try
         End Set
     End Property
 
     Public Property AppColorString As String
         Get
             Try
-                Dim storedValue As String = My.Settings.AppColorString
+
+                Dim storedValue As String = _userSettings.AppColorString
                 ' Supprimer les guillemets simples si présents
                 Return If(Not String.IsNullOrEmpty(storedValue), storedValue.Trim("'"c), "Blue")
             Catch ex As Exception
@@ -247,7 +263,7 @@ Public Class SettingsViewModel
         Set(ByVal value As String)
             Try
                 ' Éviter les doublons avant de modifier AppColorString
-                If My.Settings.AppColorString = value Then
+                If _userSettings.AppColorString = value Then
                     logger.Info("AppColorString n'a pas changé, aucun besoin de mise à jour.")
                     Return
                 End If
@@ -255,12 +271,13 @@ Public Class SettingsViewModel
                 value = If(Not String.IsNullOrEmpty(value), value.Trim("'"c), value)
 
                 Dim converter As New System.Windows.Media.ColorConverter()
-                Dim color As System.Windows.Media.Color = CType(converter.ConvertFromString(value), System.Windows.Media.Color)
+                Dim Color As System.Windows.Media.Color = CType(System.Windows.Media.ColorConverter.ConvertFromString(value), System.Windows.Media.Color)
+
 
                 ' Mise à jour des paramètres
-                My.Settings.AppColorString = value
-                My.Settings.AppColor = System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B)
-                My.Settings.Save()
+                _userSettings.AppColorString = value
+                _userSettings.AppColor = System.Drawing.Color.FromArgb(Color.A, Color.R, Color.G, Color.B)
+                _userSettings.Save()
                 NotifyPropertyChanged("AppColorString")
                 SelectUser(SelectedUser)
             Catch ex As Exception
@@ -274,7 +291,15 @@ Public Class SettingsViewModel
     Public Property AppColor As Color
         Get
             Try
-                Return My.Settings.AppColor
+                logger.Debug("Lecture de la propriété AppColor")
+                Dim storedValue As System.Drawing.Color = _userSettings.AppColor
+
+                ' Vérifiez si storedValue est null ou vide
+                If storedValue = Nothing Then
+                    Return Color.Blue ' Valeur par défaut
+                End If
+
+                Return storedValue
 
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AppColor : {ex.Message}")
@@ -285,13 +310,13 @@ Public Class SettingsViewModel
         Set(ByVal value As Color)
             Try
                 ' Éviter les doublons avant de modifier AppColor
-                If My.Settings.AppColor = value Then
+                If MainWindow._userSettingsMain.AppColor = value Then
                     logger.Info("AppColor n'a pas changé, aucun besoin de mise à jour.")
                     Return
                 End If
 
-                My.Settings.AppColor = value
-                My.Settings.Save()
+                MainWindow._userSettingsMain.AppColor = value
+                MainWindow._userSettingsMain.Save()
                 NotifyPropertyChanged("AppColor")
                 SelectUser(SelectedUser)
             Catch ex As Exception
@@ -303,9 +328,9 @@ Public Class SettingsViewModel
 
     Public Sub NotifyPropertyChanged(ByVal propertyName As String)
         RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
+        My.Application.MainWindow.UpdateLayout()
+
     End Sub
-
-
 
 
 
@@ -315,14 +340,14 @@ Public Class SettingsViewModel
     Public Shared Sub SetTheme()
         Try
             ' Récupérer le nom du thème (clair ou sombre)
-            Dim themeName As String = If(My.Settings.AppTheme = "Clair", "Light", "Dark")
+            Dim themeName As String = If(_userSettings.AppTheme = "Clair", "Light", "Dark")
 
             ' Récupérer la couleur sélectionnée à partir de My.Settings.AppColor
             Dim mediaColor As System.Windows.Media.Color = System.Windows.Media.Color.FromArgb(
-            My.Settings.AppColor.A,
-            My.Settings.AppColor.R,
-            My.Settings.AppColor.G,
-            My.Settings.AppColor.B)
+            _userSettings.AppColor.A,
+            _userSettings.AppColor.R,
+            _userSettings.AppColor.G,
+            _userSettings.AppColor.B)
 
             ' Détecter l'application actuelle
             Dim application = System.Windows.Application.Current
@@ -334,6 +359,8 @@ Public Class SettingsViewModel
 
                 ' Regénérer un nouveau thème si nécessaire
                 Dim newTheme As Theme = RuntimeThemeGenerator.Current.GenerateRuntimeTheme(themeName, mediaColor)
+                ' Changer le thème de l'application en utilisant le nouvel objet Theme
+                ThemeManager.Current.ChangeTheme(System.Windows.Application.Current, newTheme)
 
                 ' Rechercher si un dictionnaire de ressources existe déjà avec ce thème
                 Dim existingResourceDictionary = application.Resources.MergedDictionaries.FirstOrDefault(Function(rd) rd.Source IsNot Nothing AndAlso rd.Source.ToString().Contains("AppTheme"))
@@ -373,7 +400,8 @@ Public Class SettingsViewModel
     Public Property SelectedDebugLevel As String
         Get
             Try
-                Return My.Settings.DebugLevel
+                logger.Debug("Lecture de la propriété SelectedDebugLevel")
+                Return _userSettings.DebugLevel
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété SelectedDebugLevel : {ex.Message}")
                 Return "DEBUG"
@@ -381,30 +409,36 @@ Public Class SettingsViewModel
 
         End Get
         Set(ByVal value As String)
-            My.Settings.DebugLevel = value
-            My.Settings.Save()
+            ' Mise à jour des paramètres uniquement si la valeur change
+            If _userSettings.DebugLevel <> value Then
+                _userSettings.DebugLevel = value
+                _userSettings.Save()
+                NotifyPropertyChanged("SelectedDebugLevel")
+                logger.Info($"Le niveau de débogage a été modifié : {value}")
+                ' Vérifier le niveau de débogage sélectionné
+                Select Case value
+                    Case "DEBUG"
+                        logger.Logger.Repository.Threshold = log4net.Core.Level.Debug
+                    Case "INFO"
+                        logger.Logger.Repository.Threshold = log4net.Core.Level.Info
+                    Case "WARN"
+                        logger.Logger.Repository.Threshold = log4net.Core.Level.Warn
+                    Case "ERROR"
+                        logger.Logger.Repository.Threshold = log4net.Core.Level.Error
+                End Select
+            End If
 
-            ' Vérifier le niveau de débogage sélectionné
-            Select Case value
-                Case "DEBUG"
-                    logger.Logger.Repository.Threshold = log4net.Core.Level.Debug
-                Case "INFO"
-                    logger.Logger.Repository.Threshold = log4net.Core.Level.Info
-                Case "WARN"
-                    logger.Logger.Repository.Threshold = log4net.Core.Level.Warn
-                Case "ERROR"
-                    logger.Logger.Repository.Threshold = log4net.Core.Level.Error
-            End Select
 
-            logger.Info($"Le niveau de débogage a été modifié : {value}")
             NotifyPropertyChanged("SelectedDebugLevel")
         End Set
     End Property
 
+
     Public Property CtrlF9 As String
         Get
             Try
-                Return My.Settings.CtrlF9
+                logger.Debug("Lecture de la propriété CtrlF9")
+                Return _userSettings.CtrlF9
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF9 : {ex.Message}")
                 Return String.Empty
@@ -412,53 +446,52 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                ' Supprimer les anciennes valeurs en double si elles existent
-                If My.Settings.Properties.Cast(Of SettingsProperty).Any(Function(p) p.Name = "CtrlF9") Then
-                    My.Settings.CtrlF9 = Nothing
-                End If
-
                 ' Mise à jour des paramètres si la valeur change
-                If My.Settings.CtrlF9 <> value Then
-                    My.Settings.CtrlF9 = value
-                    My.Settings.Save()
+                If _userSettings.CtrlF9 <> value Then
+                    _userSettings.CtrlF9 = value
+                    _userSettings.Save()
                     NotifyPropertyChanged("CtrlF9")
+                    logger.Info($"La valeur de CtrlF9 a été modifiée : {value}")
                 End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF9 : {ex.Message}")
             End Try
         End Set
     End Property
+
+
     Public Property CtrlF9Enabled As Boolean
         Get
             Try
-                logger.Error("Accès à la propriété CtrlF9Enabled")
-                Return My.Settings.CtrlF9Enabled
+                logger.Debug("Lecture de la propriété CtrlF9Enabled")
+                Return _userSettings.CtrlF9Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF9Enabled : {ex.Message}")
                 Return False
             End Try
         End Get
-        Set(ByVal value As Boolean)
+        Set(value As Boolean)
             Try
-                ' Réajouter le paramètre
-                My.Settings.CtrlF9Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("CtrlF9Enabled")
-                logger.Error("CtrlF9Enabled modifié et sauvegardé")
+                If _userSettings.CtrlF9Enabled <> value Then
+                    _userSettings.CtrlF9Enabled = value
+                    _userSettings.Save()
+                    OnPropertyChanged(NameOf(CtrlF9Enabled))
+                    logger.Info($"La valeur de CtrlF9Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété CtrlF9Enabled : {ex.Message}")
+                logger.Error($"Erreur lors de la modification de la propriété CtrlF9Enabled1 : {ex.Message}")
             End Try
+
+
         End Set
     End Property
-
-
-
 
 
     Public Property CtrlF10 As String
         Get
             Try
-                Return My.Settings.CtrlF10
+                logger.Debug("Lecture de la propriété CtrlF10")
+                Return _userSettings.CtrlF10
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF10 : {ex.Message}")
                 Return String.Empty
@@ -466,16 +499,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                ' Supprimer les anciennes valeurs en double si elles existent
-                If My.Settings.Properties.Cast(Of SettingsProperty).Any(Function(p) p.Name = "CtrlF10") Then
-                    My.Settings.CtrlF10 = Nothing
-                End If
-
                 ' Mise à jour des paramètres uniquement si la valeur change
-                If My.Settings.CtrlF10 <> value Then
-                    My.Settings.CtrlF10 = value
-                    My.Settings.Save()
+                If _userSettings.CtrlF10 <> value Then
+                    _userSettings.CtrlF10 = value
+                    _userSettings.Save()
                     NotifyPropertyChanged("CtrlF10")
+                    logger.Info($"La valeur de CtrlF10 a été modifiée : {value}")
                 End If
 
             Catch ex As Exception
@@ -489,7 +518,8 @@ Public Class SettingsViewModel
     Public Property CtrlF10Enabled As Boolean
         Get
             Try
-                Return My.Settings.CtrlF10Enabled
+                logger.Debug("Lecture de la propriété CtrlF10Enabled")
+                Return _userSettings.CtrlF10Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF10Enabled : {ex.Message}")
                 Return False
@@ -497,9 +527,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.CtrlF10Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("CtrlF10Enabled")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.CtrlF10Enabled <> value Then
+                    _userSettings.CtrlF10Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("CtrlF10Enabled")
+                    logger.Info($"La valeur de CtrlF10Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF10Enabled : {ex.Message}")
             End Try
@@ -508,8 +542,8 @@ Public Class SettingsViewModel
     Public Property CtrlF11 As String
         Get
             Try
-                Return My.Settings.CtrlF11
-
+                logger.Debug("Lecture de la propriété CtrlF11")
+                Return _userSettings.CtrlF11
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF11 : {ex.Message}")
                 Return String.Empty
@@ -517,9 +551,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.CtrlF11 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("CtrlF11")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.CtrlF11 <> value Then
+                    _userSettings.CtrlF11 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("CtrlF11")
+                    logger.Info($"La valeur de CtrlF11 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF11 : {ex.Message}")
             End Try
@@ -528,7 +566,8 @@ Public Class SettingsViewModel
     Public Property CtrlF11Enabled As Boolean
         Get
             Try
-                Return My.Settings.CtrlF11Enabled
+                logger.Debug("Lecture de la propriété CtrlF11Enabled")
+                Return _userSettings.CtrlF11Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF11Enabled : {ex.Message}")
                 Return False
@@ -536,31 +575,15 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.CtrlF11Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("CtrlF11Enabled")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.CtrlF11Enabled <> value Then
+                    _userSettings.CtrlF11Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("CtrlF11Enabled")
+                    logger.Info($"La valeur de CtrlF11Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF11Enabled : {ex.Message}")
-            End Try
-        End Set
-    End Property
-
-    Public Property CtrlF12 As String
-        Get
-            Try
-                Return My.Settings.CtrlF12
-            Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété CtrlF12 : {ex.Message}")
-                Return String.Empty
-            End Try
-        End Get
-        Set(ByVal value As String)
-            Try
-                My.Settings.CtrlF12 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("CtrlF12")
-            Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété CtrlF12 : {ex.Message}")
             End Try
         End Set
     End Property
@@ -569,7 +592,8 @@ Public Class SettingsViewModel
 
         Get
             Try
-                Return My.Settings.CtrlF12Enabled
+                logger.Debug("Lecture de la propriété CtrlF12Enabled")
+                Return _userSettings.CtrlF12Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété CtrlF12Enabled : {ex.Message}")
                 Return False
@@ -577,9 +601,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.CtrlF12Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("CtrlF12Enabled")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.CtrlF12Enabled <> value Then
+                    _userSettings.CtrlF12Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("CtrlF12Enabled")
+                    logger.Info($"La valeur de CtrlF12Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété CtrlF12Enabled : {ex.Message}")
             End Try
@@ -588,7 +616,8 @@ Public Class SettingsViewModel
     Public Property ShiftF9 As String
         Get
             Try
-                Return My.Settings.ShiftF9
+                logger.Debug("Lecture de la propriété ShiftF9")
+                Return _userSettings.ShiftF9
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF9 : {ex.Message}")
                 Return String.Empty
@@ -596,9 +625,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.ShiftF9 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("ShiftF9")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.ShiftF9 <> value Then
+                    _userSettings.ShiftF9 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("ShiftF9")
+                    logger.Info($"La valeur de ShiftF9 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShifttF9 : {ex.Message}")
             End Try
@@ -608,7 +641,8 @@ Public Class SettingsViewModel
     Public Property ShiftF9Enabled As Boolean
         Get
             Try
-                Return My.Settings.ShiftF9Enabled
+                logger.Debug("Lecture de la propriété ShiftF9Enabled")
+                Return _userSettings.ShiftF9Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF9Enabled : {ex.Message}")
                 Return False
@@ -616,9 +650,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.ShiftF9Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("ShiftF9Enabled")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.ShiftF9Enabled <> value Then
+                    _userSettings.ShiftF9Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("ShiftF9Enabled")
+                    logger.Info($"La valeur de ShiftF9Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF9Enabled : {ex.Message}")
             End Try
@@ -628,7 +666,8 @@ Public Class SettingsViewModel
     Public Property ShiftF10 As String
         Get
             Try
-                Return My.Settings.ShiftF10
+                logger.Debug("Lecture de la propriété ShiftF10")
+                Return _userSettings.ShiftF10
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF10 : {ex.Message}")
                 Return String.Empty
@@ -636,9 +675,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.ShiftF10 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("ShiftF10")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.ShiftF10 <> value Then
+                    _userSettings.ShiftF10 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("ShiftF10")
+                    logger.Info($"La valeur de ShiftF10 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF10 : {ex.Message}")
             End Try
@@ -648,7 +691,8 @@ Public Class SettingsViewModel
     Public Property ShiftF10Enabled As Boolean
         Get
             Try
-                Return My.Settings.ShiftF10Enabled
+                logger.Debug("Lecture de la propriété ShiftF10Enabled")
+                Return _userSettings.ShiftF10Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF10Enabled : {ex.Message}")
                 Return False
@@ -656,9 +700,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.ShiftF10Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("ShiftF10Enabled")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.ShiftF10Enabled <> value Then
+                    _userSettings.ShiftF10Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("ShiftF10Enabled")
+                    logger.Info($"La valeur de ShiftF10Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF10Enabled : {ex.Message}")
             End Try
@@ -668,7 +716,8 @@ Public Class SettingsViewModel
     Public Property ShiftF11 As String
         Get
             Try
-                Return My.Settings.ShiftF11
+                logger.Debug("Lecture de la propriété ShiftF11")
+                Return _userSettings.ShiftF11
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF11 : {ex.Message}")
                 Return String.Empty
@@ -676,9 +725,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.ShiftF11 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("ShiftF11")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.ShiftF11 <> value Then
+                    _userSettings.ShiftF11 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("ShiftF11")
+                    logger.Info($"La valeur de ShiftF11 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF11 : {ex.Message}")
             End Try
@@ -688,7 +741,8 @@ Public Class SettingsViewModel
     Public Property ShiftF11Enabled As Boolean
         Get
             Try
-                Return My.Settings.ShiftF11Enabled
+                logger.Debug("Lecture de la propriété ShiftF11Enabled")
+                Return _userSettings.ShiftF11Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété ShiftF11Enabled : {ex.Message}")
                 Return False
@@ -696,58 +750,25 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.ShiftF11Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("ShiftF11Enabled")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.ShiftF11Enabled <> value Then
+                    _userSettings.ShiftF11Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("ShiftF11Enabled")
+                    logger.Info($"La valeur de ShiftF11Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété ShiftF11Enabled : {ex.Message}")
             End Try
         End Set
     End Property
 
-    Public Property ShiftF12 As String
-        Get
-            Try
-                Return My.Settings.ShiftF12
-            Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété ShiftF12 : {ex.Message}")
-                Return String.Empty
-            End Try
-        End Get
-        Set(ByVal value As String)
-            Try
-                My.Settings.ShiftF12 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("ShiftF12")
-            Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété ShiftF12 : {ex.Message}")
-            End Try
-        End Set
-    End Property
-    Public Property ShiftF12Enabled As Boolean
-        Get
-            Try
-                Return My.Settings.ShiftF12Enabled
-            Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété ShiftF12Enabled : {ex.Message}")
-                Return False
-            End Try
-        End Get
-        Set(ByVal value As Boolean)
-            Try
-                My.Settings.ShiftF12Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("ShiftF12Enabled")
-            Catch ex As Exception
-                logger.Error($"Erreur lors de la modification de la propriété ShiftF12Enabled : {ex.Message}")
-            End Try
-        End Set
-    End Property
 
     Public Property PlanningMode As Boolean
         Get
             Try
-                Return My.Settings.PlanningMode
+                logger.Debug("Lecture de la propriété PlanningMode")
+                Return _userSettings.PlanningMode
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété PlanningMode : {ex.Message}")
                 Return False
@@ -755,9 +776,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.PlanningMode = value
-                My.Settings.Save()
-                NotifyPropertyChanged("PlanningMode")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.PlanningMode <> value Then
+                    _userSettings.PlanningMode = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("PlanningMode")
+                    logger.Info($"La valeur de PlanningMode a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété PlanningMode : {ex.Message}")
             End Try
@@ -766,7 +791,8 @@ Public Class SettingsViewModel
     Public Property PlanningMode2 As Boolean
         Get
             Try
-                Return My.Settings.PlanningMode2
+                logger.Debug("Lecture de la propriété PlanningMode2")
+                Return _userSettings.PlanningMode2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété PlanningMode2 : {ex.Message}")
                 Return False
@@ -774,9 +800,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.PlanningMode2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("PlanningMode2")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.PlanningMode2 <> value Then
+                    _userSettings.PlanningMode2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("PlanningMode2")
+                    logger.Info($"La valeur de PlanningMode2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété PlanningMode2 : {ex.Message}")
             End Try
@@ -786,7 +816,8 @@ Public Class SettingsViewModel
     Public Property PlanningName2 As String
         Get
             Try
-                Return My.Settings.PlanningName2
+                logger.Debug("Lecture de la propriété PlanningName2")
+                Return _userSettings.PlanningName2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété PlanningName2 : {ex.Message}")
                 Return False
@@ -794,9 +825,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.PlanningName2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("PlanningName2")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.PlanningName2 <> value Then
+                    _userSettings.PlanningName2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("PlanningName2")
+                    logger.Info($"La valeur de PlanningName2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété PlanningName2 : {ex.Message}")
             End Try
@@ -807,7 +842,8 @@ Public Class SettingsViewModel
     Public Property SecretaryMode As Boolean
         Get
             Try
-                Return My.Settings.SecretaryMode
+                logger.Debug("Lecture de la propriété SecretaryMode")
+                Return _userSettings.SecretaryMode
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété SecretaryMode: {ex.Message}")
                 Return False
@@ -815,9 +851,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.SecretaryMode = value
-                My.Settings.Save()
-                NotifyPropertyChanged("SecretaryMode")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.SecretaryMode <> value Then
+                    _userSettings.SecretaryMode = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("SecretaryMode")
+                    logger.Info($"La valeur de SecretaryMode a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété SecretaryMode : {ex.Message}")
             End Try
@@ -827,7 +867,8 @@ Public Class SettingsViewModel
     Public Property DoctorMode As Boolean
         Get
             Try
-                Return My.Settings.DoctorMode
+                logger.Debug("Lecture de la propriété DoctorMode")
+                Return _userSettings.DoctorMode
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété DoctorMode: {ex.Message}")
                 Return False
@@ -835,9 +876,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.DoctorMode = value
-                My.Settings.Save()
-                NotifyPropertyChanged("DoctorMode")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.DoctorMode <> value Then
+                    _userSettings.DoctorMode = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("DoctorMode")
+                    logger.Info($"La valeur de DoctorMode a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété DoctorMode : {ex.Message}")
             End Try
@@ -847,7 +892,8 @@ Public Class SettingsViewModel
     Public Property OrthoMode As Boolean
         Get
             Try
-                Return My.Settings.OrthoMode
+                logger.Debug("Lecture de la propriété OrthoMode")
+                Return _userSettings.OrthoMode
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété OrthoMode: {ex.Message}")
                 Return False
@@ -855,9 +901,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.OrthoMode = value
-                My.Settings.Save()
-                NotifyPropertyChanged("OrthoMode")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.OrthoMode <> value Then
+                    _userSettings.OrthoMode = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("OrthoMode")
+                    logger.Info($"La valeur de OrthoMode a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété OrthoMode : {ex.Message}")
             End Try
@@ -867,7 +917,8 @@ Public Class SettingsViewModel
     Public Property AdvanvedMode As Boolean
         Get
             Try
-                Return My.Settings.AdvanvedMode
+                logger.Debug("Lecture de la propriété AdvanvedMode")
+                Return _userSettings.AdvanvedMode
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AdvanvedMode: {ex.Message}")
                 Return False
@@ -875,9 +926,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.AdvanvedMode = value
-                My.Settings.Save()
-                NotifyPropertyChanged("AdvanvedMode")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.AdvanvedMode <> value Then
+                    _userSettings.AdvanvedMode = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("AdvanvedMode")
+                    logger.Info($"La valeur de AdvanvedMode a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété AdvanvedMode : {ex.Message}")
             End Try
@@ -887,7 +942,8 @@ Public Class SettingsViewModel
     Public Property AdminMode As Boolean
         Get
             Try
-                Return My.Settings.AdminMode
+                logger.Debug("Lecture de la propriété AdminMode")
+                Return _userSettings.AdminMode
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AdminMode: {ex.Message}")
                 Return False
@@ -895,9 +951,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.AdminMode = value
-                My.Settings.Save()
-                NotifyPropertyChanged("AdminMode")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.AdminMode <> value Then
+                    _userSettings.AdminMode = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("AdminMode")
+                    logger.Info($"La valeur de AdminMode a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété AdminMode : {ex.Message}")
             End Try
@@ -907,7 +967,8 @@ Public Class SettingsViewModel
     Public Property NFCMode As Boolean
         Get
             Try
-                Return My.Settings.NFCMode
+                logger.Debug("Lecture de la propriété NFCMode")
+                Return _userSettings.NFCMode
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété NFCMode: {ex.Message}")
                 Return False
@@ -915,9 +976,13 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.NFCMode = value
-                My.Settings.Save()
-                NotifyPropertyChanged("NFCMode")
+                ' Mise à jour des paramètres uniquement si la valeur change
+                If _userSettings.NFCMode <> value Then
+                    _userSettings.NFCMode = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("NFCMode")
+                    logger.Info($"La valeur de NFCMode a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété NFCMode : {ex.Message}")
             End Try
@@ -937,19 +1002,23 @@ Public Class SettingsViewModel
 
     Public Property RoomDisplay As Boolean
         Get
-            Return My.Settings.RoomDisplay
+            logger.Debug("Lecture de la propriété RoomDisplay")
+            Return _userSettings.RoomDisplay
         End Get
         Set(value As Boolean)
             Try
-                My.Settings.RoomDisplay = value
-                If value = True Then
-                    My.Settings.RoomDisplayStr = "Visible"
-                Else
-                    My.Settings.RoomDisplayStr = "Collapsed"
+                If _userSettings.RoomDisplay <> value Then
+                    _userSettings.RoomDisplay = value
+                    If value = True Then
+                        _userSettings.RoomDisplayStr = "Visible"
+                    Else
+                        _userSettings.RoomDisplayStr = "Collapsed"
+                    End If
+                    _userSettings.Save()
+                    NotifyPropertyChanged("RoomDisplay")
+                    NotifyPropertyChanged("RoomDisplayStr")
+                    logger.Info($"La valeur de RoomDisplay a été modifiée : {value}")
                 End If
-                My.Settings.Save()
-                NotifyPropertyChanged("RoomDisplay")
-                NotifyPropertyChanged("RoomDisplayStr")
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété RoomDisplay : {ex.Message}")
             End Try
@@ -958,12 +1027,17 @@ Public Class SettingsViewModel
 
     Public Property RoomDisplayStr As String
         Get
-            Return My.Settings.RoomDisplayStr
+            logger.Debug("Lecture de la propriété RoomDisplayStr")
+            Return _userSettings.RoomDisplayStr
         End Get
         Set(value As String)
             Try
-                My.Settings.RoomDisplayStr = value
-                NotifyPropertyChanged("RoomDisplayStr")
+                If _userSettings.RoomDisplayStr <> value Then
+                    _userSettings.RoomDisplayStr = value
+                    NotifyPropertyChanged("RoomDisplay")
+                    NotifyPropertyChanged("RoomDisplayStr")
+                    logger.Info($"La valeur de RoomDisplayStr a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété RoomDisplayStr : {ex.Message}")
             End Try
@@ -1016,7 +1090,8 @@ Public Class SettingsViewModel
     Public Property F5Enabled As Boolean
         Get
             Try
-                Return My.Settings.F5Enabled
+                logger.Debug("Lecture de la propriété F5Enabled")
+                Return _userSettings.F5Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Enabled : {ex.Message}")
                 Return False
@@ -1024,9 +1099,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.F5Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Enabled")
+                If _userSettings.F5Enabled <> value Then
+                    _userSettings.F5Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Enabled")
+                    logger.Info($"La valeur de F5Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Enabled : {ex.Message}")
             End Try
@@ -1036,7 +1114,8 @@ Public Class SettingsViewModel
     Public Property F5Page1 As String
         Get
             Try
-                Return My.Settings.F5Page1
+                logger.Debug("Lecture de la propriété F5Page1")
+                Return _userSettings.F5Page1
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Page1 : {ex.Message}")
                 Return String.Empty
@@ -1044,9 +1123,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Page1 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Page1")
+                If _userSettings.F5Page1 <> value Then
+                    _userSettings.F5Page1 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Page1")
+                    logger.Info($"La valeur de F5Page1 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Page1 : {ex.Message}")
             End Try
@@ -1056,7 +1138,8 @@ Public Class SettingsViewModel
     Public Property F5Page2 As String
         Get
             Try
-                Return My.Settings.F5Page2
+                logger.Debug("Lecture de la propriété F5Page2")
+                Return _userSettings.F5Page2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Page2 : {ex.Message}")
                 Return String.Empty
@@ -1064,9 +1147,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Page2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Page2")
+                If _userSettings.F5Page2 <> value Then
+                    _userSettings.F5Page2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Page2")
+                    logger.Info($"La valeur de F5Page2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Page2 : {ex.Message}")
             End Try
@@ -1076,7 +1162,8 @@ Public Class SettingsViewModel
     Public Property F5Page3 As String
         Get
             Try
-                Return My.Settings.F5Page3
+                logger.Debug("Lecture de la propriété F5Page3")
+                Return _userSettings.F5Page3
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Page3 : {ex.Message}")
                 Return String.Empty
@@ -1084,9 +1171,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Page3 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Page3")
+                If _userSettings.F5Page3 <> value Then
+                    _userSettings.F5Page3 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Page3")
+                    logger.Info($"La valeur de F5Page3 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Page3 : {ex.Message}")
             End Try
@@ -1096,7 +1186,8 @@ Public Class SettingsViewModel
     Public Property F5Page4 As String
         Get
             Try
-                Return My.Settings.F5Page4
+                logger.Debug("Lecture de la propriété F5Page4")
+                Return _userSettings.F5Page4
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Page4 : {ex.Message}")
                 Return String.Empty
@@ -1104,9 +1195,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Page4 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Page4")
+                If _userSettings.F5Page4 <> value Then
+                    _userSettings.F5Page4 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Page4")
+                    logger.Info($"La valeur de F5Page4 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Page4 : {ex.Message}")
             End Try
@@ -1116,7 +1210,8 @@ Public Class SettingsViewModel
     Public Property F5Page5 As String
         Get
             Try
-                Return My.Settings.F5Page5
+                logger.Debug("Lecture de la propriété F5Page5")
+                Return _userSettings.F5Page5
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Page5 : {ex.Message}")
                 Return String.Empty
@@ -1124,9 +1219,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Page5 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Page5")
+                If _userSettings.F5Page5 <> value Then
+                    _userSettings.F5Page5 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Page5")
+                    logger.Info($"La valeur de F5Page5 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Page5 : {ex.Message}")
             End Try
@@ -1136,7 +1234,8 @@ Public Class SettingsViewModel
     Public Property F5Text1 As String
         Get
             Try
-                Return My.Settings.F5Text1
+                logger.Debug("Lecture de la propriété F5Text1")
+                Return _userSettings.F5Text1
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Text1 : {ex.Message}")
                 Return String.Empty
@@ -1144,9 +1243,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Text1 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Text1")
+                If _userSettings.F5Text1 <> value Then
+                    _userSettings.F5Text1 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Text1")
+                    logger.Info($"La valeur de F5Text1 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Text1 : {ex.Message}")
             End Try
@@ -1156,7 +1258,8 @@ Public Class SettingsViewModel
     Public Property F5Text2 As String
         Get
             Try
-                Return My.Settings.F5Text2
+                logger.Debug("Lecture de la propriété F5Text2")
+                Return _userSettings.F5Text2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Text2 : {ex.Message}")
                 Return String.Empty
@@ -1164,9 +1267,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Text2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Text2")
+                If _userSettings.F5Text2 <> value Then
+                    _userSettings.F5Text2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Text2")
+                    logger.Info($"La valeur de F5Text2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Text2 : {ex.Message}")
             End Try
@@ -1176,7 +1282,8 @@ Public Class SettingsViewModel
     Public Property F5Text3 As String
         Get
             Try
-                Return My.Settings.F5Text3
+                logger.Debug("Lecture de la propriété F5Text3")
+                Return _userSettings.F5Text3
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Text3 : {ex.Message}")
                 Return String.Empty
@@ -1184,9 +1291,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Text3 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Text3")
+                If _userSettings.F5Text3 <> value Then
+                    _userSettings.F5Text3 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Text3")
+                    logger.Info($"La valeur de F5Text3 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Text3 : {ex.Message}")
             End Try
@@ -1196,7 +1306,8 @@ Public Class SettingsViewModel
     Public Property F5Text4 As String
         Get
             Try
-                Return My.Settings.F5Text4
+                logger.Debug("Lecture de la propriété F5Text4")
+                Return _userSettings.F5Text4
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Text4 : {ex.Message}")
                 Return String.Empty
@@ -1204,9 +1315,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Text4 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Text4")
+                If _userSettings.F5Text4 <> value Then
+                    _userSettings.F5Text4 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Text4")
+                    logger.Info($"La valeur de F5Text4 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Text4 : {ex.Message}")
             End Try
@@ -1216,7 +1330,8 @@ Public Class SettingsViewModel
     Public Property F5Text5 As String
         Get
             Try
-                Return My.Settings.F5Text5
+                logger.Debug("Lecture de la propriété F5Text5")
+                Return _userSettings.F5Text5
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F5Text5 : {ex.Message}")
                 Return String.Empty
@@ -1224,9 +1339,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F5Text5 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F5Text5")
+                If _userSettings.F5Text5 <> value Then
+                    _userSettings.F5Text5 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F5Text5")
+                    logger.Info($"La valeur de F5Text5 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F5Text5 : {ex.Message}")
             End Try
@@ -1236,7 +1354,8 @@ Public Class SettingsViewModel
     Public Property F6Enabled As Boolean
         Get
             Try
-                Return My.Settings.F6Enabled
+                logger.Debug("Lecture de la propriété F6Enabled")
+                Return _userSettings.F6Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Enabled : {ex.Message}")
                 Return False
@@ -1244,9 +1363,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.F6Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Enabled")
+                If _userSettings.F6Enabled <> value Then
+                    _userSettings.F6Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Enabled")
+                    logger.Info($"La valeur de F6Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Enabled : {ex.Message}")
             End Try
@@ -1256,7 +1378,8 @@ Public Class SettingsViewModel
     Public Property F6Page1 As String
         Get
             Try
-                Return My.Settings.F6Page1
+                logger.Debug("Lecture de la propriété F6Page1")
+                Return _userSettings.F6Page1
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Page1 : {ex.Message}")
                 Return String.Empty
@@ -1264,9 +1387,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Page1 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Page1")
+                If _userSettings.F6Page1 <> value Then
+                    _userSettings.F6Page1 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Page1")
+                    logger.Info($"La valeur de F6Page1 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Page1 : {ex.Message}")
             End Try
@@ -1276,7 +1402,8 @@ Public Class SettingsViewModel
     Public Property F6Page2 As String
         Get
             Try
-                Return My.Settings.F6Page2
+                logger.Debug("Lecture de la propriété F6Page2")
+                Return _userSettings.F6Page2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Page2 : {ex.Message}")
                 Return String.Empty
@@ -1284,9 +1411,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Page2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Page2")
+                If _userSettings.F6Page2 <> value Then
+                    _userSettings.F6Page2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Page2")
+                    logger.Info($"La valeur de F6Page2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Page2 : {ex.Message}")
             End Try
@@ -1296,7 +1426,8 @@ Public Class SettingsViewModel
     Public Property F6Page3 As String
         Get
             Try
-                Return My.Settings.F6Page3
+                logger.Debug("Lecture de la propriété F6Page3")
+                Return _userSettings.F6Page3
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Page3 : {ex.Message}")
                 Return String.Empty
@@ -1304,9 +1435,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Page3 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Page3")
+                If _userSettings.F6Page3 <> value Then
+                    _userSettings.F6Page3 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Page3")
+                    logger.Info($"La valeur de F6Page3 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Page3 : {ex.Message}")
             End Try
@@ -1316,7 +1450,8 @@ Public Class SettingsViewModel
     Public Property F6Page4 As String
         Get
             Try
-                Return My.Settings.F6Page4
+                logger.Debug("Lecture de la propriété F6Page4")
+                Return _userSettings.F6Page4
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Page4 : {ex.Message}")
                 Return String.Empty
@@ -1324,9 +1459,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Page4 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Page4")
+                If _userSettings.F6Page4 <> value Then
+                    _userSettings.F6Page4 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Page4")
+                    logger.Info($"La valeur de F6Page4 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Page4 : {ex.Message}")
             End Try
@@ -1336,7 +1474,8 @@ Public Class SettingsViewModel
     Public Property F6Page5 As String
         Get
             Try
-                Return My.Settings.F6Page5
+                logger.Debug("Lecture de la propriété F6Page5")
+                Return _userSettings.F6Page5
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Page5 : {ex.Message}")
                 Return String.Empty
@@ -1344,9 +1483,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Page5 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Page5")
+                If _userSettings.F6Page5 <> value Then
+                    _userSettings.F6Page5 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Page5")
+                    logger.Info($"La valeur de F6Page5 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Page5 : {ex.Message}")
             End Try
@@ -1356,7 +1498,8 @@ Public Class SettingsViewModel
     Public Property F6Text1 As String
         Get
             Try
-                Return My.Settings.F6Text1
+                logger.Debug("Lecture de la propriété F6Text1")
+                Return _userSettings.F6Text1
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Text1 : {ex.Message}")
                 Return String.Empty
@@ -1364,9 +1507,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Text1 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Text1")
+                If _userSettings.F6Text1 <> value Then
+                    _userSettings.F6Text1 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Text1")
+                    logger.Info($"La valeur de F6Text1 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Text1 : {ex.Message}")
             End Try
@@ -1376,7 +1522,8 @@ Public Class SettingsViewModel
     Public Property F6Text2 As String
         Get
             Try
-                Return My.Settings.F6Text2
+                logger.Debug("Lecture de la propriété F6Text2")
+                Return _userSettings.F6Text2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Text2 : {ex.Message}")
                 Return String.Empty
@@ -1384,9 +1531,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Text2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Text2")
+                If _userSettings.F6Text2 <> value Then
+                    _userSettings.F6Text2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Text2")
+                    logger.Info($"La valeur de F6Text2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Text2 : {ex.Message}")
             End Try
@@ -1396,7 +1546,8 @@ Public Class SettingsViewModel
     Public Property F6Text3 As String
         Get
             Try
-                Return My.Settings.F6Text3
+                logger.Debug("Lecture de la propriété F6Text3")
+                Return _userSettings.F6Text3
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Text3 : {ex.Message}")
                 Return String.Empty
@@ -1404,9 +1555,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Text3 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Text3")
+                If _userSettings.F6Text3 <> value Then
+                    _userSettings.F6Text3 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Text3")
+                    logger.Info($"La valeur de F6Text3 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Text3 : {ex.Message}")
             End Try
@@ -1416,7 +1570,8 @@ Public Class SettingsViewModel
     Public Property F6Text4 As String
         Get
             Try
-                Return My.Settings.F6Text4
+                logger.Debug("Lecture de la propriété F6Text4")
+                Return _userSettings.F6Text4
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Text4 : {ex.Message}")
                 Return String.Empty
@@ -1424,9 +1579,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Text4 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Text4")
+                If _userSettings.F6Text4 <> value Then
+                    _userSettings.F6Text4 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Text4")
+                    logger.Info($"La valeur de F6Text4 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Text4 : {ex.Message}")
             End Try
@@ -1436,7 +1594,8 @@ Public Class SettingsViewModel
     Public Property F6Text5 As String
         Get
             Try
-                Return My.Settings.F6Text5
+                logger.Debug("Lecture de la propriété F6Text5")
+                Return _userSettings.F6Text5
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F6Text5 : {ex.Message}")
                 Return String.Empty
@@ -1444,9 +1603,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F6Text5 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F6Text5")
+                If _userSettings.F6Text5 <> value Then
+                    _userSettings.F6Text5 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F6Text5")
+                    logger.Info($"La valeur de F6Text5 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F6Text5 : {ex.Message}")
             End Try
@@ -1456,7 +1618,8 @@ Public Class SettingsViewModel
     Public Property F7Enabled As Boolean
         Get
             Try
-                Return My.Settings.F7Enabled
+                logger.Debug("Lecture de la propriété F7Enabled")
+                Return _userSettings.F7Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Enabled : {ex.Message}")
                 Return False
@@ -1464,9 +1627,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.F7Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Enabled")
+                If _userSettings.F7Enabled <> value Then
+                    _userSettings.F7Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Enabled")
+                    logger.Info($"La valeur de F7Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Enabled : {ex.Message}")
             End Try
@@ -1476,7 +1642,8 @@ Public Class SettingsViewModel
     Public Property F7Page1 As String
         Get
             Try
-                Return My.Settings.F7Page1
+                logger.Debug("Lecture de la propriété F7Page1")
+                Return _userSettings.F7Page1
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Page1 : {ex.Message}")
                 Return String.Empty
@@ -1484,9 +1651,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Page1 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Page1")
+                If _userSettings.F7Page1 <> value Then
+                    _userSettings.F7Page1 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Page1")
+                    logger.Info($"La valeur de F7Page1 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Page1 : {ex.Message}")
             End Try
@@ -1496,7 +1666,8 @@ Public Class SettingsViewModel
     Public Property F7Page2 As String
         Get
             Try
-                Return My.Settings.F7Page2
+                logger.Debug("Lecture de la propriété F7Page2")
+                Return _userSettings.F7Page2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Page2 : {ex.Message}")
                 Return String.Empty
@@ -1504,9 +1675,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Page2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Page2")
+                If _userSettings.F7Page2 <> value Then
+                    _userSettings.F7Page2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Page2")
+                    logger.Info($"La valeur de F7Page2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Page2 : {ex.Message}")
             End Try
@@ -1516,7 +1690,8 @@ Public Class SettingsViewModel
     Public Property F7Page3 As String
         Get
             Try
-                Return My.Settings.F7Page3
+                logger.Debug("Lecture de la propriété F7Page3")
+                Return _userSettings.F7Page3
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Page3 : {ex.Message}")
                 Return String.Empty
@@ -1524,9 +1699,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Page3 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Page3")
+                If _userSettings.F7Page3 <> value Then
+                    _userSettings.F7Page3 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Page3")
+                    logger.Info($"La valeur de F7Page3 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Page3 : {ex.Message}")
             End Try
@@ -1536,7 +1714,8 @@ Public Class SettingsViewModel
     Public Property F7Page4 As String
         Get
             Try
-                Return My.Settings.F7Page4
+                logger.Debug("Lecture de la propriété F7Page4")
+                Return _userSettings.F7Page4
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Page4 : {ex.Message}")
                 Return String.Empty
@@ -1544,9 +1723,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Page4 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Page4")
+                If _userSettings.F7Page4 <> value Then
+                    _userSettings.F7Page4 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Page4")
+                    logger.Info($"La valeur de F7Page4 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Page4 : {ex.Message}")
             End Try
@@ -1556,7 +1738,8 @@ Public Class SettingsViewModel
     Public Property F7Page5 As String
         Get
             Try
-                Return My.Settings.F7Page5
+                logger.Debug("Lecture de la propriété F7Page5")
+                Return _userSettings.F7Page5
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Page5 : {ex.Message}")
                 Return String.Empty
@@ -1564,9 +1747,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Page5 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Page5")
+                If _userSettings.F7Page5 <> value Then
+                    _userSettings.F7Page5 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Page5")
+                    logger.Info($"La valeur de F7Page5 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Page5 : {ex.Message}")
             End Try
@@ -1576,7 +1762,8 @@ Public Class SettingsViewModel
     Public Property F7Text1 As String
         Get
             Try
-                Return My.Settings.F7Text1
+                logger.Debug("Lecture de la propriété F7Text1")
+                Return _userSettings.F7Text1
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Text1 : {ex.Message}")
                 Return String.Empty
@@ -1584,9 +1771,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Text1 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Text1")
+                If _userSettings.F7Text1 <> value Then
+                    _userSettings.F7Text1 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Text1")
+                    logger.Info($"La valeur de F7Text1 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Text1 : {ex.Message}")
             End Try
@@ -1596,7 +1786,8 @@ Public Class SettingsViewModel
     Public Property F7Text2 As String
         Get
             Try
-                Return My.Settings.F7Text2
+                logger.Debug("Lecture de la propriété F7Text2")
+                Return _userSettings.F7Text2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Text2 : {ex.Message}")
                 Return String.Empty
@@ -1604,9 +1795,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Text2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Text2")
+                If _userSettings.F7Text2 <> value Then
+                    _userSettings.F7Text2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Text2")
+                    logger.Info($"La valeur de F7Text2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Text2 : {ex.Message}")
             End Try
@@ -1616,7 +1810,8 @@ Public Class SettingsViewModel
     Public Property F7Text3 As String
         Get
             Try
-                Return My.Settings.F7Text3
+                logger.Debug("Lecture de la propriété F7Text3")
+                Return _userSettings.F7Text3
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Text3 : {ex.Message}")
                 Return String.Empty
@@ -1624,9 +1819,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Text3 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Text3")
+                If _userSettings.F7Text3 <> value Then
+                    _userSettings.F7Text3 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Text3")
+                    logger.Info($"La valeur de F7Text3 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Text3 : {ex.Message}")
             End Try
@@ -1636,7 +1834,8 @@ Public Class SettingsViewModel
     Public Property F7Text4 As String
         Get
             Try
-                Return My.Settings.F7Text4
+                logger.Debug("Lecture de la propriété F7Text4")
+                Return _userSettings.F7Text4
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Text4 : {ex.Message}")
                 Return String.Empty
@@ -1644,9 +1843,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Text4 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Text4")
+                If _userSettings.F7Text4 <> value Then
+                    _userSettings.F7Text4 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Text4")
+                    logger.Info($"La valeur de F7Text4 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Text4 : {ex.Message}")
             End Try
@@ -1656,7 +1858,8 @@ Public Class SettingsViewModel
     Public Property F7Text5 As String
         Get
             Try
-                Return My.Settings.F7Text5
+                logger.Debug("Lecture de la propriété F7Text5")
+                Return _userSettings.F7Text5
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F7Text5 : {ex.Message}")
                 Return String.Empty
@@ -1664,9 +1867,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F7Text5 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F7Text5")
+                If _userSettings.F7Text5 <> value Then
+                    _userSettings.F7Text5 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F7Text5")
+                    logger.Info($"La valeur de F7Text5 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F7Text5 : {ex.Message}")
             End Try
@@ -1676,7 +1882,8 @@ Public Class SettingsViewModel
     Public Property F8Enabled As Boolean
         Get
             Try
-                Return My.Settings.F8Enabled
+                logger.Debug("Lecture de la propriété F8Enabled")
+                Return _userSettings.F8Enabled
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Enabled : {ex.Message}")
                 Return False
@@ -1684,9 +1891,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As Boolean)
             Try
-                My.Settings.F8Enabled = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Enabled")
+                If _userSettings.F8Enabled <> value Then
+                    _userSettings.F8Enabled = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Enabled")
+                    logger.Info($"La valeur de F8Enabled a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Enabled : {ex.Message}")
             End Try
@@ -1696,7 +1906,8 @@ Public Class SettingsViewModel
     Public Property F8Page1 As String
         Get
             Try
-                Return My.Settings.F8Page1
+                logger.Debug("Lecture de la propriété F8Page1")
+                Return _userSettings.F8Page1
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Page1 : {ex.Message}")
                 Return String.Empty
@@ -1704,9 +1915,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Page1 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Page1")
+                If _userSettings.F8Page1 <> value Then
+                    _userSettings.F8Page1 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Page1")
+                    logger.Info($"La valeur de F8Page1 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Page1 : {ex.Message}")
             End Try
@@ -1716,7 +1930,8 @@ Public Class SettingsViewModel
     Public Property F8Page2 As String
         Get
             Try
-                Return My.Settings.F8Page2
+                logger.Debug("Lecture de la propriété F8Page2")
+                Return _userSettings.F8Page2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Page2 : {ex.Message}")
                 Return String.Empty
@@ -1724,9 +1939,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Page2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Page2")
+                If _userSettings.F8Page2 <> value Then
+                    _userSettings.F8Page2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Page2")
+                    logger.Info($"La valeur de F8Page2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Page2 : {ex.Message}")
             End Try
@@ -1736,7 +1954,8 @@ Public Class SettingsViewModel
     Public Property F8Page3 As String
         Get
             Try
-                Return My.Settings.F8Page3
+                logger.Debug("Lecture de la propriété F8Page3")
+                Return _userSettings.F8Page3
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Page3 : {ex.Message}")
                 Return String.Empty
@@ -1744,9 +1963,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Page3 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Page3")
+                If _userSettings.F8Page3 <> value Then
+                    _userSettings.F8Page3 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Page3")
+                    logger.Info($"La valeur de F8Page3 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Page3 : {ex.Message}")
             End Try
@@ -1756,7 +1978,8 @@ Public Class SettingsViewModel
     Public Property F8Page4 As String
         Get
             Try
-                Return My.Settings.F8Page4
+                logger.Debug("Lecture de la propriété F8Page4")
+                Return _userSettings.F8Page4
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Page4 : {ex.Message}")
                 Return String.Empty
@@ -1764,9 +1987,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Page4 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Page4")
+                If _userSettings.F8Page4 <> value Then
+                    _userSettings.F8Page4 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Page4")
+                    logger.Info($"La valeur de F8Page4 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Page4 : {ex.Message}")
             End Try
@@ -1776,7 +2002,8 @@ Public Class SettingsViewModel
     Public Property F8Page5 As String
         Get
             Try
-                Return My.Settings.F8Page5
+                logger.Debug("Lecture de la propriété F8Page5")
+                Return _userSettings.F8Page5
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Page5 : {ex.Message}")
                 Return String.Empty
@@ -1784,9 +2011,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Page5 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Page5")
+                If _userSettings.F8Page5 <> value Then
+                    _userSettings.F8Page5 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Page5")
+                    logger.Info($"La valeur de F8Page5 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Page5 : {ex.Message}")
             End Try
@@ -1796,7 +2026,8 @@ Public Class SettingsViewModel
     Public Property F8Text1 As String
         Get
             Try
-                Return My.Settings.F8Text1
+                logger.Debug("Lecture de la propriété F8Text1")
+                Return _userSettings.F8Text1
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Text1 : {ex.Message}")
                 Return String.Empty
@@ -1804,9 +2035,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Text1 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Text1")
+                If _userSettings.F8Text1 <> value Then
+                    _userSettings.F8Text1 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Text1")
+                    logger.Info($"La valeur de F8Text1 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Text1 : {ex.Message}")
             End Try
@@ -1816,7 +2050,8 @@ Public Class SettingsViewModel
     Public Property F8Text2 As String
         Get
             Try
-                Return My.Settings.F8Text2
+                logger.Debug("Lecture de la propriété F8Text2")
+                Return _userSettings.F8Text2
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Text2 : {ex.Message}")
                 Return String.Empty
@@ -1824,9 +2059,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Text2 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Text2")
+                If _userSettings.F8Text2 <> value Then
+                    _userSettings.F8Text2 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Text2")
+                    logger.Info($"La valeur de F8Text2 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Text2 : {ex.Message}")
             End Try
@@ -1836,7 +2074,8 @@ Public Class SettingsViewModel
     Public Property F8Text3 As String
         Get
             Try
-                Return My.Settings.F8Text3
+                logger.Debug("Lecture de la propriété F8Text3")
+                Return _userSettings.F8Text3
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Text3 : {ex.Message}")
                 Return String.Empty
@@ -1844,9 +2083,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Text3 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Text3")
+                If _userSettings.F8Text3 <> value Then
+                    _userSettings.F8Text3 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Text3")
+                    logger.Info($"La valeur de F8Text3 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Text3 : {ex.Message}")
             End Try
@@ -1856,7 +2098,8 @@ Public Class SettingsViewModel
     Public Property F8Text4 As String
         Get
             Try
-                Return My.Settings.F8Text4
+                logger.Debug("Lecture de la propriété F8Text4")
+                Return _userSettings.F8Text4
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Text4 : {ex.Message}")
                 Return String.Empty
@@ -1864,9 +2107,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Text4 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Text4")
+                If _userSettings.F8Text4 <> value Then
+                    _userSettings.F8Text4 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Text4")
+                    logger.Info($"La valeur de F8Text4 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Text4 : {ex.Message}")
             End Try
@@ -1876,7 +2122,8 @@ Public Class SettingsViewModel
     Public Property F8Text5 As String
         Get
             Try
-                Return My.Settings.F8Text5
+                logger.Debug("Lecture de la propriété F8Text5")
+                Return _userSettings.F8Text5
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété F8Text5 : {ex.Message}")
                 Return String.Empty
@@ -1884,9 +2131,12 @@ Public Class SettingsViewModel
         End Get
         Set(ByVal value As String)
             Try
-                My.Settings.F8Text5 = value
-                My.Settings.Save()
-                NotifyPropertyChanged("F8Text5")
+                If _userSettings.F8Text5 <> value Then
+                    _userSettings.F8Text5 = value
+                    _userSettings.Save()
+                    NotifyPropertyChanged("F8Text5")
+                    logger.Info($"La valeur de F8Text5 a été modifiée : {value}")
+                End If
             Catch ex As Exception
                 logger.Error($"Erreur lors de la modification de la propriété F8Text5 : {ex.Message}")
             End Try
@@ -1946,6 +2196,10 @@ Public Class SettingsViewModel
             My.Settings.Save()
             NotifyPropertyChanged(propertyName)
         End If
+    End Sub
+
+    Protected Sub OnPropertyChanged(propertyName As String)
+        RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
     End Sub
 
 End Class

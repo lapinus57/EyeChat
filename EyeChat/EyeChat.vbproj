@@ -33,7 +33,7 @@
     <PublisherName>MULLER</PublisherName>
     <SuiteName>EyeChat</SuiteName>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationRevision>10</ApplicationRevision>
     <ApplicationVersion>0.1.2.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -97,7 +97,7 @@
     <ApplicationIcon>Chat.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>EyeChat.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>MyKeyEyeChat.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -107,7 +107,7 @@
     <DocumentationFile>EyeChat.xml</DocumentationFile>
     <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
@@ -175,10 +175,6 @@
     <Reference Include="Octokit, Version=8.0.1.0, Culture=neutral, PublicKeyToken=0be8860aee462442, processorArchitecture=MSIL">
       <HintPath>..\packages\Octokit.8.0.1\lib\netstandard2.0\Octokit.dll</HintPath>
     </Reference>
-    <Reference Include="PCSC, Version=5.0.0.0, Culture=neutral, PublicKeyToken=13b76e54a2ee80a7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\FICHIERBM\PCSC.dll</HintPath>
-    </Reference>
     <Reference Include="Stfu, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stfu.0.1.1\lib\net40\Stfu.dll</HintPath>
     </Reference>
@@ -197,6 +193,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -226,6 +223,7 @@
     <Compile Include="Class\BooleanToVisibilityConverter.vb" />
     <Compile Include="Class\Computer.vb" />
     <Compile Include="Class\ContainsStringToVisibilityConverter.vb" />
+    <Compile Include="Class\Cotation.vb" />
     <Compile Include="Class\ExamOption.vb" />
     <Compile Include="Class\FileReceiver.vb" />
     <Compile Include="Class\FileSender.vb" />
@@ -234,6 +232,7 @@
     <Compile Include="Class\NameToEnabledConverter.vb" />
     <Compile Include="Class\Patient.vb" />
     <Compile Include="Class\Planning.vb" />
+    <Compile Include="Class\Salle.vb" />
     <Compile Include="Class\SpeedMessage.vb" />
     <Compile Include="Class\StringToImageSourceConverter.vb" />
     <Compile Include="Class\User.vb" />
@@ -250,9 +249,26 @@
     <Compile Include="Controls\PatientBubbleCtrl.xaml.vb">
       <DependentUpon>PatientBubbleCtrl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PostitEditor.xaml.vb">
+      <DependentUpon>PostitEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PostItWindow.xaml.vb">
+      <DependentUpon>PostItWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\UsersBubbleCtrl.xaml.vb">
       <DependentUpon>UsersBubbleCtrl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Module\FilesTransferManager.vb" />
+    <Compile Include="Module\FileWatcherSV.vb" />
+    <Compile Include="Module\HotKeyManager.vb" />
+    <Compile Include="Module\InitFirstload.vb" />
+    <Compile Include="Module\JsonManager.vb" />
+    <Compile Include="Module\NfcManager.vb" />
+    <Compile Include="Module\PatientManager.vb" />
+    <Compile Include="Module\ReceiveManager.vb" />
+    <Compile Include="Module\SendManager.vb" />
+    <Compile Include="Module\UIDManager.vb" />
+    <Compile Include="Module\UpdateManager.vb" />
     <Compile Include="ViewModel\ColorItemViewModel.vb" />
     <Compile Include="ViewModel\GitHubViewModel.vb" />
     <Page Include="Controls\GithubWindows.xaml">
@@ -272,6 +288,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\PatientBubbleCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PostitEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PostItWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -315,6 +339,7 @@
   <ItemGroup>
     <Import Include="System.Threading.Tasks" />
     <Import Include="System.Linq" />
+    <Import Include="System.Windows.Interactivity" />
     <Import Include="System.Xml.Linq" />
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
@@ -367,9 +392,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <None Include="Core\usersettings.json" />
-    <None Include="EyeChat.snk" />
-    <None Include="eyechat2.pfx" />
-    <None Include="EyeChatKey.pfx" />
     <None Include="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -378,6 +400,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+    <None Include="MyKeyEyeChat.snk" />
     <None Include="packages.config" />
     <None Include="Users\Users.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -442,6 +465,9 @@
     <Resource Include="Avatar\joy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\packages\JeremyAnsel.HLSL.Targets.1.0.13\build\JeremyAnsel.HLSL.Targets.targets" Condition="Exists('..\packages\JeremyAnsel.HLSL.Targets.1.0.13\build\JeremyAnsel.HLSL.Targets.targets')" />

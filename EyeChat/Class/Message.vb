@@ -61,7 +61,7 @@ Public Class Message
                     messages = serializer.Deserialize(Of ObservableCollection(Of Message))(jsonReader)
 
                     For Each message In messages
-                        If (message.Sender = My.Settings.UserName) Then
+                        If (message.Sender = MainWindow._userSettingsMain.UserName) Then
                             message.IsAlignedRight = True
                         Else
                             message.IsAlignedRight = False

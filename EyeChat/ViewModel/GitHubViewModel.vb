@@ -27,7 +27,7 @@ Public Class GitHubViewModel
     Public ReadOnly Property AppSizeDisplay As Integer
         Get
             Try
-                Return My.Settings.AppSizeDisplay
+                Return MainWindow._userSettingsMain.AppSizeDisplay
             Catch ex As Exception
                 logger.Error($"Erreur lors de la lecture de la propriété AppSizeDisplay : {ex.Message}")
                 Return "14"

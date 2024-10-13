@@ -65,7 +65,7 @@ Public Class UsersBubbleCtrl
         InitializeComponent()
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
-        Size = My.Settings.AppSizeDisplay
+        Size = MainWindow._userSettingsMain.AppSizeDisplay
     End Sub
 
 #Disable Warning BC40005 ' Le membre masque une méthode substituable dans le type de base

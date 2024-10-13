@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EyeChat"
-             mc:Ignorable="d" 
-             xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf">
+             mc:Ignorable="d">
    
     <UserControl.Resources>
         <local:MultiplyByTwoConverter x:Key="MultiplyByTwoConverter" />
@@ -14,10 +13,7 @@
             <Setter Property="FontSize" Value="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
-        <Style TargetType="emoji:TextBlock">
-            <Setter Property="FontSize" Value="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-        </Style>
+        
         <SolidColorBrush x:Key="MahApps.Brushes.MenuItem.SelectionFill" Color="{Binding Source={StaticResource MahApps.Brushes.Accent}, Path=Color}" />
         
     </UserControl.Resources>
@@ -43,7 +39,7 @@
                 <StackPanel Width="220">
                     <StackPanel Width="220" Orientation="Horizontal" >
                         <TextBlock Text="{Binding Name}" Margin="0,0,5,0" />
-                        <emoji:TextBlock Text="{Binding AuxiliaireTilte}"/>
+                        <TextBlock Text="{Binding AuxiliaireTilte}"/>
                     </StackPanel>
 
 

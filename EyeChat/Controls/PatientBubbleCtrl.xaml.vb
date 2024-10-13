@@ -43,10 +43,10 @@ Public Class PatientBubbleCtrl
                 Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
 
                 ' Construisez la chaîne de texte à envoyer
-                Dim Text As String = "PTN02" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+                Dim Text As String = "PTN02" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & _userSettingsMain.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
 
 
@@ -58,10 +58,10 @@ Public Class PatientBubbleCtrl
                 Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
 
                 ' Construisez la chaîne de texte à envoyer
-                Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+                Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & _userSettingsMain.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
             End If
 
@@ -83,18 +83,18 @@ Public Class PatientBubbleCtrl
                 Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
 
                 ' Construisez la chaîne de texte à envoyer
-                Dim Text As String = "PTN02" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+                Dim Text As String = "PTN02" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & _userSettingsMain.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
                 Dim newexams As String
 
                 ' Construisez la chaîne de texte à envoyer
-                Text = "PTN01" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|RDC|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+                Text = "PTN01" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|RDC|" & patient.Examinator & "|" & formattedHoldTime & "|" & _userSettingsMain.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
 
                 'Await (CType(Application.Current.MainWindow, MahApps.Metro.Controls.MetroWindow)).ShowChildWindowAsync(New InfoPatient())
@@ -105,10 +105,10 @@ Public Class PatientBubbleCtrl
                 Dim formattedHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
 
                 ' Construisez la chaîne de texte à envoyer
-                Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & My.Settings.UserName
+                Dim Text As String = "PTN05" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime & "|" & _userSettingsMain.UserName
 
                 ' Envoyez le message
-                SendMessage(Text)
+                SendManager.SendMessage(Text)
 
             End If
 
@@ -155,7 +155,7 @@ Public Class PatientBubbleCtrl
             Dim Text As String = "PTN03" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedHoldTime
 
             ' Envoyez le message
-            SendMessage(Text)
+            SendManager.SendMessage(Text)
 
             ' Mettez à jour la liste
             'UpdateList()
@@ -331,7 +331,7 @@ Public Class PatientBubbleCtrl
         Dim formattedNewHoldTime As String = newHoldTime.ToString("yyyy-MM-ddTHH:mm:ss.fff")
         Dim formattedOldHoldTime As String = patient.Hold_Time.ToString("yyyy-MM-ddTHH:mm:ss.fff")
         Dim Text As String = "PTN04" & patient.Title & "|" & patient.LastName & "|" & patient.FirstName & "|" & patient.Exams & "|" & patient.Annotation & "|" & patient.Position & "|" & patient.Examinator & "|" & formattedOldHoldTime & "|" & formattedNewHoldTime
-        SendMessage(Text)
+        SendManager.SendMessage(Text)
     End Sub
 
 
@@ -384,8 +384,8 @@ Public Class PatientBubbleCtrl
 
             ' Ajustez la visibilité des MenuItem en fonction de OrthoMode
             ' Exemple pour le premier MenuItem; répétez pour les autres selon le besoin
-            DirectCast(contextMenu.Items(1), MenuItem).Visibility = If(My.Settings.OrthoMode, Visibility.Visible, Visibility.Collapsed)
-            DirectCast(contextMenu.Items(3), MenuItem).Visibility = If(My.Settings.AdvanvedMode, Visibility.Visible, Visibility.Collapsed)
+            DirectCast(contextMenu.Items(1), MenuItem).Visibility = If(MainWindow._userSettingsMain.OrthoMode, Visibility.Visible, Visibility.Collapsed)
+            DirectCast(contextMenu.Items(3), MenuItem).Visibility = If(MainWindow._userSettingsMain.AdvanvedMode, Visibility.Visible, Visibility.Collapsed)
 
             ' Répétez pour d'autres MenuItem si nécessaire
         End If

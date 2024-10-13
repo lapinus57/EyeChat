@@ -34,6 +34,7 @@
     <system:String x:Key="ExamHeaderLabel">Liste d'examens</system:String>
 
 
+    <system:String x:Key="RoomWaitHeaderLabel">Liste salles d'attente</system:String>
 
     <system:String x:Key="SpeedMessageHeaderLabel">Messages rapide</system:String>
 

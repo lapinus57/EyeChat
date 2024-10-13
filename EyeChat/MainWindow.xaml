@@ -21,6 +21,9 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         Dialog:DialogParticipation.Register="{Binding}">
     
+    <Window.DataContext>
+        <local:SettingsViewModel />
+    </Window.DataContext>
 
     <Window.Resources>
         
@@ -213,10 +216,10 @@
             <ListBox ItemsSource="{Binding Users}" 
                      SelectedItem="{Binding SelectedListUser, Mode=TwoWay}"                       
                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"                   
-                     x:Name="ListUseres">
+                     x:Name="ListUseres" HorizontalAlignment="Left" Width="268">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <local:UsersBubbleCtrl>
+                        <local:UsersBubbleCtrl x:Name="ListUsersBubble">
                             
                         </local:UsersBubbleCtrl>
                     </DataTemplate>
@@ -252,8 +255,7 @@
         
         <mah:MetroTabControl Grid.Column="0" 
                              mah:HeaderedControlHelper.HeaderFontSize="{Binding AppSizeDisplay}"
-                             mah:HeaderedControlHelper.HeaderFontWeight="Bold"                            
-                             FontSize="22"
+                             mah:HeaderedControlHelper.HeaderFontWeight="Bold"
                              x:Name="PatientTabCtrl" >
         <TabItem Header="RDC"  >
                     <ListBox x:Name="PatientListRDC" ScrollViewer.VerticalScrollBarVisibility="Visible">

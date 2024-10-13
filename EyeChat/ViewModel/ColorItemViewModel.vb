@@ -15,11 +15,11 @@ Public Class ColorItemViewModel
     Public Property ColorItem As ColorItemViewModel
         Get
             ' Convertir la valeur de AppColorString en ColorItemViewModel
-            Return ColorItems.FirstOrDefault(Function(c) c.Name = My.Settings.AppColorString)
+            Return ColorItems.FirstOrDefault(Function(c) c.Name = MainWindow._userSettingsMain.AppColorString)
         End Get
         Set(ByVal value As ColorItemViewModel)
-            My.Settings.AppColorString = value?.Name ' Assurez-vous que value n'est pas null avant d'accéder à sa propriété Name
-            My.Settings.Save()
+            MainWindow._userSettingsMain.AppColorString = value?.Name ' Assurez-vous que value n'est pas null avant d'accéder à sa propriété Name
+            MainWindow._userSettingsMain.Save()
             NotifyPropertyChanged("AppColorString")
         End Set
     End Property

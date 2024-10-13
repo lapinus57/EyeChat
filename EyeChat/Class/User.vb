@@ -16,6 +16,9 @@ Public Class User
     <JsonProperty("Avatar")>
     Public Property Avatar As String
 
+    <JsonProperty("ColorUser")>
+    Public Property ColorUser As System.Drawing.Color
+
     <JsonProperty("AuxiliaireTilte")>
     Public Property AuxiliaireTilte As String
 
@@ -33,6 +36,7 @@ Public Class User
         Avatar = "/Avatar/avataaars.png"
         ' Par défaut, définir une room vide
         AuxiliaireTilte = String.Empty
+        ColorUser = System.Drawing.Color.White
         ' Par défaut, définir un status offline
         Status = "Offline"
         Initials = String.Empty

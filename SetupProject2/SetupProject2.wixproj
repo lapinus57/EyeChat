@@ -1,0 +1,9 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DefineConstants>Debug</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EyeChat\EyeChat.vbproj" />
+    <ProjectReference Include="..\WatchdogEyeChat\WatchdogEyeChat.vbproj" />
+  </ItemGroup>
+</Project>

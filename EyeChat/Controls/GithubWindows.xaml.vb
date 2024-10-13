@@ -98,11 +98,11 @@ Public Class GithubWindows
             Select Case selectedCategory
                 Case "problem"
                     ' Traiter le problème signalé
-                    Await CreateGitHubIssueAsync(My.Settings.UserName & " a rencontré un problème", descriptionText)
+                    Await CreateGitHubIssueAsync(MainWindow._userSettingsMain.UserName & " a rencontré un problème", descriptionText)
 
                 Case "idea"
                     ' Traiter l'idée proposée
-                    Await CreateGitHubIssueAsync(My.Settings.UserName & " a une idée", descriptionText)
+                    Await CreateGitHubIssueAsync(MainWindow._userSettingsMain.UserName & " a une idée", descriptionText)
 
                 Case Else
                     ' Catégorie non reconnue
