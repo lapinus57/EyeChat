@@ -64,6 +64,9 @@ Class MainWindow
     Public Shared phrasesData As EggPhrasesData
 
 
+    'Nfc déclaration 
+    'Public MyACR122U As ACR122U
+    'Dim Uidcard As String
 
     Public Shared _userSettingsMain As UserSettings
 
@@ -78,7 +81,17 @@ Class MainWindow
 
 #Region "HotKeyManager"
 
-    Private _hotKeyManager As HotKeyManager
+    Public Property OrthoMode As Boolean
+        Get
+            Return _orthoMode
+        End Get
+        Set(value As Boolean)
+            If _orthoMode <> value Then
+                _orthoMode = value
+                OnPropertyChanged(NameOf(OrthoMode))
+            End If
+        End Set
+    End Property
 
     Protected Overrides Sub OnSourceInitialized(e As EventArgs)
         MyBase.OnSourceInitialized(e)
@@ -162,8 +175,32 @@ Class MainWindow
     End Function
 
 
+    If My.Settings.CtrlF9Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID1, MOD_CTRL, VK_F9)
+        End If
+    If My.Settings.CtrlF10Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID2, MOD_CTRL, VK_F10)
+        End If
+    If My.Settings.CtrlF11Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID3, MOD_CTRL, VK_F11)
+        End If
+    If My.Settings.CtrlF12Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID4, MOD_CTRL, VK_F12)
+        End If
 
 
+    If My.Settings.ShiftF9Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID5, MOD_SHIFT, VK_F9)
+        End If
+    If My.Settings.ShiftF10Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID6, MOD_SHIFT, VK_F10)
+        End If
+    If My.Settings.ShiftF11Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID7, MOD_SHIFT, VK_F11)
+        End If
+    If My.Settings.ShiftF12Enabled Then
+            RegisterHotKey(helper.Handle, HOTKEY_ID8, MOD_SHIFT, VK_F12)
+        End If
 
 
 
@@ -353,27 +390,11 @@ Class MainWindow
     End Sub
 
     Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
-        _userSettingsMain = UserSettings.Load()
-        'test
+        If IsNameInList(Users, "A Tous") Then
+            SelectUser("A Tous")
+            SelectUserByName("A Tous")
+        End If
 
-        ' Initialisation du Timer pour vérifier toutes les 2 secondes
-        checkProcessTimer = New System.Timers.Timer(1000) ' Intervalle en millisecondes
-        AddHandler checkProcessTimer.Elapsed, AddressOf checkProcessTimer_Tick
-        checkProcessTimer.Start()
-
-        ' Initialiser le FileWatcherSV
-        fileWatcher = New FileWatcherSV(iniFilePath, Me)
-        'fin test
-
-
-        ' Créer un nouvel onglet
-        Dim newTabItem As New TabItem With {
-    .Header = "Nouveau Patient", ' Texte de l'onglet
-    .Content = New TextBlock With {.Text = "Contenu de l'onglet"} ' Contenu de l'onglet
-}
-
-        ' Ajouter l'onglet au MetroTabControl nommé "PatientTabCtrl"
-        'PatientTabCtrl.Items.Add(newTabItem)
     End Sub
 
 
@@ -382,21 +403,6 @@ Class MainWindow
         ExamOptions = JsonConvert.DeserializeObject(Of ObservableCollection(Of ExamOption))(json)
     End Sub
 
-
-
-    Public ReadOnly Property AppSizeDisplay As Double
-        Get
-            Try
-                logger.Info("Accès à la propriété AppSizeDisplay")
-                Return _userSettingsMain.AppSizeDisplay
-                My.Application.MainWindow.FontSize = _userSettingsMain.AppSizeDisplay
-                MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(_userSettingsMain.AppSizeDisplay))
-            Catch ex As Exception
-                logger.Error($"Erreur lors de la lecture de la propriété AppSizeDisplay : {ex.Message}")
-                Return 10.0 ' Valeur par défaut en cas d'erreur
-            End Try
-        End Get
-    End Property
     Private Sub MainWindow_Initialized(sender As Object, e As EventArgs) Handles Me.Initialized
         _userSettingsMain = UserSettings.Load()
 
@@ -410,20 +416,48 @@ Class MainWindow
 
         InitializeComponent()
         UpdateOrthoMode()
+        _userSettings = UserSettings.Load()
 
 
-        Select Case _userSettingsMain.DebugLevel
-            Case "DEBUG"
-                logger.Logger.Repository.Threshold = log4net.Core.Level.Debug
-            Case "INFO"
-                logger.Logger.Repository.Threshold = log4net.Core.Level.Info
-            Case "WARN"
-                logger.Logger.Repository.Threshold = log4net.Core.Level.Warn
-            Case "ERROR"
-                logger.Logger.Repository.Threshold = log4net.Core.Level.Error
-        End Select
+        'test si les paramètres sont présent
+        Try
+            ' test si My.Settings.windowsName est vide
+            If String.IsNullOrWhiteSpace(My.Settings.WindowsName) Then
+                My.Settings.WindowsName = Environment.UserName
+                My.Settings.Save()
+                logger.Info($"Nom de l'utilisateur windows : {My.Settings.WindowsName}")
+            End If
+        Catch ex As Exception
+            logger.Error($"Erreur lors de la récupération du nom de l'utilisateur windows : {ex.Message}")
+        End Try
 
 
+        Try
+            ' test si My.Settings.ComputerName est vide
+            If String.IsNullOrWhiteSpace(My.Settings.ComputerName) Then
+                My.Settings.ComputerName = Environment.MachineName
+                My.Settings.Save()
+                logger.Info($"Nom de l'ordinateur : {My.Settings.ComputerName}")
+            End If
+        Catch ex As Exception
+            logger.Error($"Erreur lors de la récupération du nom de l'ordinateur : {ex.Message}")
+        End Try
+
+        Try
+            ' test si My.Settings.UniqueId est vide
+            If String.IsNullOrWhiteSpace(My.Settings.UniqueId) Then
+                My.Settings.UniqueId = GenerateUniqueId()
+                My.Settings.Id = GetUniqueIdHashCode()
+                My.Settings.Save()
+                logger.Info($"UniqueId : {My.Settings.UniqueId}")
+            End If
+        Catch ex As Exception
+            logger.Error($"Erreur lors de la récupération du UniqueId : {ex.Message}")
+        End Try
+
+
+        'test si les dossier sont présent
+        Filetest()
 
         ' Initialise la collection de messages
         Try
@@ -490,17 +524,16 @@ Class MainWindow
         'PatientManager.PatientAdd("Mr", "muller", "benoit", "SK", "od", "RDC", "Blue", "benoit")
         'PatientAdd("Mr", "durand", "benoit", "SK", Nothing, "1er", "Green", "benoit", Date.Now)
 
-        '''''''''
-        'jsonData = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "dataphrases.json"))
-        'phrasesData = JsonConvert.DeserializeObject(Of EggPhrasesData)(jsonData)
-        ''''''''''''
+        jsonData = File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "dataphrases.json"))
+        phrasesData = JsonConvert.DeserializeObject(Of EggPhrasesData)(jsonData)
+
 
         'Charge les options d'examen à partir du fichier JSON
-        JsonManager.loadExamOption()
+        loadExamOption()
 
+        _userSettings = UserSettings.Load()
 
-
-        MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(_userSettingsMain.AppSizeDisplay))
+        MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(My.Settings.AppSizeDisplay))
 
 
         ' Charger les messages à partir du fichier JSON
@@ -598,16 +631,22 @@ Class MainWindow
 
         AddHandler My.Settings.PropertyChanged, AddressOf SettingsChanged
 
-        'NfcManager.HandleNfcMode(_userSettingsMain)
+        If My.Settings.NFCMode = True Then
+            Try
+                hidePatientList()
+                'MyACR122U = New ACR122U()
+                'AddHandler MyACR122U.CardInserted, AddressOf Acr122u_CardInserted
+                'AddHandler MyACR122U.CardRemoved, AddressOf Acr122u_CardRemoved
+                'MyACR122U.Init(True, 50, 4, 4, 200)
 
-
-
-        SendManager.SendMessage("USR01" & _userSettingsMain.UserName & "|" & Environment.UserName)
-
-        If IsNameInList(Users, "Alix") Then
-            SelectUser("Alix")
-            SelectUserByName("Alix")
+            Catch ex As Exception
+                logger.Error($"Erreur lors de l'initialise du nfc : {ex.Message}")
+            End Try
+        Else
+            showPatientList()
+            SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
         End If
+
 
     End Sub
 
@@ -628,32 +667,63 @@ Class MainWindow
     End Sub
 
 
+    Private Sub Acr122u_CardRemoved()
+        ' Console.WriteLine("Card Removed")
+        'Dispatcher.Invoke(Sub()
+        'logger.Info($"Carte NFC retirée : {Uidcard}")
+        'Dim userconnected As User = Users.FirstOrDefault(Function(user) user.UUID = Uidcard)
+        'SendMessage("USR02" & userconnected.Name & "|OCT")
+        'SendMessage("USR02" & My.Settings.UserName & "|OCT")
+        'SendMessage("USR01" & My.Settings.UserName & "|" & Environment.UserName)
 
-
-
-
-    Public Shared Sub hidePatientList()
-        Dim mainWindow As MainWindow = Application.Current.MainWindow
-        mainWindow.PatientListRDC.Visibility = Visibility.Hidden
-        mainWindow.PatientList1er.Visibility = Visibility.Hidden
-        mainWindow.PatientListAll.Visibility = Visibility.Hidden
-        mainWindow.MessageList.Visibility = Visibility.Hidden
+        'hidePatientList()
+        'End Sub)
     End Sub
 
-    Public Shared Sub showPatientList()
-        Dim mainWindow As MainWindow = Application.Current.MainWindow
-        mainWindow.PatientListRDC.Visibility = Visibility.Visible
-        mainWindow.PatientList1er.Visibility = Visibility.Visible
-        mainWindow.PatientListAll.Visibility = Visibility.Visible
-        mainWindow.MessageList.Visibility = Visibility.Visible
+    Private Sub Acr122u_CardInserted(ByVal reader As PCSC.ICardReader)
+        'Console.WriteLine("Card Inserted")
+
+        'Dim Card As String = BitConverter.ToString(MyACR122U.GetUID(reader)).Replace("-", "")
+        'Uidcard = Card
+
+
+
+        'Dispatcher.Invoke(Sub()
+        'logger.Info($"Carte NFC insérée : {Uidcard}")
+        'showPatientList()
+
+        'Dim userconnected As User = Users.FirstOrDefault(Function(user) user.UUID = Uidcard)
+        'SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
+
+        'SendMessage("USR01" & userconnected.Name & "|OCT")
+        'AddMessage("Benoit", "Benoit", "Room", Uidcard, False, Nothing)
+
+
+        'End Sub)
+
     End Sub
 
+
+
+    Public Sub hidePatientList()
+        PatientListRDC.Visibility = Visibility.Hidden
+        PatientList1er.Visibility = Visibility.Hidden
+        PatientListAll.Visibility = Visibility.Hidden
+        MessageList.Visibility = Visibility.Hidden
+    End Sub
+
+    Public Sub showPatientList()
+        PatientListRDC.Visibility = Visibility.Visible
+        PatientList1er.Visibility = Visibility.Visible
+        PatientListAll.Visibility = Visibility.Visible
+        MessageList.Visibility = Visibility.Visible
+    End Sub
 
 
 
     Private Sub Timer_Tick(ByVal sender As Object, ByVal e As EventArgs)
         ' Code à exécuter à 8h00 précises
-        SendManager.SendMessage("USR02" & _userSettingsMain.UserName & "|" & My.Settings.WindowsName)
+        SendMessage("USR02" & My.Settings.UserName & "|" & My.Settings.WindowsName)
 
         If My.Settings.PlanningMode = True Then
             Try
@@ -688,7 +758,7 @@ Class MainWindow
 
         End If
 
-        'SendManager.SendMessage("USR01Benoit1|" & My.Settings.WindowsName)
+        SendMessage("USR01" & My.Settings.UserName & "|" & My.Settings.WindowsName)
 
 
         ' Arrêtez la minuterie si nécessaire pour éviter d'exécuter l'action à plusieurs reprises
@@ -698,8 +768,8 @@ Class MainWindow
     Private Sub MessageMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim selectedMessage As SpeedMessage = DirectCast(DirectCast(sender, System.Windows.Controls.MenuItem).Tag, SpeedMessage)
         '"SMF01UserName|Destinataitre|message|Option1|Option2|Option3"
-        SendManager.SendMessage("SMF01" & _userSettingsMain.UserName & "|" & selectedMessage.Destinataire & "|" & selectedMessage.Message.Replace("[ROOM]", My.Settings.WindowsName) & "|" & selectedMessage.Options)
-        SendManager.SendMessage("MSG01" & _userSettingsMain.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & selectedMessage.Destinataire & " " & selectedMessage.Message.Replace("[ROOM]", My.Settings.WindowsName) & "|" & _userSettingsMain.UserAvatar)
+        SendMessage("SMF01" & My.Settings.UserName & "|" & selectedMessage.Destinataire & "|" & selectedMessage.Message.Replace("[ROOM]", My.Settings.WindowsName) & "|" & selectedMessage.Options)
+        SendMessage("MSG01" & My.Settings.UserName & "|A Tous|" & My.Settings.WindowsName & "|" & selectedMessage.Destinataire & " " & selectedMessage.Message.Replace("[ROOM]", My.Settings.WindowsName) & "|benoit.png")
 
 
 
@@ -715,12 +785,31 @@ Class MainWindow
     End Function
 
 
+    Public Function GenerateUniqueId() As String
+
+        ' Génération d'un identifiant unique basé sur le nom d'utilisateur de Windows et le nom du PC
+        Dim windowsUser As String = Environment.UserName
+        Dim computerName As String = Environment.MachineName
+
+        Return $"{windowsUser}_{computerName}"
+    End Function
+
+
+    Public Function GetUniqueIdHashCode() As Integer
+        ' Génération d'un integer unique basé sur le UniqueId
+        Return My.Settings.UniqueId.GetHashCode()
+    End Function
+
+    'Chargement des listes de patients 
+    Private Sub LoadPatientsFromJson()
+        Dim allPatients As ObservableCollection(Of Patient) = Patient.LoadPatientsFromJson()
+
 
 
     ' Méthode pour ajouter un nouveau message
     Public Sub AddMessage(ByVal name As String, ByVal sender As String, ByVal room As String, ByVal content As String, ByVal isAlignedRight As Boolean, ByVal avatar As String)
         If Messages IsNot Nothing Then
-            Messages.Add(New Message With {.Name = name, .Sender = sender, .Room = room, .Content = content, .IsAlignedRight = isAlignedRight, .Timestamp = DateTime.Now, .Avatar = avatar})
+            Messages.Add(New Message With {.name = name, .sender = sender, .room = room, .content = content, .isAlignedRight = isAlignedRight, .Timestamp = DateTime.Now, .avatar = avatar})
             SaveMessagesToJson(Messages)
         End If
     End Sub
@@ -749,30 +838,866 @@ Class MainWindow
 
 
 
-    Public Sub SetHeaderFontSize(ByVal value As Integer)
-        ' Exemple de mise à jour de la taille des en-têtes
-        MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(value))
-        For Each tabItem As TabItem In PatientTabCtrl.Items
-            tabItem.FontSize = value
-        Next
-        Me.UpdateLayout() ' Assurez-vous que la mise à jour de la disposition est appelée ici
-    End Sub
 
     Public Sub Updatemsglist()
         SelectUser(SelectedUser)
-        'MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(SettingsViewModel.))
+        MahApps.Metro.Controls.HeaderedControlHelper.SetHeaderFontSize(PatientTabCtrl, CInt(My.Settings.AppSizeDisplay))
+    End Sub
+
+
+#Region "Gestion de l'ajout, suppression et modification d'un patient"
+
+    Public Sub PatientAdd(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Annotation As String, ByVal Position As String, ByVal Examinator As String, ByVal Hold_Time As String)
+
+        ' Obtenir la couleur en fonction du type d'examen du patient
+        Dim examType As String = Exams ' Remplacez cela par le type d'examen réel du patient
+        Dim examOption As ExamOption = ExamOptions.FirstOrDefault(Function(ExamOptions) ExamOptions.Name = examType)
+        If examOption IsNot Nothing Then
+            Dim patientColor As String = examOption.Color
+            ' Utilisez la couleur pour mettre à jour la propriété Colors du patient
+            Dim newPatient As New Patient With {.Title = Title, .LastName = LastName, .FirstName = FirstName, .Exams = Exams, .Annotation = Annotation, .Position = Position, .Hold_Time = Hold_Time, .IsTaken = False, .Colors = patientColor, .Examinator = Examinator}
+            PatientsALL.Add(newPatient)
+            SavePatientsToJson(PatientsALL)
+
+            If newPatient.Position = "RDC" Then
+                PatientsRDC.Add(newPatient)
+            ElseIf newPatient.Position = "1er" Then
+                Patients1er.Add(newPatient)
+            End If
+        End If
+        UpdateList()
+        SavePatientsToJson(PatientsALL)
+
+    End Sub
+
+
+    Public Sub PatientRemove(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Comments As String, ByVal Floor As String, ByVal Examinator As String, ByVal Hold_Time As String)
+
+        Dim patientToRemove As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.Title = Title And patient.LastName = LastName And patient.FirstName = FirstName And patient.Exams = Exams And patient.Annotation = Comments And patient.Position = Floor And patient.Examinator = Examinator And patient.Hold_Time = Hold_Time)
+        If patientToRemove IsNot Nothing Then
+
+            'SendTextBox.Text = patientToRemove.ToString
+            ' Supprimer le patient de PatientsALL
+            PatientsALL.Remove(patientToRemove)
+
+            ' Si le patient est dans PatientsRDC, le supprimer également
+            If patientToRemove.Position = "RDC" Then
+                PatientsRDC.Remove(patientToRemove)
+            ElseIf patientToRemove.Position = "1er" Then
+                Patients1er.Remove(patientToRemove)
+            End If
+
+            ' Si le patient est dans Patients1er, le supprimer également
+            If Patients1er.Contains(patientToRemove) Then
+                Patients1er.Remove(patientToRemove)
+            End If
+        End If
+        UpdateList()
+        SavePatientsToJson(PatientsALL)
+    End Sub
+
+    Public Sub PatientUpdate(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Comments As String, ByVal Floor As String, ByVal Examinator As String, ByVal OldHold_Time As String, ByVal NewHold_Time As String)
+        Dim oldHoldTimeDateTime As DateTime
+        Dim newHoldTimeDateTime As DateTime
+
+        If DateTime.TryParseExact(OldHold_Time, "yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, oldHoldTimeDateTime) AndAlso
+       DateTime.TryParseExact(NewHold_Time, "yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, newHoldTimeDateTime) Then
+
+            Dim patientToUpdate As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.Title = Title And patient.LastName = LastName And patient.FirstName = FirstName And patient.Exams = Exams And patient.Annotation = Comments And patient.Position = Floor And patient.Examinator = Examinator And patient.Hold_Time = oldHoldTimeDateTime)
+
+            If patientToUpdate IsNot Nothing Then
+                ' Retirez le patient de la liste actuelle
+                PatientsALL.Remove(patientToUpdate)
+
+                ' Si le patient est dans PatientsRDC, le supprimer également
+                If patientToUpdate.Position = "RDC" Then
+                    PatientsRDC.Remove(patientToUpdate)
+                ElseIf patientToUpdate.Position = "1er" Then
+                    Patients1er.Remove(patientToUpdate)
+                End If
+
+                ' Mise à jour des propriétés du patient
+                patientToUpdate.Hold_Time = newHoldTimeDateTime
+                ' Vous pouvez également mettre à jour d'autres propriétés si nécessaire
+
+                ' Ajoutez le patient mis à jour aux listes appropriées
+                PatientsALL.Add(patientToUpdate)
+                If patientToUpdate.Position = "RDC" Then
+                    PatientsRDC.Add(patientToUpdate)
+                ElseIf patientToUpdate.Position = "1er" Then
+                    Patients1er.Add(patientToUpdate)
+                End If
+            End If
+
+            SavePatientsToJson(PatientsALL)
+            ' Effacez les listes existantes pour préparer la mise à jour
+            UpdateList()
+            SavePatientsToJson(PatientsALL)
+
+
+        End If
+    End Sub
+
+    Public Sub PatientCheckPass(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Comments As String, ByVal Floor As String, ByVal Examinator As String, ByVal Hold_Time As String, ByVal OperatorName As String)
+        Dim HoldTimeDateTime As DateTime
+
+        DateTime.TryParseExact(Hold_Time, "yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, HoldTimeDateTime)
+
+        Dim patientToUpdate As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.Title = Title And patient.LastName = LastName And patient.FirstName = FirstName And patient.Exams = Exams And patient.Annotation = Comments And patient.Position = Floor And patient.Examinator = Examinator And patient.Hold_Time = HoldTimeDateTime)
+
+        If patientToUpdate IsNot Nothing Then
+            ' Retirez le patient de la liste actuelle
+            PatientsALL.Remove(patientToUpdate)
+
+            ' Si le patient est dans PatientsRDC, le supprimer également
+            If patientToUpdate.Position = "RDC" Then
+                PatientsRDC.Remove(patientToUpdate)
+            End If
+            If patientToUpdate.Position = "1er" Then
+                Patients1er.Remove(patientToUpdate)
+            End If
+
+            ' Mise à jour des propriétés du patient
+            patientToUpdate.IsTaken = True
+            patientToUpdate.OperatorName = OperatorName
+            patientToUpdate.Colors = "gray"
+            patientToUpdate.Pick_up_Time = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+            patientToUpdate.Time_Order = patientToUpdate.Pick_up_Time - patientToUpdate.Hold_Time
+
+            PatientsALL.Add(patientToUpdate)
+
+            ' Vous pouvez également mettre à jour d'autres propriétés si nécessaire
+
+            ' Ajoutez le patient mis à jour aux listes appropriées
+
+            If patientToUpdate.Position = "RDC" Then
+                PatientsRDC.Add(patientToUpdate)
+            ElseIf patientToUpdate.Position = "1er" Then
+                Patients1er.Add(patientToUpdate)
+            End If
+
+
+
+            SavePatientsToJson(PatientsALL)
+            UpdateList()
+            SavePatientsToJson(PatientsALL)
+        End If
+
+    End Sub
+
+    Public Sub PatientUndoPass(ByVal Title As String, ByVal LastName As String, ByVal FirstName As String, ByVal Exams As String, ByVal Comments As String, ByVal Floor As String, ByVal Examinator As String, ByVal Hold_Time As String, ByVal OperatorName As String)
+        Dim HoldTimeDateTime As DateTime
+
+        DateTime.TryParseExact(Hold_Time, "yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, HoldTimeDateTime)
+
+        Dim patientToUpdate As Patient = PatientsALL.FirstOrDefault(Function(patient) patient.Title = Title And patient.LastName = LastName And patient.FirstName = FirstName And patient.Exams = Exams And patient.Annotation = Comments And patient.Position = Floor And patient.Examinator = Examinator And patient.Hold_Time = HoldTimeDateTime)
+
+        If patientToUpdate IsNot Nothing Then
+            ' Retirez le patient de la liste actuelle
+            PatientsALL.Remove(patientToUpdate)
+
+            ' Si le patient est dans PatientsRDC, le supprimer également
+            If patientToUpdate.Position = "RDC" Then
+                PatientsRDC.Remove(patientToUpdate)
+            ElseIf patientToUpdate.Position = "1er" Then
+                Patients1er.Remove(patientToUpdate)
+            End If
+
+            ' Mise à jour des propriétés du patient
+            ' Obtenir la couleur en fonction du type d'examen du patient
+            Dim examType As String = patientToUpdate.Exams ' Remplacez cela par le type d'examen réel du patient
+            Dim examOption As ExamOption = ExamOptions.FirstOrDefault(Function(ExamOptions) ExamOptions.Name = examType)
+
+            If examOption IsNot Nothing Then
+                Dim patientColor As String = examOption.Color
+                ' Utilisez la couleur pour mettre à jour la propriété Colors du patient
+                patientToUpdate.Colors = patientColor
+            End If
+
+            patientToUpdate.IsTaken = False
+            patientToUpdate.OperatorName = Nothing
+            patientToUpdate.Pick_up_Time = Nothing
+            patientToUpdate.Time_Order = Nothing
+
+            ' Vous pouvez également mettre à jour d'autres propriétés si nécessaire
+
+            ' Ajoutez le patient mis à jour aux listes appropriées
+
+            If patientToUpdate.Position = "RDC" Then
+                PatientsRDC.Add(patientToUpdate)
+                PatientsALL.Add(patientToUpdate)
+            ElseIf patientToUpdate.Position = "1er" Then
+                Patients1er.Add(patientToUpdate)
+                PatientsALL.Add(patientToUpdate)
+            End If
+            SavePatientsToJson(PatientsALL)
+            UpdateList()
+            SavePatientsToJson(PatientsALL)
+        End If
+
+
+    End Sub
+
+
+    Public Sub ModifyPatient(ByVal lastName As String, ByVal updatedPatient As Patient)
+        For index As Integer = 0 To PatientsALL.Count - 1
+            If PatientsALL(index).LastName = lastName Then
+                PatientsALL(index) = updatedPatient
+                Exit For
+            End If
+        Next
     End Sub
 
 
 
 #Region "Gestion UDP et messages"
+    Private Sub InitializeSender()
+        sendingClient = New UdpClient(broadcastAddress, port) With {
+            .EnableBroadcast = True
+        }
+    End Sub
+
+    Private Sub InitializeReceiver()
+        Dim receiveThread As New Thread(AddressOf ReceiveMessages) With {
+            .IsBackground = True
+        }
+        receiveThread.Start()
+    End Sub
+
+    Private Sub ReceiveMessages()
+        receivingClient = New UdpClient(port)
+        Dim endPoint As New IPEndPoint(IPAddress.Any, port)
+
+        While True
+            Dim receiveBytes As Byte() = receivingClient.Receive(endPoint)
+            Dim receivedMessage As String = Encoding.UTF8.GetString(receiveBytes)
+
+            ' Utilisation de Dispatcher.Invoke pour exécuter la méthode MessageReceived sur le thread de l'interface utilisateur
+            Dispatcher.Invoke(Sub() MessageReceived(receivedMessage))
+        End While
+    End Sub
+
+    Private Sub MessageReceived(ByVal receivedMessage As String)
+        ' Traitez le message reçu en fonction du code
+        Dim messageCode As String = receivedMessage.Substring(0, 5)
 
 
 
 
 
 
-    Public Async Sub SpeedMessageDialog(ByVal Titre As String, ByVal Message As String, ByVal option1 As String, ByVal option2 As String, ByVal option3 As String)
+
+        If userToUpdate Is Nothing Then
+            ' Ajouter l'utilisateur s'il n'existe pas
+            Addusers(UserName)
+            userToUpdate = Users.FirstOrDefault(Function(user) user.Name = UserName)
+            Try
+                Dim localIPAddress As IPAddress = GetLocalIPAddress()
+                SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
+                logger.Debug("Envoi de l'ID du PC aux autres applications")
+            Catch ex As Exception
+                logger.Error("Erreur lors de l'envoi de l'ID du PC aux autres applications : " & ex.Message)
+            End Try
+        End If
+
+        If userToUpdate.Status = "Offline" Then
+            ' Mettre à jour le statut de l'utilisateur
+            userToUpdate.Status = IdentifiantPC
+            logger.Error("Utilisateur mis à jour avec un seul identifiant")
+            Try
+                Dim localIPAddress As IPAddress = GetLocalIPAddress()
+                SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
+                logger.Debug("Envoi de l'ID du PC aux autres applications")
+            Catch ex As Exception
+                logger.Error("Erreur lors de l'envoi de l'ID du PC aux autres applications : " & ex.Message)
+            End Try
+        ElseIf Not userToUpdate.Status.Contains(IdentifiantPC) Then
+            ' Mettre à jour le statut de l'utilisateur avec un nouveau poste
+            userToUpdate.Status += " | " & IdentifiantPC
+            logger.Error("Utilisateur mis à jour avec plusieurs postes")
+            Try
+                Dim localIPAddress As IPAddress = GetLocalIPAddress()
+                SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
+                logger.Debug("Envoi de l'ID du PC aux autres applications")
+            Catch ex As Exception
+                logger.Error("Erreur lors de l'envoi de l'ID du PC aux autres applications : " & ex.Message)
+            End Try
+        Else
+            logger.Error("Rien à faire, utilisateur déjà mis à jour")
+            Exit Sub ' Éviter la boucle infinie
+        End If
+
+        ' Envoyer un message de confirmation à l'utilisateur si c'est une autre personne
+
+        SendMessage("USR01" & My.Settings.UserName & "|" & My.Settings.WindowsName)
+
+
+        ' Sauvegarder les modifications et mettre à jour l'interface utilisateur
+        SaveUsersToJson(Users)
+        Users = LoadUsersFromJson()
+        ListUseres.ItemsSource = Users
+        Else
+        ' Gérer le cas où le message n'a pas le bon nombre de parties
+        End If
+        Catch ex As Exception
+        ' Gérer l'exception liée au traitement du message d'ajout d'utilisateur
+        End Try
+
+
+
+        Case "USR02"
+        ' Déconnexion d'un utilisateur
+        ' "USR02UserName|IdentifiantPC"
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+
+            If parts.Length >= 2 Then
+                Dim UserName As String = parts(0)
+                Dim IdentifiantPC As String = parts(1)
+
+                Dim userToUpdate As User = Users.FirstOrDefault(Function(user) user.Name = UserName)
+
+                If userToUpdate IsNot Nothing Then
+                    If userToUpdate.Status = IdentifiantPC Then
+                        ' Mettre à zéro le statut d'utilisateur
+                        userToUpdate.Status = "Offline"
+                    ElseIf userToUpdate.Status.Contains("|") Then
+                        ' Diviser le statut en parties distinctes en utilisant le séparateur "|"
+                        Dim statusParts As String() = userToUpdate.Status.Split("|"c)
+
+                        ' Réorganiser les parties du statut en supprimant les occurrences de "IdentifiantPC"
+                        userToUpdate.Status = ""
+                        For Each part As String In statusParts
+                            If part <> IdentifiantPC Then
+                                ' Ajouter la partie au statut sauf si c'est "IdentifiantPC"
+                                If userToUpdate.Status <> "" Then
+                                    userToUpdate.Status &= " | "
+                                End If
+                                userToUpdate.Status &= part
+                            End If
+                        Next
+                    End If
+
+                    ' Sauvegarder les modifications et mettre à jour l'interface utilisateur
+                    SaveUsersToJson(Users)
+                    Users = LoadUsersFromJson()
+                    ListUseres.ItemsSource = Users
+                End If
+            Else
+                ' Gérer le cas où le message n'a pas le bon nombre de parties
+            End If
+        Catch ex As Exception
+            ' Gérer l'exception liée au traitement du message de déconnexion d'utilisateur
+        End Try
+
+        Case "USR03"
+                ' Code suppresion d'un user
+                '"USR01|UserName Ancien|UserName new"
+        Case "USR04"
+                 ' Code message pour le changement de coleur
+                '"USR01|UserName|NewColor"
+
+        Case "USR11"
+        ' Mise à jour des préférences d'avatar d'un utilisateur
+        ' "USR11UserName|TagAvatar"
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            logger.Info("Réception d'une mise à jour d'avatar")
+
+            If parts.Length >= 2 Then
+                Dim UserName As String = parts(0)
+                Dim AvatarTag As String = parts(1)
+
+                Dim userToUpdate As User = Users.FirstOrDefault(Function(user) user.Name = UserName)
+                If userToUpdate IsNot Nothing Then
+                    ' Mettre à jour l'avatar de l'utilisateur
+                    userToUpdate.Avatar = AvatarTag
+                    logger.Info("Avatar mis à jour pour l'utilisateur " & UserName & " avec le tag " & AvatarTag)
+
+                    Try
+                        ' Sauvegarder les modifications et mettre à jour l'interface utilisateur
+                        SaveUsersToJson(Users)
+                        Users = LoadUsersFromJson()
+                        ListUseres.ItemsSource = Users
+                        SendMessage("ACK11" & UserName & "|AvatarUpdated")
+                        logger.Debug("Confirmation de mise à jour envoyée à l'utilisateur " & UserName)
+                    Catch ex As Exception
+                        logger.Error("Erreur lors de la sauvegarde ou de l'envoi de la confirmation : " & ex.Message)
+                    End Try
+                Else
+                    logger.Warn("Utilisateur non trouvé : " & UserName)
+                End If
+            Else
+                logger.Error("Le message n'a pas le bon format ou manque d'informations")
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors du traitement du message USR11 : " & ex.Message)
+        End Try
+
+
+            ' Section pour les messages de type "NFC"
+            ' Les messages NFC sont utilisés pour gérer les cartes NFC et les utilisateurs associés
+        Case "NFC01"
+                ' Code insertion d'une carte NFC
+                ' "NFC01|UserName|UID"
+
+        Case "NFC02"
+                ' Code ejection d'une carte NFC
+                ' "NFC02|UserName|UID""
+
+        Case "NFC11"
+                ' Code pour ajouter un utilisateur à une carte NFC
+                ' "NFC11|UserName|UID"
+
+        Case "NFC12"
+                ' Code pour supprimer un utilisateur d'une carte NFC
+                ' "NFC12|UserName|UID"
+
+
+            ' Section pour les messages de type "SMF"
+            ' Les messages SMF sont utilisés pour gérer les messages SpeedMessage
+        Case "SMF01"
+        'Reception d'un SpeedMessage envoyer 
+        ' exemple d'une message reçu "SMF01UserName|Destinataitre|message|Option1|Option2|Option3"
+        Try
+            ' Extraire le contenu du message à partir de la position 5 pour ignorer le code
+            Dim messageContent As String = receivedMessage.Substring(5)
+
+            ' Diviser le contenu du message en parties en utilisant le caractère '|'
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim UserSend As String = parts(0)
+            Dim Destinataire As String = parts(1)
+            Dim Message As String = parts(2)
+            Dim Option1 As String = parts(3)
+            Dim Option2 As String = parts(4)
+            Dim Option3 As String = parts(5)
+
+            If Destinataire = My.Settings.UserName Then
+
+                Me.WindowState = WindowState.Normal
+                Me.Topmost = True
+                Me.Topmost = False
+                Me.Focus()
+                SpeedMessageDialog(UserSend, UserSend & Message, Option1, Option2, Option3)
+            End If
+
+        Catch ex As Exception
+            logger.Error("Erreur de réception d'un message SpeedMessage SMF01 " & ex.Message)
+        End Try
+
+
+            ' Section pour les messages de type "PTN"
+            ' Les messages PTN sont utilisés pour gérer les patients
+        Case "PTN01"
+        ' Code de message pour ajouter un patient 
+        ' exemple de message "PTN01Mr|BENOIT|Muller|FO|ODG |RDC|Benoit|2023-08-25T16:33:30.496"
+        Try
+            ' Extraire le contenu du message à partir de la position 5 pour ignorer le code
+            Dim messageContent As String = receivedMessage.Substring(5)
+
+            ' Diviser le contenu du message en parties en utilisant le caractère '|'
+            Dim parts As String() = messageContent.Split("|"c)
+
+            ' Extraire les informations du patient à partir des parties
+            Dim Title As String = parts(0)
+            Dim LastName As String = parts(1)
+            Dim FirstName As String = parts(2)
+            Dim Exam As String = parts(3)
+            Dim Comments As String = parts(4)
+            Dim Floor As String = parts(5)
+            Dim Examinator As String = parts(6)
+            Dim Hold_Time As String = parts(7)
+
+            ' Appeler la fonction PatientAdd pour ajouter le patient avec les informations extraites
+            PatientAdd(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time)
+
+        Catch ex As Exception
+            ' Gérer toute exception qui pourrait survenir lors du traitement du message
+            logger.Error("Erreur de réception d'un message PatientAdd PTN01 " & ex.Message)
+        End Try
+
+
+        Case "PTN02"
+        ' Code de message pour la mise à jour d'un patient                        
+        ' "PTN02Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|OperatorName"
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim Title As String = parts(0)
+            Dim LastName As String = parts(1)
+            Dim FirstName As String = parts(2)
+            Dim Exam As String = parts(3)
+            Dim Comments As String = parts(4)
+            Dim Floor As String = parts(5)
+            Dim Examinator As String = parts(6)
+            Dim Hold_Time As String = parts(7)
+            Dim OperatorName As String = parts(8)
+
+            PatientCheckPass(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time, OperatorName)
+        Catch ex As Exception
+            ' Gérer toute exception qui pourrait survenir lors du traitement du message
+            logger.Error("Erreur de réception d'un message PatientCheckPass PTN02 " & ex.Message)
+        End Try
+
+
+        Case "PTN03"
+        ' Code de message pour supprimer un patient               
+        ' "PTN03Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|Hold_Time"
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim Title As String = parts(0)
+            Dim LastName As String = parts(1)
+            Dim FirstName As String = parts(2)
+            Dim Exam As String = parts(3)
+            Dim Comments As String = parts(4)
+            Dim Floor As String = parts(5)
+            Dim Examinator As String = parts(6)
+            Dim Hold_Time As String = parts(7)
+
+            PatientRemove(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time)
+        Catch ex As Exception
+            ' Gérer toute exception qui pourrait survenir lors du traitement du message
+            logger.Error("Erreur de réception d'un message PatientRemove PTN03 " & ex.Message)
+        End Try
+
+        Case "PTN04"
+        ' Code de message pour supprimer un patient               
+        ' "PTN04Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|OldHold_Time|NewHold_Time"
+
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim Title As String = parts(0)
+            Dim LastName As String = parts(1)
+            Dim FirstName As String = parts(2)
+            Dim Exam As String = parts(3)
+            Dim Comments As String = parts(4)
+            Dim Floor As String = parts(5)
+            Dim Examinator As String = parts(6)
+            Dim OldHold_Time As String = parts(7)
+            Dim NewHold_Time As String = parts(8)
+
+
+            PatientUpdate(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, OldHold_Time, NewHold_Time)
+
+        Catch ex As Exception
+            ' Gérer toute exception qui pourrait survenir lors du traitement du message
+            logger.Error("Erreur de réception d'un message PatientUpdate PTN04 " & ex.Message)
+
+        End Try
+
+        Case "PTN05"
+        ' Code de message pour la mise à jour d'un patient                        
+        ' "PTN05Titre|Nom|Prénom|Exams|Comments|Floor|Examinator|OperatorName"
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim Title As String = parts(0)
+            Dim LastName As String = parts(1)
+            Dim FirstName As String = parts(2)
+            Dim Exam As String = parts(3)
+            Dim Comments As String = parts(4)
+            Dim Floor As String = parts(5)
+            Dim Examinator As String = parts(6)
+            Dim Hold_Time As String = parts(7)
+            Dim OperatorName As String = parts(8)
+
+            PatientUndoPass(Title, LastName, FirstName, Exam, Comments, Floor, Examinator, Hold_Time, OperatorName)
+            logger.Debug("Réception d'un message PatientUndoPass PTN05")
+        Catch ex As Exception
+            logger.Error("Erreur de réception d'un message PatientUndoPass PTN05 " & ex.Message)
+        End Try
+
+
+            ' Section pour les messages de type "SYS"
+            ' Les messages SYS sont utilisés pour gérer les actions système
+        Case "SYS01"
+        ' Code pour fermer la boite à distance
+        ' Exemple du message envoyé : "SYS01|IdentifiantPC(cible)|IdentifiantPC(auteur)"
+
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim targetPC As String = parts(0)
+            Dim authorPC As String = parts(1)
+
+            ' Vérification de l'identifiant PC de la cible
+            If targetPC = My.Settings.UniqueId Then
+                logger.Debug("Réception d'un message SYS01 pour fermeture à distance.")
+                SaveMessagesToJson(Messages)
+                SaveUsersToJson(Users)
+                Me.Close() ' Fermer la fenêtre
+            End If
+        Catch ex As Exception
+            ' Gestion de l'exception
+            logger.Error("Une erreur s'est produite lors du traitement du message SYS01 : " & ex.Message)
+        End Try
+
+
+        Case "SYS02"
+        ' Code pour déconnecter l'utilisateur à distance
+        ' Exemple du message envoyé : "SYS02|IdentifiantPC(cible)|IdentifiantPC(auteur)"
+
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim targetPC As String = parts(0)
+            Dim authorPC As String = parts(1)
+            If targetPC = My.Settings.UniqueId Then
+                logger.Debug("Réception d'un message SYS02 pour déconnexion à distance.")
+                SaveMessagesToJson(Messages)
+                SaveUsersToJson(Users)
+                SelectedUserMessages.Clear()
+                Users.Clear()
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de la déconnexion à distance : " & ex.Message)
+        End Try
+
+        Case "SYS20"
+        'code pour mettre le client en reception de fichier
+        'Exemple du message envoyé : "SYS20ComputerID(cible)|ComputerID(auteur)|Folder|FileName"
+
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim targetPC As String = parts(0)
+            Dim authorPC As String = parts(1)
+            Dim Folder As String = parts(2)
+            Dim FileName As String = parts(3)
+            If targetPC = My.Settings.UniqueId Then
+                logger.Debug("Réception d'un message SYS20 pour mise en réception de fichier.")
+                If targetPC = My.Settings.UniqueId And authorPC <> My.Settings.UniqueId Then
+                    ' Mettre le client en réception de fichier
+                    Dim receiver As New FileReceiver()
+                    Dim savePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Folder, FileName)
+                    ' Remplacez par l'emplacement où vous souhaitez sauvegarder le fichier
+                    Dim port As Integer = 12345 ' Remplacez par le même port que celui utilisé pour l'envoi
+                    'SendMessage("SYS21" & authorPC & "|" & targetPC & "|" & Folder & "|" & FileName & "|" & port)
+
+                    receiver.ReceiveFile(savePath, port)
+                End If
+            End If
+
+        Catch ex As Exception
+            logger.Error("Erreur lors de la mise en réception de fichier :  " & ex.Message)
+        End Try
+
+
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim targetPC As String = parts(0)
+            Dim authorPC As String = parts(1)
+            Dim Folder As String = parts(2)
+            Dim FileName As String = parts(3)
+            If targetPC = My.Settings.UniqueId Then
+                logger.Debug("Réception d'un message SYS20 pour mise en réception de fichier.")
+                If targetPC = My.Settings.UniqueId And authorPC <> My.Settings.UniqueId Then
+                    ' Mettre le client en réception de fichier
+                    Dim receiver As New FileReceiver()
+                    Dim savePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Folder, FileName)
+                    ' Remplacez par l'emplacement où vous souhaitez sauvegarder le fichier
+                    Dim port As Integer = 12345 ' Remplacez par le même port que celui utilisé pour l'envoi
+                    'SendMessage("SYS21" & authorPC & "|" & targetPC & "|" & Folder & "|" & FileName & "|" & port)
+
+                    receiver.ReceiveFile(savePath, port)
+                End If
+            End If
+
+        Catch ex As Exception
+            logger.Error("Erreur lors de la mise en réception de fichier :  " & ex.Message)
+        End Try
+
+
+            ' Section pour les messages de type "MSG"
+            ' Les messages MSG sont utilisés pour gérer les messages
+        Case "MSG01"
+
+        'Ajouter un message
+        'Exemple du message envoyé : "MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+        Try
+
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim author As String = parts(0)
+            Dim destinataire As String = parts(1)
+            Dim room As String = parts(2)
+            Dim message As String = parts(3)
+            Dim avatarPath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatar", parts(4))
+
+
+            Dim messageAdded As Boolean = False ' Variable pour suivre si un message a été ajouté
+
+            Select Case destinataire
+                Case "A Tous"
+                    If author = My.Settings.UserName Then
+                        ' Auteur envoie un message "A Tous"
+                        AddMessage("A Tous", author, room, message, True, avatarPath)
+                        SelectUserByName("A Tous")
+                        messageAdded = True
+                    Else
+                        ' Autre utilisateur envoie un message "A Tous"
+                        AddMessage("A Tous", author, room, message, False, avatarPath)
+                        SelectUserByName("A Tous")
+                        messageAdded = True
+                    End If
+
+                Case "Secrétariat"
+                    If author = My.Settings.UserName Then
+                        ' Auteur envoie un message à "Secrétaria"
+                        AddMessage("Secrétariat", author, room, message, True, avatarPath)
+                        SelectUserByName("Secrétariat")
+                        messageAdded = True
+                    End If
+
+                    If My.Settings.SecretaryMode = True Then
+                        ' Secrétaria mode est activé
+                        AddMessage("Secrétariat", author, room, message, False, avatarPath)
+                        AddMessage(author, author, room, message, False, avatarPath)
+                        SelectUserByName(author)
+                        messageAdded = True
+                    End If
+
+                Case Else
+                    If author = My.Settings.UserName Then
+                        ' Auteur envoie un message à "quelqu'un"
+                        AddMessage(destinataire, author, room, message, True, avatarPath)
+                        SelectUserByName(destinataire)
+                        messageAdded = True
+                    End If
+
+                    If destinataire = My.Settings.UserName Then
+                        ' Destinataire est l'auteur
+                        AddMessage(author, author, room, message, False, avatarPath)
+                        SelectUserByName(author)
+                        messageAdded = True
+                    End If
+            End Select
+
+            ' Mettre à jour la fenêtre si un message a été ajouté
+            If messageAdded Then
+                Me.WindowState = WindowState.Normal
+                Me.Topmost = True
+                Me.Topmost = False
+                Me.Focus()
+            End If
+
+
+
+
+        Catch ex As Exception
+            logger.Error("Erreur de réception d'un message MSG01 " & ex.Message)
+        End Try
+
+        Case "MSG02"
+                'Pour supprimer un message
+
+
+            ' Section pour les messages de type "SLN"
+            ' Les messages SLN sont utilisés pour gérer les salons
+        Case "SLN01"
+                'création d'un salon
+        Case "SLN02"
+                'invatition a un salon
+        Case "SLN03"
+                'suppresion d'un salon 
+
+
+            ' Section pour les messages de type "DBG"
+            ' Les messages DBG sont utilisés pour le débogage
+        Case "DBG01"
+        'Code pour envoyer l'ID du PC au autres application
+        Try
+            Dim localIPAddress As IPAddress = GetLocalIPAddress()
+            SendMessageWithCode("DBG02", My.Settings.UniqueId & "|" & Environment.UserName & "|" & localIPAddress.ToString)
+            logger.Debug("Envoi de l'ID du PC aux autres applications")
+        Catch ex As Exception
+            logger.Error("Erreur lors de l'envoi de l'ID du PC aux autres applications : " & ex.Message)
+        End Try
+
+
+        Case "DBG02"
+        'Code pour enregistrer l'ID des autre PC dans la collection computer
+        Try
+            Dim messageContent As String = receivedMessage.Substring(5)
+            Dim parts As String() = messageContent.Split("|"c)
+            Dim ComputerID As String = parts(0)
+            Dim ComputerUser As String = parts(1)
+            Dim ComputerIP As String = parts(2)
+            If Not Computers.Any(Function(c) c.ComputerID = ComputerID) Then
+                Computers.Add(New Computer With {.ComputerID = ComputerID, .ComputerUser = ComputerUser, .ComputerIP = ComputerIP})
+
+                logger.Debug("Ajout d'un PC à la liste des PC : " & ComputerID)
+            End If
+            SaveComputersToJson() ' Sauvegarder la liste mise à jour dans le fichier JSON
+        Catch ex As Exception
+            logger.Error("Erreur lors de la réception de l'ID des autres PC : " & ex.Message)
+        End Try
+
+        Case Else
+        ' Code pour les messages non reconnus
+        ' ...
+        End Select
+    End Sub
+
+    ' Fonction permettant d'envoyer un code suivi d'un contenu spécifié
+    Private Sub SendMessageWithCode(code As String, content As String)
+
+        Try
+            ' Vérifier si le code et le contenu ne sont pas nuls
+            If code IsNot Nothing And content IsNot Nothing Then
+                ' Concaténer le code et le contenu pour former le message complet
+                Dim message As String = code + content
+
+                ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
+                Dim messageBytes As Byte() = Encoding.UTF8.GetBytes(message)
+
+                ' Envoyer les octets du message à travers le client d'envoi
+                sendingClient.Send(messageBytes, messageBytes.Length)
+
+                ' Afficher le message dans la console
+                logger.Debug("Envoi d'un message avec code : " & code & " et message : " & content)
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de l'envoi d'un message avec code : " & code & " et message : " & content & " l'erreur suivante est apparue : " & ex.Message)
+        End Try
+
+    End Sub
+
+    ' Fonction permettant d'envoyer un message complet 
+    Public Shared Sub SendMessage(message As String)
+        Try
+            ' Vérifier si le message n'est pas vide
+            If Not String.IsNullOrWhiteSpace(message) Then
+
+                ' Vérifie si le client d'envoi est initialiser
+                If sendingClient IsNot Nothing Then
+
+                    ' Convertir le message en tableau d'octets en utilisant l'encodage UTF-8
+                    Dim DataMessage As Byte() = Encoding.UTF8.GetBytes(message)
+
+                    ' Envoyer les octets du message à travers le client d'envoi
+                    If DataMessage IsNot Nothing AndAlso sendingClient IsNot Nothing Then
+
+                        ' Envoyer les octets du message à travers le client d'envoi
+                        sendingClient.Send(DataMessage, DataMessage.Length)
+
+                        ' Afficher le message dans la console
+                        logger.Debug("Envoi d'un message : " & message)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            logger.Error($"Erreur lors de l'envoi d'un message : {message}. L'erreur suivante est apparue : {ex.Message}")
+        End Try
+    End Sub
+
+
+    Private Async Sub SpeedMessageDialog(ByVal Titre As String, ByVal Message As String, ByVal option1 As String, ByVal option2 As String, ByVal option3 As String)
         Try
             Dim dialogSettings As New MetroDialogSettings With {
             .AffirmativeButtonText = option1,
@@ -1044,8 +1969,8 @@ Class MainWindow
                                 ExtractInfoFromInput(SendTextBox.Text.Substring(codeMSG.Length), patientTitre, patientNom, patientPrenom)
                             End If
 
-                            Dim Text As String = "PTN01" & patientTitre & "|" & patientNom & "|" & patientPrenom & "|" & codeMSG & "|" & annotation & "|RDC|" & _userSettingsMain.UserName & "|" & Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
-                            SendManager.SendMessage(Text)
+                            Dim Text As String = "PTN01" & patientTitre & "|" & patientNom & "|" & patientPrenom & "|" & codeMSG & "|" & annotation & "|RDC|" & My.Settings.UserName & "|" & Date.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+                            SendMessage(Text)
 
 
                         Else
@@ -1053,7 +1978,8 @@ Class MainWindow
 
 
                             ' C'est un message simple
-                            ' Formate le message sous la forme "MSG01{_userSettingsMain.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+                            ' Formate le message sous la forme "MSG01{My.Settings.UserName}|{selectedUser.Name}|{Message}|{Avatar}"
+                            logger.Info("Le message de la Sendbox est un message simple")
                             logger.Info("Le message de la Sendbox est un message simple")
                             Try
                                 Dim text As String
@@ -1096,8 +2022,8 @@ Class MainWindow
 
                                     End If
 
-                                    text = "MSG01" & _userSettingsMain.UserName & "|" & selectedUserName & "|" & My.Settings.WindowsName & "|" & SendTextBox.Text & "|" & _userSettingsMain.UserAvatar
-                                    SendManager.SendMessage(text)
+                                    text = "MSG01" & My.Settings.UserName & "|" & selectedUserName & "|" & My.Settings.WindowsName & "|" & SendTextBox.Text & "|avataaars.png"
+                                    SendMessage(text)
                                     MessageList.ScrollToEnd()
                                     logger.Debug("Message simple envoyé  ")
                                 End If
@@ -1199,8 +2125,7 @@ Class MainWindow
         'My.Settings.Save()
 
         'End If
-        'SendMessage("USR02" & _userSettingsMain.UserName & "|" & My.Settings.WindowsName)
-        Return Task.CompletedTask
+        'SendMessage("USR02" & My.Settings.UserName & "|" & My.Settings.WindowsName)
 
     End Function
 
@@ -1268,9 +2193,52 @@ Class MainWindow
         End Set
     End Property
 
+#Region "Envoie de fichier"
 
+    Public Shared Sub SendFileOverNetwork(folder As String, fileToSend As String, Optional user As String = "")
+        Try
+            ' Vérifie si un utilisateur a été spécifié
+            If String.IsNullOrEmpty(user) Then
+                ' Aucun utilisateur spécifié, envoyez le message à tous les ordinateurs répertoriés
+                For Each computer In Computers
+                    ' Assurez-vous de ne pas vous envoyer un message à vous-même
+                    If computer.ComputerID <> My.Settings.UniqueId Then
+                        Dim message As String = $"SYS20{computer.ComputerID}|{My.Settings.UniqueId}|{folder}|{fileToSend}"
+                        ' Envoyer le message
+                        SendMessage(message)
+                        ' Envoyer le fichier à l'ordinateur actuel
+                        Dim senderFile As New FileSender()
+                        Dim filePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", fileToSend)
+                        Dim ipAddress As String = computer.ComputerIp ' Remplacez par l'adresse IP du destinataire
+                        Dim port As Integer = 12345 ' Remplacez par le port que vous souhaitez utiliser
+                        senderFile.SendFile(filePath, ipAddress, port)
+                    End If
+                Next
+            Else
+                ' Un utilisateur a été spécifié, envoyez le message uniquement à cet utilisateur
+                Dim targetComputer As Computer = Computers.FirstOrDefault(Function(comp) comp.ComputerUser = user)
+                If targetComputer IsNot Nothing Then
+                    Dim message As String = $"SYS20{targetComputer.ComputerID}|{My.Settings.UniqueId}|{folder}|{fileToSend}"
+                    ' Envoyer le message à l'utilisateur spécifié
+                    SendMessage(message)
+                    ' Envoyer le fichier à l'utilisateur spécifié
+                    Dim senderFile As New FileSender()
+                    Dim filePath As String = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", fileToSend)
+                    Dim ipAddress As String = targetComputer.ComputerIp ' Remplacez par l'adresse IP du destinataire
+                    Dim port As Integer = 12345 ' Remplacez par le port que vous souhaitez utiliser
+                    senderFile.SendFile(filePath, ipAddress, port)
+                Else
+                    ' Gérer le cas où l'utilisateur spécifié n'existe pas
+                    MessageBox.Show("L'utilisateur spécifié n'existe pas.")
+                End If
+            End If
+        Catch ex As Exception
+            logger.Error("Erreur lors de l'envoi du fichier : " & ex.Message)
+        End Try
 
+    End Sub
 
+#End Region
 
 #Region "Gestion boite de dialogue d'ajout d'un patint"
 
@@ -1547,7 +2515,7 @@ Class MainWindow
         logger.Info("Fermeture de la fenêtre MainWindow")
         Try
             ' Envoyer un message lors de la fermeture de la fenêtre
-            SendManager.SendMessage("USR02" & _userSettingsMain.UserName & "|" & Environment.UserName)
+            SendMessage("USR02" & My.Settings.UserName & "|" & Environment.UserName)
             logger.Debug("L'envoi du message lors de la fermeture de la fenêtre MainWindow s'est déroulé avec succès.")
         Catch ex As Exception
             ' En cas d'erreur lors de l'envoi du message de fermeture
