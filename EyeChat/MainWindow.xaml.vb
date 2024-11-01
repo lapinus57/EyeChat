@@ -534,14 +534,14 @@ Class MainWindow
 
         ' Initialisation de SendManager
 
-        'SendManager.InitializeSender()
+        SendManager.InitializeSender()
 
 
         ' Initialisation de ReceiveManager
-        'Dim receiveManager As New ReceiveManager(Dispatcher, Me)
+        Dim receiveManager As New ReceiveManager(Dispatcher, Me)
 
         ' Démarrer la réception de messages
-        'ReceiveManager.StartReceiving()
+        receiveManager.StartReceiving()
 
         If My.Settings.PlanningMode2 = True Then
 
@@ -1554,7 +1554,13 @@ Class MainWindow
 
     End Sub
 
-
+    Public Function GetSelectedUserName() As String
+        Dim selectedUser As User = CType(Me.ListUseres.SelectedItem, User)
+        If selectedUser IsNot Nothing Then
+            Return selectedUser.Name
+        End If
+        Return "A Tous"
+    End Function
 
     Private Sub MainWindow_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         logger.Info("Fermeture de la fenêtre MainWindow")
@@ -1591,4 +1597,3 @@ Class MainWindow
 
 
 End Class
-

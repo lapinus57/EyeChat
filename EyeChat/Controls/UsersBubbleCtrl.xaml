@@ -23,7 +23,8 @@
                 MouseLeftButtonDown="Border_MouseLeftButtonDown">
             <Border.ContextMenu>
                 <ContextMenu Visibility="{Binding Name, Converter={StaticResource NameToEnabledConverter}, ConverterParameter='A Tous,Secrétariat'}">
-                    <MenuItem Header="Envoyer une notification" />
+                    <MenuItem Header="Envoyer une notification" 
+                              Click="MenuItemSendNotification_Click"/>
                     <MenuItem Header="Monter" 
                               Click="MenuItemMoveUp_Click" />
                     <MenuItem Header="Descendre" 

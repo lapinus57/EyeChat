@@ -21,7 +21,6 @@ Public Class SendManager
             sendingClient.Connect(MulticastAddress, Port)
 
             logger.Debug("Client d'envoi UDP initialisé avec succès")
-            MsgBox("Client d'envoi UDP initialisé avec succès")
         Catch ex As Exception
             logger.Error("Erreur lors de l'initialisation du client d'envoi UDP : " & ex.Message)
             MsgBox("Erreur lors de l'initialisation du client d'envoi UDP : " & ex.Message)

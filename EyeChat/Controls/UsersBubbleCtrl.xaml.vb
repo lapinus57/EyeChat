@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Media
 Imports EyeChat.MainWindow
 Imports EyeChat.User
 
@@ -79,8 +80,12 @@ Public Class UsersBubbleCtrl
     Private Sub Border_MouseLeftButtonDown(ByVal sender As Object, ByVal e As MouseButtonEventArgs)
         Dim selectedUser As User = DirectCast(DataContext, User)
         Dim selectedName As String = selectedUser.Name
-        SelectUser(selectedName)
 
+        ' Ajoutez un message de débogage pour vérifier le nom de l'utilisateur sélectionné
+        Console.WriteLine("Utilisateur sélectionné : " & selectedName)
+
+        ' Appelez la méthode SelectUser
+        SelectUser(selectedName)
     End Sub
 
     Private Sub MenuItemMoveUp_Click(sender As Object, e As RoutedEventArgs)
@@ -121,6 +126,16 @@ Public Class UsersBubbleCtrl
             End If
         End If
         SaveUsersToJson(Users)
+    End Sub
+
+    Private Sub MenuItemSendNotification_Click(sender As Object, e As RoutedEventArgs)
+        ' Trouver l'élément parent ListBoxItem du UserControl
+        Dim listBoxItem As ListBoxItem = FindParentListBoxItem(Me)
+
+        ' Récupérer l'utilisateur correspondant à l'élément de la liste
+        Dim user As User = TryCast(listBoxItem.DataContext, User)
+
+        SendManager.SendMessage("POP01" & user.Name)
     End Sub
 
     Private Function FindParentListBoxItem(element As DependencyObject) As ListBoxItem

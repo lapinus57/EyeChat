@@ -5,6 +5,8 @@ Imports System.Threading
 Imports System.Drawing
 Imports System.Windows.Threading
 Imports log4net
+Imports System.Media
+Imports System.Windows.Media.Animation
 
 Public Class ReceiveManager
 
@@ -28,6 +30,7 @@ Public Class ReceiveManager
             {"USR02", AddressOf HandleUserDisconnection},
             {"USR03", AddressOf HandleUserNameChange},
             {"USR04", AddressOf HandleUserColorChange},
+            {"USR05", AddressOf HandleUserUpdate},
             {"USR11", AddressOf HandleUserAvatarUpdate},
             {"NFC01", AddressOf HandleNFCInsertion},
             {"NFC02", AddressOf HandleNFCRemoval},
@@ -47,7 +50,8 @@ Public Class ReceiveManager
             {"SLN01", AddressOf HandleRoomCreation},
             {"SLN02", AddressOf HandleRoomRemoval},
             {"SLN03", AddressOf HandleRoomUseraddition},
-            {"SLN04", AddressOf HandleRoomUserRemoval}
+            {"SLN04", AddressOf HandleRoomUserRemoval},
+            {"POP01", AddressOf HandlePopupnotification}
         }
     End Sub
 
@@ -60,7 +64,6 @@ Public Class ReceiveManager
              }
 
             receiveThread.Start()
-            MsgBox("Réception de messages démarrée")
         Catch ex As Exception
             logger.Error("Erreur lors du démarrage de la réception de messages : " & ex.Message)
             MsgBox("Erreur lors du démarrage de la réception de messages : " & ex.Message)
@@ -83,11 +86,15 @@ Public Class ReceiveManager
             ' Boucle infinie pour écouter les messages entrants
             While True
                 Try
+
+
                     Dim receiveBytes As Byte() = receivingClient.Receive(endPoint)
                     Dim receivedMessage As String = Encoding.UTF8.GetString(receiveBytes)
 
                     ' Exécute la méthode MessageReceived sur le thread de l'interface utilisateur
-                    dispatcher.Invoke(Sub() MessageReceived(receivedMessage))
+                    dispatcher?.Invoke(Sub() MessageReceived(receivedMessage))
+
+
                 Catch ex As SocketException
                     ' Gérer l'exception de socket ici
                     MessageBox.Show("Erreur de socket : " & ex.Message)
@@ -152,6 +159,11 @@ Public Class ReceiveManager
 
             ' Sauvegarder les utilisateurs et rafraîchir l'interface
             SaveAndRefreshUsers()
+            If userName <> MainWindow._userSettingsMain.UserName Then
+                ' Envoyer un message USR05 avec les informations de l'utilisateur actuel
+                SendManager.SendMessage("USR05" & MainWindow._userSettingsMain.UserName & "|" & Environment.UserName & "|/Avatar/" & MainWindow._userSettingsMain.UserAvatar)
+
+            End If
         Catch ex As Exception
             logger.Error("Erreur lors du traitement de la connexion utilisateur : " & ex.Message)
         End Try
@@ -244,6 +256,44 @@ Public Class ReceiveManager
         End Try
     End Sub
 
+    ' Ajoutez cette méthode pour gérer le message USR05
+    Private Sub HandleUserUpdate(ByVal content As String)
+        Try
+            ' Découper le contenu en parties
+            Dim parts As String() = content.Split("|"c)
+            If parts.Length < 3 Then
+                logger.Warn("Contenu de mise à jour utilisateur invalide.")
+                Return
+            End If
+
+            Dim userName As String = parts(0)
+            Dim identifiantPC As String = parts(1)
+            Dim userAvatar As String = parts(2)
+
+            ' Rechercher l'utilisateur par nom
+            Dim userToUpdate As User = MainWindow.Users.FirstOrDefault(Function(user) user.Name = userName)
+
+            ' Si l'utilisateur n'existe pas, l'ajouter
+            If userToUpdate Is Nothing Then
+                mainWindow.Addusers(userName) ' Ajout de l'utilisateur s'il n'existe pas
+                userToUpdate = MainWindow.Users.FirstOrDefault(Function(user) user.Name = userName)
+                If userToUpdate Is Nothing Then
+                    logger.Error("Impossible d'ajouter l'utilisateur.")
+                    Return
+                End If
+            End If
+
+            ' Mettre à jour les informations de l'utilisateur
+            userToUpdate.Status = identifiantPC
+            userToUpdate.Avatar = userAvatar
+
+
+            ' Sauvegarder les utilisateurs et rafraîchir l'interface
+            SaveAndRefreshUsers()
+        Catch ex As Exception
+            logger.Error("Erreur lors de la mise à jour de l'utilisateur : " & ex.Message)
+        End Try
+    End Sub
     Private Sub HandleNFCInsertion(ByVal content As String)
         Try
             'Not implemented yet
@@ -648,7 +698,42 @@ Public Class ReceiveManager
         'Not implemented yet
     End Sub
 
+    ' Méthode pour gérer les notifications POP01
+    Private Sub HandlePopupNotification(message As String)
+        ' Vérifier que le message est suffisamment long
 
+        ' Extraire le nom de l'utilisateur du message
+        Dim userName As String = message
+
+        ' Vérifier si le nom d'utilisateur correspond à celui de l'utilisateur actuel
+        If userName = MainWindow._userSettingsMain.UserName Then
+                ' Faire apparaître la MainWindow
+                Dim mainWindow As MainWindow = CType(Application.Current.MainWindow, MainWindow)
+
+            ' Restaurer la fenêtre si elle est agrandie ou minimisée
+            If mainWindow.WindowState = WindowState.Maximized OrElse mainWindow.WindowState = WindowState.Minimized Then
+                mainWindow.WindowState = WindowState.Normal
+            End If
+
+            mainWindow.Topmost = True
+            ' Cette ligne est nécessaire pour s'assurer que la fenêtre est restaurée correctement
+            mainWindow.WindowState = WindowState.Normal
+            mainWindow.Focus()
+
+            ' Émettre un bip sonore
+            SystemSounds.Beep.Play()
+
+            ' Déclencher l'animation de secousse sur la MainWindow
+            'TriggerShakeAnimation(mainWindow)
+            ' Déclencher l'animation de déformation sur la MainWindow
+            'TriggerDistortAnimation(mainWindow)
+            ' Déclencher l'animation de déformation permanente sur la MainWindow
+            'TriggerPermanentDistortAnimation(mainWindow)
+            ' Déclencher l'effet miroir sur la MainWindow
+            TriggerMirrorEffect(mainWindow)
+        End If
+
+    End Sub
 
 
     ' Méthode pour envoyer l'ID du PC local
@@ -698,8 +783,113 @@ Public Class ReceiveManager
 
     ' Méthode pour sauvegarder et recharger les utilisateurs
     Private Sub SaveAndRefreshUsers()
+        ' Stocker l'utilisateur sélectionné
+        Dim selectedUser As String = mainWindow.GetSelectedUserName()
         User.SaveUsersToJson(MainWindow.Users)
         MainWindow.Users = User.LoadUsersFromJson()
         dispatcher.Invoke(Sub() mainWindow.ListUseres.ItemsSource = MainWindow.Users)
+        mainWindow.SelectUserByName(selectedUser)
+    End Sub
+
+    ' Méthode pour déclencher l'animation de secousse
+    Private Sub TriggerShakeAnimation(window As Window)
+        Dim originalLeft As Double = window.Left
+        Dim originalTop As Double = window.Top
+
+        Dim shakeAnimation As New Storyboard()
+        Dim animationX As New DoubleAnimation() With {
+            .From = originalLeft - 20,
+            .To = originalLeft + 20,
+            .Duration = New Duration(TimeSpan.FromMilliseconds(100)),
+            .AutoReverse = True,
+            .RepeatBehavior = New RepeatBehavior(5)
+        }
+        Dim animationY As New DoubleAnimation() With {
+            .From = originalTop - 20,
+            .To = originalTop + 20,
+            .Duration = New Duration(TimeSpan.FromMilliseconds(100)),
+            .AutoReverse = True,
+            .RepeatBehavior = New RepeatBehavior(5)
+        }
+
+        Storyboard.SetTarget(animationX, window)
+        Storyboard.SetTargetProperty(animationX, New PropertyPath(Window.LeftProperty))
+        Storyboard.SetTarget(animationY, window)
+        Storyboard.SetTargetProperty(animationY, New PropertyPath(Window.TopProperty))
+
+        shakeAnimation.Children.Add(animationX)
+        shakeAnimation.Children.Add(animationY)
+
+        shakeAnimation.Begin()
+    End Sub
+
+    ' Méthode pour déclencher l'animation de déformation
+    Private Sub TriggerDistortAnimation(window As Window)
+        Dim scaleTransform As New ScaleTransform(1.0, 1.0)
+        window.RenderTransform = scaleTransform
+        window.RenderTransformOrigin = New System.Windows.Point(0.5, 0.5)
+
+        Dim scaleXAnimation As New DoubleAnimation() With {
+            .From = 1.0,
+            .To = 1.2,
+            .Duration = New Duration(TimeSpan.FromMilliseconds(100)),
+            .AutoReverse = True,
+            .RepeatBehavior = New RepeatBehavior(3)
+        }
+        Dim scaleYAnimation As New DoubleAnimation() With {
+            .From = 1.0,
+            .To = 1.2,
+            .Duration = New Duration(TimeSpan.FromMilliseconds(100)),
+            .AutoReverse = True,
+            .RepeatBehavior = New RepeatBehavior(3)
+        }
+
+        scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleXAnimation)
+        scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, scaleYAnimation)
+    End Sub
+
+
+    ' Méthode pour déclencher l'animation de déformation permanente
+    Private Sub TriggerPermanentDistortAnimation(window As Window)
+        Dim skewTransform As New SkewTransform(0, 0)
+        window.RenderTransform = skewTransform
+        window.RenderTransformOrigin = New System.Windows.Point(0.5, 0.5)
+
+        Dim skewXAnimation As New DoubleAnimation() With {
+            .From = 0,
+            .To = 20,
+            .Duration = New Duration(TimeSpan.FromMilliseconds(500)),
+            .AutoReverse = False,
+            .RepeatBehavior = New RepeatBehavior(1)
+        }
+        Dim skewYAnimation As New DoubleAnimation() With {
+            .From = 0,
+            .To = 20,
+            .Duration = New Duration(TimeSpan.FromMilliseconds(500)),
+            .AutoReverse = False,
+            .RepeatBehavior = New RepeatBehavior(1)
+        }
+
+        skewTransform.BeginAnimation(SkewTransform.AngleXProperty, skewXAnimation)
+        skewTransform.BeginAnimation(SkewTransform.AngleYProperty, skewYAnimation)
+    End Sub
+
+    ' Méthode pour déclencher l'effet miroir
+    Private Sub TriggerMirrorEffect(window As Window)
+        ' Vérifier si la fenêtre est prête pour la transformation
+        If window Is Nothing Then
+            Return
+        End If
+
+        ' Obtenir l'élément racine de la fenêtre
+        Dim rootElement As FrameworkElement = TryCast(window.Content, FrameworkElement)
+        If rootElement Is Nothing Then
+            Return
+        End If
+
+        ' Appliquer la transformation de mise à l'échelle pour l'effet miroir
+        Dim scaleTransform As New ScaleTransform(-1, 1)
+        rootElement.RenderTransform = scaleTransform
+        rootElement.RenderTransformOrigin = New System.Windows.Point(0.5, 0.5)
     End Sub
 End Class
